@@ -1,0 +1,13 @@
+const asyncHandler = require('../middlewares/asyncHandler');
+const svc = require('../services/supplier.service');
+
+// query params: category, region, active, q, page, limit
+exports.getAll = asyncHandler(async (req, res) => {
+  const data = await svc.listSuppliers(req.query);
+  res.json(data);
+});
+
+exports.getOne = asyncHandler(async (req, res) => {
+  const data = await svc.getSupplier(req.params.id);
+  res.json({ supplier: data });
+});

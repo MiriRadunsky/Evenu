@@ -3,7 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
-
+const routes = require('./routes/index.router');
 const { connectMongo } = require('./db/connect.db');
 const mongoHealth = require('./db/health.db');
 const { errorHandler } = require('./middlewares/error');
@@ -33,17 +33,9 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-
-app.get('/health', (req, res) => {
-  res.status(200).json({ up: true });
-});
-
+app.use(routes)
 app.get('/health/mongo', mongoHealth);
-
-app.get('/', (req, res) => res.send('🏠 This is the Home Page'));
-
 app.use(errorHandler);
-
 connectMongo().then(() => {
   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 });

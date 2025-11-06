@@ -1,20 +1,28 @@
-import { Router } from 'express';
-import { getSuppliers, getSupplierById } from '../controllers/supplier.controller';
+const router = require('express').Router();
+const { authGuard } = require('../middlewares/auth');
+const { roleGuard } = require('../middlewares/role');
+const validateObjectId = require('../middlewares/validateObjectId');
+const ctrl = require('../controllers/supplier.controller');
 
-const router = Router();
+const allowClientAdmin = [ 'user', 'admin' ];
 
-// 🔹 יצירת ספק חדש
-router.post('/', createSupplier);
+// GET /api/suppliers?category=&region=&active=&q=&page=&limit=
+router.get(
+  '/',
+  authGuard,
+  roleGuard(allowClientAdmin),
+  ctrl.getAll
+);
 
-// 🔹 התחברות ספק – אימות סיסמה
-router.post('/login', loginSupplier);
+// GET /api/suppliers/:id
+router.get(
+  '/:id',
+  authGuard,
+  roleGuard(allowClientAdmin),
+  validateObjectId('id'),
+  ctrl.getOne
+);
+// 🔹 רישום משתמש חדש
+router.post('/supplier/register', supplierRegister);
 
-// 🔹 שליפת ספקים עם אפשרות סינון
-router.get('/', getSuppliers);
-
-// 🔹 שליפת ספק בודד לפי מזהה
-router.get('/:id', getSupplierById);
-
-// 🔹 עדכון פרופיל ספק
-router.put('/:id', updateSupplier);
-export default router;
+module.exports = router;

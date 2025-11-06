@@ -1,26 +1,30 @@
-// supplier.repository.js
+const Supplier = require('../models/Supplier');
 
-// 🔹 יצירת ספק חדש
-async function createSupplier({ name, email, password, role }) {}
+async function findMany({ category, region, active, q, page = 1, limit = 20 }) {
+  const filter = {};
+  if (category) filter.category = category;
+  if (region)   filter.regions  = region;
+  if (active !== undefined) filter.isActive = active === 'true' || active === true;
 
-// 🔹 התחברות ספק – אימות סיסמה
-async function loginSupplier({ email, password }) {}
+  if (q) filter.$text = { $search: q };
 
-// 🔹 שליפת ספק לפי ID
-async function getSupplierById(id) {}
+  const skip = (Number(page) - 1) * Number(limit);
 
-// 🔹 שליפת כל הספקים (עם סינון אופציונלי)
-async function getSuppliers(filter = {}) {}
+  const [items, total] = await Promise.all([
+    Supplier.find(filter)
+      .populate('category', 'label')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(Number(limit))
+      .lean(),
+    Supplier.countDocuments(filter)
+  ]);
 
-// 🔹 עדכון פרופיל ספק
-async function updateSupplier(id, updateData) {}
+  return { items, total, page: Number(page), limit: Number(limit) };
+}
 
-// 🔹 יצירת JWT
+function findById(id) {
+  return Supplier.findById(id).populate('category', 'label').lean();
+}
 
-module.exports = {
-    createSupplier,
-    loginSupplier,
-    getSupplierById,
-    getSuppliers,
-    updateSupplier,
-};
+module.exports = { findMany, findById };
