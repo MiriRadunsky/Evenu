@@ -1,8 +1,9 @@
-import { Router } from 'express';
-import { authenticate, getProfile , authenticate , updateProfile } from '../controllers/user.controller';
+const router = require('express').Router();
+const { authGuard } = require('../middlewares/auth');
+const ctrl = require('../controllers/user.controller');
 
-const router = Router();
+router.get('/me', authGuard, ctrl.getMe);
 
-router.get('/me', authenticate, getProfile);
+router.patch('/me', authGuard, ctrl.updateMe);
 
-router.patch('/me', authenticate, updateProfile);
+module.exports = router;
