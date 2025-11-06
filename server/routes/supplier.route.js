@@ -23,17 +23,10 @@ router.get(
   ctrl.getOne
 );
 // POST /api/supplier/register
-router.post('/supplier/register', supplierRegister);
-
+router.post('/supplier/register', ctrl.supplierRegister);
 // POST /api/supplier/login
-router.post('/supplier/login', supplierLogin);
+router.post('/supplier/login', ctrl.supplierLogin);
 //PATCH /api/suppliers/:id
-router.patch(
-  '/:supplierId/status',
-  authGuard,
-  roleGuard(allowClientAdmin),
-  validateObjectId('supplierId'),
-  patchStatusHandler
-);
+router.patch('/:id/status', ctrl.updateSupplierStatus);
 
 module.exports = router;

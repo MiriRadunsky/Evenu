@@ -25,7 +25,13 @@ const supplierSchema = new Schema(
     portfolio: { type: [portfolioSub], default: [] },
     profileImage: { type: profileImageSub, default: null },
     description: { type: String, trim: true },
-    isActive: { type: Boolean, default: true, index: true }
+    isActive: { type: Boolean, default: true, index: true },
+    status: {
+      type: String,
+      enum: [ 'בהמתנה', 'מאושר', 'נפסל', 'נחסם'],
+      default: 'חדש',
+      index: true
+    },
   },
   { timestamps: true }
 );

@@ -1,5 +1,9 @@
 const Supplier = require('../models/Supplier');
 
+
+async function updateStatus(id, status) {
+  return await Supplier.findByIdAndUpdate(id, { status }, { new: true });
+}
 async function findMany({ category, region, active, q, page = 1, limit = 20 }) {
   const filter = {};
   if (category) filter.category = category;
@@ -27,4 +31,4 @@ function findById(id) {
   return Supplier.findById(id).populate('category', 'label').lean();
 }
 
-module.exports = { findMany, findById };
+module.exports = { findMany, findById ,updateStatus};

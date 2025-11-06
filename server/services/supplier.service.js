@@ -19,5 +19,15 @@ async function getSupplier(id) {
   if (!supplier) throw new AppError(404, 'Supplier not found');
   return supplier;
 }
+async function updateSupplierStatus(id, status) {
+  const validStatuses = ['בהמתנה', 'מאושר', 'נפסל', 'נחסם'];
+  if (!validStatuses.includes(status)) {
+    throw new Error('סטטוס לא תקין');
+  }
 
-module.exports = { listSuppliers, getSupplier };
+  const supplier = await supplierRepository.updateStatus(id, status);
+  if (!supplier) throw new Error('ספק לא נמצא');
+
+  return supplier;
+}
+module.exports = { listSuppliers, getSupplier, updateSupplierStatus };

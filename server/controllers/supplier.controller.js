@@ -11,3 +11,14 @@ exports.getOne = asyncHandler(async (req, res) => {
   const data = await svc.getSupplier(req.params.id);
   res.json({ supplier: data });
 });
+
+
+asyncHandler(async function updateSupplierStatus(req, res) {
+    const { id } = req.params;
+    const { status } = req.body;
+    const updated = await svc.updateSupplierStatus(id, status);
+    res.json(updated);
+});
+
+
+module.exports = { getAll, getOne, updateSupplierStatus };
