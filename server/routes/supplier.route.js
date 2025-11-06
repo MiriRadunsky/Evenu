@@ -22,7 +22,18 @@ router.get(
   validateObjectId('id'),
   ctrl.getOne
 );
-// 🔹 רישום משתמש חדש
+// POST /api/supplier/register
 router.post('/supplier/register', supplierRegister);
+
+// POST /api/supplier/login
+router.post('/supplier/login', supplierLogin);
+//PATCH /api/suppliers/:id
+router.patch(
+  '/:supplierId/status',
+  authGuard,
+  roleGuard(allowClientAdmin),
+  validateObjectId('supplierId'),
+  patchStatusHandler
+);
 
 module.exports = router;

@@ -1,28 +1,30 @@
 const { Schema, model, Types } = require('mongoose');
 
 const portfolioSub = new Schema(
-  { url: { type: String, required: true }, title: String },
+  {
+    url: { type: String, required: true, trim: true },
+    title: { type: String, trim: true }
+  },
   { _id: false }
 );
 
 const profileImageSub = new Schema(
-  { url: { type: String, required: true }, alt: String },
+  {
+    url: { type: String, required: true, trim: true },
+    alt: { type: String, trim: true }
+  },
   { _id: false }
 );
 
 const supplierSchema = new Schema(
   {
-    name: { type: String, required: true, trim: true, index: 'text' },
+    user: { type: Types.ObjectId, ref: 'User', required: true, index: true },
     category: { type: Types.ObjectId, ref: 'Category', required: true, index: true },
-    regions: { type: [String], default: [], index: true }, // ['ירושלים','מרכז']
-    kashrut: { type: String },
-    contact: {
-      phone: { type: String, trim: true },
-      email: { type: String, lowercase: true, trim: true }
-    },
-    portfolio: [portfolioSub],
-    profileImage: profileImageSub,
-    description: { type: String },
+    regions: { type: [String], default: [], index: true },
+    kashrut: { type: String, trim: true },
+    portfolio: { type: [portfolioSub], default: [] },
+    profileImage: { type: profileImageSub, default: null },
+    description: { type: String, trim: true },
     isActive: { type: Boolean, default: true, index: true }
   },
   { timestamps: true }
