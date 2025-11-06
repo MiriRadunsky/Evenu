@@ -4,20 +4,12 @@ import { authenticate } from '../middlewares/auth.middleware';
 
 const router = Router();
 
-// 🔹 רישום משתמש חדש
-router.post('/register', register);
-
-// 🔹 התחברות רגילה
-router.post('/login', login);
+router.post('/register', validateBody(registerSchema), register);
+router.post('/login', validateBody(loginSchema), login);
 
 
 // 🔹 כניסה עם ספק חיצוני (Google)
 router.post('/google', googleLogin);
 
-// 🔹 שליפת פרופיל משתמש מחובר
-router.get('/me', authenticate, getProfile);
-
-// 🔹 עדכון פרופיל
-router.patch('/me', authenticate, updateProfile);
 
 export default router;
