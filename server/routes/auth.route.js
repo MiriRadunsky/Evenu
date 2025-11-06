@@ -10,11 +10,6 @@ router.post('/register', register);
 // 🔹 התחברות רגילה
 router.post('/login', login);
 
-// 🔹 רישום משתמש חדש
-router.post('/supplier/register', supplierRegister);
-
-// 🔹 התחברות רגילה
-router.post('/supplier/login', supplierLogin);
 
 // 🔹 כניסה עם ספק חיצוני (Google)
 router.post('/google', googleLogin);
