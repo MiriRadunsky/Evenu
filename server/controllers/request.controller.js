@@ -1,14 +1,12 @@
 import asyncHandler from '../middlewares/asyncHandler.middleware.js';
-import supplierRequestService from '../services/request.service.js';
-
+import * as serv from '../services/request.service.js';
 export const createRequest = asyncHandler(async (req, res) => {
-  console.log("gg");
-  
+
   const { eventId } = req.params;
   const { supplierId, notesFromClient } = req.body;
   const clientId = req.user._id; 
 
-  const request = await supplierRequestService.createSupplierRequest({
+  const request = await serv.createRequest({
     eventId,
     supplierId,
     clientId,
@@ -22,15 +20,16 @@ export const createRequest = asyncHandler(async (req, res) => {
 });
 
 export const approveRequest = asyncHandler(async (req, res) => {
+  console.log("approveRequest controller");
   const supplierId = req.user.id; 
   const { id } = req.params;
-  const result = await approveSupplierRequest(id, supplierId);
+  const result = await serv.approveSupplierRequest(id, supplierId);
   res.json({ message: 'Request approved', request: result });
 });
 
 export const declineRequest = asyncHandler(async (req, res) => {
   const supplierId = req.user.id;
   const { id } = req.params;
-  const result = await declineSupplierRequest(id, supplierId);
+  const result = await serv.declineSupplierRequest(id, supplierId);
   res.json({ message: 'Request declined', request: result });
 });
