@@ -1,4 +1,5 @@
-const { Schema, model, Types } = require('mongoose');
+import mongoose from 'mongoose';  
+const { Schema, model, Types } = mongoose;
 
 const eventAuditSchema = new Schema(
   {
@@ -19,4 +20,4 @@ const eventAuditSchema = new Schema(
 
 eventAuditSchema.index({ entityType: 1, entityId: 1, at: -1 });
 
-module.exports = model('EventAudit', eventAuditSchema);
+export default model('EventAudit', eventAuditSchema);
