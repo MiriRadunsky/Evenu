@@ -190,3 +190,19 @@ npm run dev:web
 ## 10) רישוי
 
 MIT 
+
+
+USERS:
+// {
+//   "name": "Eli Sheva",
+//   "email": "elisheva@example.com",
+//   "phone": "+972501234567",
+//   "password": "StrongPass123"
+// }
+
+// {
+//   "name": "Yael Cohen",
+//   "email": "yael.cohen@example.com",
+//   "phone": "+972521234567",
+//   "password": "SecurePass456"
+// }
