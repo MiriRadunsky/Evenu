@@ -40,5 +40,5 @@ export async function registerSupplier({ userData, supplierData }) {
     ...supplierData
   });
 
-  return { user, supplier };
+  return { user, supplier, token};
 }

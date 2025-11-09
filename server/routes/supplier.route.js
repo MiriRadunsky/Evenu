@@ -27,8 +27,6 @@ router.get(
 );
 // POST /api/supplier/register
 router.post('/supplier/register', ctrl.supplierRegister);
-// // POST /api/supplier/login
-router.post('/supplier/login', ctrl.supplierLogin);
 //PATCH /api/suppliers/:id
 router.patch('/:id/status', ctrl.updateSupplierStatus);
 
