@@ -12,6 +12,8 @@ export const getOne = asyncHandler(async (req, res) => {
   res.json({ supplier: data });
 });
 
+
+//admin only
 export const updateSupplierStatus = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;

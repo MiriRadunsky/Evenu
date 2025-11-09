@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import { authenticate, getProfile , authenticate , updateProfile } from '../controllers/user.controller';
+import { authGuard } from '../middlewares/auth.middleware.js';
+import * as ctrl from '../controllers/user.controller.js';
 
 const router = Router();
 
-// 🔹 שליפת פרופיל משתמש מחובר
-router.get('/me', authenticate, getProfile);
+router.get('/me', authGuard, ctrl.getMe);
+router.patch('/me', authGuard, ctrl.updateMe);
 
-// 🔹 עדכון פרופיל
-router.patch('/me', authenticate, updateProfile);
+export default router;

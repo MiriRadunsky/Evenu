@@ -12,6 +12,7 @@ const supplierRequestSchema = new Schema(
     status: { type: String, enum: ['ממתין', 'מאושר', 'נדחה', 'פג'], default: 'ממתין', index: true },
 
     expiresAt: { type: Date, index: { expireAfterSeconds: 0 } }
+    
   },
   { timestamps: true }
 );

@@ -2,6 +2,7 @@ import { Router } from 'express';
 
 import authRouter from './auth.route.js';
 import supplierRouter from './supplier.route.js';
+import userRouter from './user.route.js'; // ⬅️ הוסף את זה!
 // import eventRouter from './event.routes.js';
 // import requestRouter from './request.routes.js';
 // import contractRouter from './contract.routes.js';
@@ -15,6 +16,7 @@ router.get('/', (req, res) => res.send('🏠 This is the Home Page'));
 // 🔹 נתיבי משנה
 router.use('/auth', authRouter);
 router.use('/suppliers', supplierRouter);
+router.use('/users', userRouter); // ⬅️ שנה את זה!
 // router.use('/events', eventRouter);
 // router.use('/requests', requestRouter);
 // router.use('/contracts', contractRouter);
@@ -22,11 +24,6 @@ router.use('/suppliers', supplierRouter);
 
 // 🔹 Health check
 router.get('/health', (req, res) => res.json({ up: true }));
-
-// router.use((_req, res) => {
-//   res.status(404).json({ error: 'Route not found' });
-// });
-
 
 // ✅ ES Modules export
 export default router;
