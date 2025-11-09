@@ -1,5 +1,5 @@
-const { Schema, model, Types } = require('mongoose');
-
+import mongoose from 'mongoose';
+const { Schema, model, Types } = mongoose;
 const paymentSchema = new Schema(
   {
     contractId: { type: Types.ObjectId, ref: 'Contract', required: true, index: true },
@@ -14,5 +14,4 @@ const paymentSchema = new Schema(
 );
 
 paymentSchema.index({ contractId: 1, status: 1 });
-
-module.exports = model('Payment', paymentSchema);
+export default model('Payment', paymentSchema);

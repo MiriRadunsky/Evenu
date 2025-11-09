@@ -1,5 +1,5 @@
-const { Schema, model } = require('mongoose');
-
+import mongoose from 'mongoose';
+const { Schema, model } = mongoose;
 const categorySchema = new Schema(
   {
     label: {
@@ -12,4 +12,4 @@ const categorySchema = new Schema(
   { timestamps: true }
 );
 
-module.exports = model('Category', categorySchema);
+export default model('Category', categorySchema);

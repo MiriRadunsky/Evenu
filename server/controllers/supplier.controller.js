@@ -1,5 +1,5 @@
 import asyncHandler from '../middlewares/asyncHandler.middleware.js';
-import * as svc from '../services/supplier.service.js';
+import * as serv from '../services/supplier.service.js';
 
 // query params: category, region, active, q, page, limit
 export const getAll = asyncHandler(async (req, res) => {
@@ -17,4 +17,21 @@ export const updateSupplierStatus = asyncHandler(async (req, res) => {
   const { status } = req.body;
   const updated = await svc.updateSupplierStatus(id, status);
   res.json(updated);
+});
+
+export const supplierRegister = asyncHandler(async (req, res) => {
+  console.log("supplierController ");
+  const { name, email, phone, password, category, regions, kashrut, portfolio, profileImage, description } = req.body;
+  const { user, supplier } = await serv.registerSupplier({
+    userData: { name, email, phone, password ,role: 'supplier' },
+    supplierData: { category, regions, kashrut, portfolio, profileImage, description }
+  });
+
+  res.status(201).json({ message: 'Supplier created', user, supplier });
+});
+
+export const supplierLogin = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+  const { token } = await svc.supplierLogin(email, password);
+  res.json({ token });
 });

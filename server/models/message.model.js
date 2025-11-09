@@ -1,5 +1,5 @@
-const { Schema, model, Types } = require('mongoose');
-
+import mongoose from 'mongoose';
+const { Schema, model, Types } = mongoose;
 // הודעות Real-time עם שמירה קצרת-טווח (TTL)
 const participantSub = new Schema(
   {
@@ -24,4 +24,4 @@ const messageSchema = new Schema(
 
 messageSchema.index({ threadId: 1, createdAt: 1 });
 
-module.exports = model('Message', messageSchema);
+export default model('Message', messageSchema);

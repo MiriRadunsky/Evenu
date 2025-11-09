@@ -32,7 +32,7 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-app.use(router)
+app.use('/api',router)
 app.get('/health/mongo', mongoHealth);
 app.use(errorHandler);
 connectMongo().then(() => {

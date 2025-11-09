@@ -1,12 +1,25 @@
-module.exports = {
-  User: require('./User'),
-  Event: require('./Event'),
-  Category: require('./Category'),
-  Supplier: require('./Supplier'),
-  SupplierRequest: require('./SupplierRequest'),
-  Contract: require('./Contract'),
-  Payment: require('./Payment'),      
-  Message: require('./Message'),
-  Notification: require('./Notification'),
-  EventAudit: require('./EventAudit')
+import User from './User.js';
+import Event from './Event.js';
+import Category from './Category.js';
+import Supplier from './Supplier.js';
+import SupplierRequest from './SupplierRequest.js';
+import Contract from './Contract.js';
+import Payment from './Payment.js';
+import Message from './Message.js';
+import Notification from './Notification.js';
+import EventAudit from './EventAudit.js';
+
+const models = {
+  User,
+  Event,
+  Category,
+  Supplier,
+  SupplierRequest,
+  Contract,
+  Payment,
+  Message,
+  Notification,
+  EventAudit
 };
+
+export default models;
