@@ -6,15 +6,15 @@ import { AppError } from '../middlewares/error.middleware.js';
 
 const SECRET = process.env.JWT_SECRET || 'secretkey';
 
-export async function register({ name, email, phone, password }) {
+export async function register({ name, email, phone, password ,role}) {
     const existingUser = await repo.findUserByEmail(email);
     if (existingUser) throw new AppError(409, 'User already exists');
     console.log('password:', password);
     const hashedPassword = await bcrypt.hash(password, 10);
-    const userData = { name, email, phone, password: hashedPassword, role: 'user' };
+    const userData = { name, email, phone, password: hashedPassword, role };
     const user = await repo.createUser(userData);
     const token = jwt.sign({ id: user._id, role: user.role }, SECRET, { expiresIn: '1d' });
-    return token;
+    return {user, token};
 }
 
 export async function login(email, password) {

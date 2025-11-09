@@ -30,3 +30,7 @@ export async function findMany({ category, region, active, q, page = 1, limit = 
 export function findById(id) {
   return Supplier.findById(id).populate('category', 'label').lean();
 }
+
+export async function createSupplier(data) {
+  return Supplier.create(data);
+}
