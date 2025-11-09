@@ -28,7 +28,7 @@ router.get(
   ctrl.getOne
 );
 // POST /api/supplier/register
-router.post('/supplier/register', validateBody(supplierRegisterSchema),ctrl.supplierRegister);
+router.post('/register', validateBody(supplierRegisterSchema),ctrl.supplierRegister);
 //PATCH /api/suppliers/:id
 router.patch('/:id/status', ctrl.updateSupplierStatus);
 
