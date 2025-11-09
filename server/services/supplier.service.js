@@ -22,10 +22,10 @@ export async function getSupplier(id) {
 export async function updateSupplierStatus(id, status) {
   const validStatuses = ['בהמתנה', 'מאושר', 'נפסל', 'נחסם'];
   if (!validStatuses.includes(status)) {
-    throw new Error('סטטוס לא תקין');
+    throw new AppError(400, 'סטטוס לא תקין');
   }
 
-  const supplier = await repo.updateStatus(id, status); 
+  const supplier = await repo.updateStatus(id, status);
   if (!supplier) throw new AppError(404, 'ספק לא נמצא');
 
   return supplier;

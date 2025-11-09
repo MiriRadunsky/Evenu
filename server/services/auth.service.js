@@ -20,12 +20,12 @@ export async function register({ name, email, phone, password }) {
 export async function login(email, password) {
     console.log("credentials: ", email, password);
     const user = await repo.findUserByEmail(email);
-    if (!user) throw new Error('Invalid credentials');
+    if (!user) throw new AppError(404, 'User not found');
     console.log("BCYRPT ", password, user.password);
 
     const valid = await bcrypt.compare(password, user.password);
-    if (!valid) throw new Error('Invalid credentials');
+    if (!valid) throw new AppError(401, 'Invalid credentials');
 
     const token = jwt.sign({ id: user._id, role: user.role }, SECRET, { expiresIn: '1d' });
-    return { user, token };
+    return { token };
 }
