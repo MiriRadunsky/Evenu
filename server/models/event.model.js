@@ -1,4 +1,5 @@
-const { Schema, model, Types } = require('mongoose');
+import mongoose from 'mongoose';
+const { Schema, model, Types } = mongoose;
 
 const eventSchema = new Schema(
   {
