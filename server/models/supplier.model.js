@@ -29,8 +29,8 @@ const supplierSchema = new Schema(
     isActive: { type: Boolean, default: true, index: true },
     status: {
       type: String,
-      enum: ['חדש', 'בהמתנה', 'מאושר', 'נפסל', 'נחסם'],
-      default: 'חדש',
+      enum: ['בהמתנה', 'מאושר', 'נפסל', 'נחסם'],
+      default: 'בהמתנה',
       index: true
     }
   },
