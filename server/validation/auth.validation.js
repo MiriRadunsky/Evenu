@@ -3,8 +3,11 @@ import Joi from 'joi';
 export const registerSchema = Joi.object({
   name: Joi.string().min(3).max(50).required(),
   email: Joi.string().email().required(),
+  phone: Joi.string()
+    .pattern(/^05\d{8}$/) // חייב להתחיל ב 05 ואחריו 8 ספרות → סה"כ 10 ספרות
+    .required(),
   password: Joi.string()
-   // הסיסמה חייבת להיות לפחות 8 תווים, לכלול לפחות:
+    // הסיסמה חייבת להיות לפחות 8 תווים, לכלול לפחות:
     // - אות קטנה (a-z)
     // - אות גדולה (A-Z)
     // - ספרה (0-9)

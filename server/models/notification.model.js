@@ -1,4 +1,5 @@
-const { Schema, model, Types } = require('mongoose');
+import mongoose from 'mongoose';
+const { Schema, model, Types } = mongoose;
 
 // התראות In-App/Email/SMS
 const notificationSchema = new Schema(
@@ -17,4 +18,4 @@ const notificationSchema = new Schema(
 notificationSchema.index({ userId: 1, scheduledFor: 1 });
 notificationSchema.index({ channel: 1, sentAt: 1 });
 
-module.exports = model('Notification', notificationSchema);
+export default model('Notification', notificationSchema);

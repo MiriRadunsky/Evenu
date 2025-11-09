@@ -11,6 +11,6 @@ export const register = asyncHandler(async (req, res) => {
 export const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 console.log("credentials controller: ", email, password);
-  const { token } = await serv.login(email, password);
-  res.json({ token });
+  const { token ,user} = await serv.login(email, password);
+  res.json( token );
 });
