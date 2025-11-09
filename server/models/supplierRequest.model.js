@@ -1,5 +1,5 @@
-const { Schema, model, Types } = require('mongoose');
-
+import mongoose from 'mongoose';
+const { Schema, model, Types } = mongoose;
 const supplierRequestSchema = new Schema(
   {
     eventId:    { type: Types.ObjectId, ref: 'Event', required: true, index: true },
@@ -19,4 +19,4 @@ const supplierRequestSchema = new Schema(
 supplierRequestSchema.index({ supplierId: 1, status: 1 });
 supplierRequestSchema.index({ eventId: 1, status: 1 });
 
-module.exports = model('SupplierRequest', supplierRequestSchema);
+export default model('SupplierRequest', supplierRequestSchema);

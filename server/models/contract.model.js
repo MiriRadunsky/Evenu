@@ -1,5 +1,5 @@
-const { Schema, model, Types } = require('mongoose');
-
+import mongoose from 'mongoose';
+const { Schema, model,Types } = mongoose;
 const signatureSub = new Schema(
   {
     party: { type: String, enum: ['client', 'supplier'], required: true },
@@ -40,4 +40,4 @@ const contractSchema = new Schema(
   { timestamps: true }
 );
 
-module.exports = model('Contract', contractSchema);
+export default model('Contract', contractSchema);
