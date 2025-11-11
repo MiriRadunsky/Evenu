@@ -1,6 +1,8 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+import http from 'http';
+import { initWebSocket } from "./websocket/notification.socket.js"
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import router from './routes/index.router.js';
@@ -9,6 +11,8 @@ import { mongoHealth } from './db/health.db.js';
 import { errorHandler } from './middlewares/error.middleware.js';
 
 const app = express();
+const server = http.createServer(app);
+initWebSocket(server);
 const PORT = process.env.PORT || 3000;
 
 app.use(helmet());
@@ -36,5 +40,5 @@ app.use('/api',router)
 app.get('/health/mongo', mongoHealth);
 app.use(errorHandler);
 connectMongo().then(() => {
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+  server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 });

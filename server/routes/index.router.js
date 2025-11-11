@@ -2,9 +2,10 @@ import { Router } from 'express';
 
 import authRouter from './auth.route.js';
 import supplierRouter from './supplier.route.js';
-import userRouter from './user.route.js'; // ⬅️ הוסף את זה!
+import userRouter from './user.route.js'; 
 import eventRoutes from './event.route.js';
 import requestsRouter from './request.route.js';
+import notificationRoutes from './notification.routes.js';
 const router = Router();
 
 router.get('/', (req, res) => res.send('🏠 This is the Home Page'));
@@ -14,6 +15,7 @@ router.use('/suppliers', supplierRouter);
 router.use('/users', userRouter);
 router.use('/events', eventRoutes);
 router.use('/requests', requestsRouter);
+router.use('/notifications', notificationRoutes);
 
 
 router.get('/health', (req, res) => res.json({ up: true }));
