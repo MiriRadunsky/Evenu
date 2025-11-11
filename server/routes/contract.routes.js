@@ -1,16 +1,17 @@
 import { Router } from 'express';
-import { createContract, getContract, signContract } from '../controllers/contract.controller';
-import { authenticate } from '../middlewares/auth.middleware';
+import * as cnt from '../controllers/contract.controller.js';
+import { authGuard } from '../middlewares/auth.middleware.js';
+import { connect } from 'mongoose';
 
 const router = Router();
 
 // 🔹 יצירת חוזה חדש
-router.post('/contracts', authenticate, createContract);
+router.post('/', authGuard, cnt.createContract);
 
 // 🔹 שליפת חוזה קיים
-router.get('/contracts/:id', authenticate, getContract);
+router.get('/:id', authGuard, cnt.getContract);
 
 // 🔹 חתימה על חוזה
-router.post('/contracts/:id/sign', authenticate, signContract);
+router.post('/:id/sign', authGuard, cnt.signContract);
 
 export default router;
