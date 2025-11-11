@@ -6,7 +6,9 @@ import { sendNotification } from '../services/notification.service.js';
 
 const connection = new Redis(process.env.REDIS_URL || 'redis://localhost:6379', {
   maxRetriesPerRequest: null, // ✅ חובה כדי למנוע את השגיאת BullMQ
-});
+  tls: {               // 🔹 כאן צריך לשים את rejectUnauthorized
+    rejectUnauthorized: false
+  }});
 
 // תור לניהול התראות
 export const notificationQueue = new Queue('notifications', { connection });

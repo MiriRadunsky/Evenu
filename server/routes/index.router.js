@@ -2,7 +2,6 @@ import { Router } from 'express';
 
 import authRouter from './auth.route.js';
 import supplierRouter from './supplier.route.js';
-import userRouter from './user.route.js'; // ⬅️ הוסף את זה!
 // import eventRouter from './event.routes.js';
 // import requestRouter from './request.routes.js';
 import contractRouter from './contract.routes.js';
