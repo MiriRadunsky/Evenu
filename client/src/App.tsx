@@ -1,5 +1,4 @@
 
-import "./styles/index.css";
 import { LandingPage } from "./pages/LandingPage";
 
 export default function App() {

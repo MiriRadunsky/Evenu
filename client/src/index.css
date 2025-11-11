@@ -1,14 +1,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+/* 
 @layer base {
   body {
     @apply bg-[#1a1a20] text-white;
     direction: rtl;
     font-family: 'Assistant', sans-serif;
   }
-}
+} */
 
 /* Utilities */
 @layer utilities {
@@ -47,5 +47,24 @@
 
   .shadow-luxury-lg {
     box-shadow: 0 15px 45px rgba(0, 0, 0, 0.25);
+  }
+}
+
+@layer base {
+  :root {
+    --background: 39 24 9; /* #FAF7F2 */
+    --foreground: 0 0 24; /* #3D3D3D */
+    --card: 0 0 100; /* #FFFFFF */
+    --primary: 45 56 32; /* #C8A951 */
+    --primary-foreground: 0 0 100; /* #FFFFFF */
+    --secondary: 40 19 86; /* #E8E3D8 */
+    --accent: 45 56 32; /* #C8A951 */
+    --destructive: 14 85 46; /* #D84315 */
+    --border: 40 19 86; /* #E8E3D8 */
+    --radius: 0.5rem;
+  }
+  
+  * {
+    direction: rtl;
   }
 }
