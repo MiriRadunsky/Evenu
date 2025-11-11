@@ -21,4 +21,4 @@ const eventSchema = new Schema(
 
 eventSchema.index({ ownerId: 1, date: 1 });
 
-module.exports = model('Event', eventSchema);
+export default model('Event', eventSchema);

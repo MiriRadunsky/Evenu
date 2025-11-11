@@ -5,7 +5,7 @@ import supplierRouter from './supplier.route.js';
 import userRouter from './user.route.js'; // ⬅️ הוסף את זה!
 // import eventRouter from './event.routes.js';
 // import requestRouter from './request.routes.js';
-// import contractRouter from './contract.routes.js';
+import contractRouter from './contract.routes.js';
 // import notificationRouter from './notification.routes.js';
 
 const router = Router();
@@ -19,7 +19,7 @@ router.use('/suppliers', supplierRouter);
 router.use('/users', userRouter); // ⬅️ שנה את זה!
 // router.use('/events', eventRouter);
 // router.use('/requests', requestRouter);
-// router.use('/contracts', contractRouter);
+router.use('/contracts', contractRouter);
 // router.use('/notifications', notificationRouter);
 
 // 🔹 Health check
