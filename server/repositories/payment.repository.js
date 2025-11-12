@@ -1,10 +1,14 @@
+import Payment from "../models/payment.model";
+
 // 🔹 הוספת תשלום חדש לחוזה
-async function addPayment(contractId, paymentData) {}
+export async function addPayment(contractId, paymentData) {
+    return Payment.create({
+        contractId,
+        ...paymentData
+    });
+}
 
 // 🔹 עדכון סטטוס של תשלום קיים
-async function updatePayment(paymentId, updateData) {}
-
-module.exports = {
-    addPayment,
-    updatePayment
-};
+export async function updatePayment(paymentId, updateData) {
+    return Payment.findByIdAndUpdate(paymentId, updateData, { new: true });
+}

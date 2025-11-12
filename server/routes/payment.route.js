@@ -1,13 +1,13 @@
 import { Router } from 'express';
 import { addPayment, updatePayment } from '../controllers/payment.controller';
-import { authenticate } from '../middlewares/auth.middleware';
+import { authenticate, authGuard } from '../middlewares/auth.middleware';
 
 const router = Router();
 
 // הוספת תשלום חדש לחוזה
-router.post('/contracts/:id/payments', authenticate, addPayment);
+router.post('/contracts/:id/payments', authGuard, addPayment);
 
 // עדכון סטטוס תשלום
-router.patch('/payments/:id', authenticate, updatePayment);
+router.patch('/payments/:id', authGuard, updatePayment);
 
 export default router;
