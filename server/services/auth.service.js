@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 // import { createUser, loginUser } from '../repositories/auth.repository.js';
 import * as repo from '../repositories/auth.repository.js';
 import { AppError } from '../middlewares/error.middleware.js';
-
+import { generateToken } from '../utils/token.js';
 const SECRET = process.env.SECRET || 'secretkey';
 
 export async function register({ name, email, phone, password ,role}) {
@@ -13,7 +13,7 @@ export async function register({ name, email, phone, password ,role}) {
     const hashedPassword = await bcrypt.hash(password, 10);
     const userData = { name, email, phone, password: hashedPassword, role };
     const user = await repo.createUser(userData);
-    const token = jwt.sign({ id: user._id, role: user.role }, SECRET, { expiresIn: '1d' });
+    const token = generateToken(user);
     return {user, token};
 }
 
@@ -26,6 +26,16 @@ export async function login(email, password) {
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) throw new AppError(401, 'Invalid credentials');
 
-    const token = jwt.sign({ id: user._id, role: user.role }, SECRET, { expiresIn: '1d' });
+    const token = generateToken(user)  ;
     return { token };
 }
+
+export const googleLogin = async (profile) => {
+  let user = await repo.findUserByGoogleId(profile.id);
+
+  if (!user) {
+    user = await repo.createUserWithGoogle(profile);
+  }
+   const token = generateToken(user);
+  return { user, token };
+};

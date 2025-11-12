@@ -14,3 +14,19 @@ export const login = asyncHandler(async (req, res) => {
   const { token, user } = await serv.login(email, password);
   res.json(token);
 });
+
+export const googleCallback = asyncHandler(async(req, res) => {
+    const profile = req.user; // Passport שם את הפרופיל
+    const { user, token } = await serv.googleLogin(profile);
+
+    res.json({
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
+    });
+ 
+});

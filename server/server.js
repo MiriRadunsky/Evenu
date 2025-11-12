@@ -9,7 +9,8 @@ import router from './routes/index.router.js';
 import { connectMongo } from './db/connect.db.js';
 import { mongoHealth } from './db/health.db.js';
 import { errorHandler } from './middlewares/error.middleware.js';
-
+import session from 'express-session';
+import passport from './config/passport.config.js';
 const app = express();
 const server = http.createServer(app);
 initWebSocket(server);
@@ -35,10 +36,10 @@ const limiter = rateLimit({
   message: { error: 'Too many requests, please try again later.' },
 });
 app.use(limiter);
-
 app.use('/api',router)
 app.get('/health/mongo', mongoHealth);
 app.use(errorHandler);
+app.use(passport.initialize());
 connectMongo().then(() => {
   server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 });

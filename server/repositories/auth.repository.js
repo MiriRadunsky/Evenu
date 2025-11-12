@@ -14,9 +14,21 @@ export async function findUserByEmail(email) {
 }
 
 
-// 🔹 כניסה עם ספק חיצוני (Google)
-export async function loginOrCreateGoogleUser({ email, name }) {
-    // TODO: לממש כניסה או יצירת משתמש דרך Google
-}
+export const findUserByGoogleId = async (googleId) => {
+  return User.findOne({ 'social.googleId': googleId });
+};
 
-// 🔹 יצירת JWT
+export const createUserWithGoogle = async (profile) => {
+  const tempPassword = Math.random().toString(36).slice(-8);
+  const hashed = await bcrypt.hash(tempPassword, 10);
+
+  const user = await User.create({
+    name: profile.displayName || '',
+    email: profile.emails[0].value,
+    password: hashed,
+    role: 'user',
+    social: { googleId: profile.id }
+  });
+
+  return user;
+};

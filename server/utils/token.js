@@ -1,14 +1,15 @@
 // 🔹 יצירת JWT
-function generateToken(payload) {}
+import jwt from 'jsonwebtoken';
+export const generateToken = (user) =>{
 
-// 🔹 אימות JWT
-function verifyToken(token) {}
+    const token = jwt.sign({ id: user._id, role: user.role }, process.env.SECRET, { expiresIn: '1d' });
+    return token;
+}
 
-// 🔹 חידוש JWT
-function refreshToken(token) {}
+// // 🔹 אימות JWT
+// function verifyToken(token) { }
 
-module.exports = {
-    generateToken,
-    verifyToken,
-    refreshToken
-};
+// // 🔹 חידוש JWT
+// function refreshToken(token) { }
+
+
