@@ -1,4 +1,6 @@
+
 import { Server } from 'socket.io';
+import { NotificationService } from '../services/notification.service.js';
 
 let io;
 
@@ -12,10 +14,9 @@ export function initWebSocket(server) {
       socket.join(userId.toString());
       console.log(`📦 User ${userId} joined room`);
 
-      // שליחת התראות קיימות
-      const notifications = await NotificationRepository.findByUser(userId);
-      notifications.filter(n => !n.readAt)
-                   .forEach(n => io.to(userId.toString()).emit('notification', n));
+      // שולף התראות קיימות
+      const notifications = await NotificationService.getUserNotifications(userId);
+      notifications.forEach(n => socket.emit('notification', n));
     });
 
     socket.on('disconnect', () => console.log('🔴 Client disconnected'));
@@ -23,3 +24,16 @@ export function initWebSocket(server) {
 }
 
 export { io };
+
+export async function sendNotification(notification) {
+  if (!io) {
+    console.error('❌ WebSocket not initialized!');
+    return;
+  }
+
+  if (notification.channel === 'in-app') {
+    io.to(notification.userId.toString()).emit('notification', notification);
+  } else {
+    console.log(`📧 Sending email to ${notification.userId}`);
+  }
+}

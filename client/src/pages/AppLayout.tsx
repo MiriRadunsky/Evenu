@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import {
   Sidebar,
@@ -25,8 +25,15 @@ import {
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import type { User } from "../types/type";
+import { initSocket } from "../services/socket";
+import type { AppDispatch } from "../store";
+import { useDispatch } from "react-redux";
+import { fetchNotifications } from "../store/notificationsSlice";
+import NotificationsList from "./NotificationsList";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
+    const dispatch:AppDispatch = useDispatch();
+
   const user: User = {
     _id: "69103c572716ddaabc4b97ee",
     token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
@@ -37,7 +44,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     updatedAt: new Date("2025-11-09T09:35:24.160Z"),
   };
 
-
+useEffect(() => {
+    const userId = "69103c572716ddaabc4b97ee"; // תחליף ב־userId אמיתי
+    initSocket(userId, dispatch);
+    dispatch(fetchNotifications());
+  }, [dispatch]);
   const navigationItems = useMemo(
     () => [
       { title: "לוח בקרה", url: "/dashboard", icon: LayoutDashboard },
@@ -129,6 +140,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <div className="sticky top-0 z-10 bg-background border-b px-4 py-3 flex items-center gap-2">
           <SidebarTrigger />
         </div>
+      <NotificationsList />
+
         <main className="p-6">{children}</main>
       </SidebarInset>
     </SidebarProvider>

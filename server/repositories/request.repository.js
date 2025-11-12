@@ -1,11 +1,11 @@
-import SupplierRequest from '../models/SupplierRequest.js';
-import Event from '../models/Event.js';
-import Supplier from '../models/Supplier.js';
-import User from '../models/User.js';
+import Event from '../models/event.model.js';
+import Supplier from '../models/supplier.model.js';
+import User from '../models/user.model.js';
+import SupplierRequest from '../models/request.model.js';
 
-export default {
+export const RequestRepository = {
   async createRequest({ eventId, supplierId, clientId, notesFromClient }) {
-    // --- Validation ---
+
     const event = await Event.findById(eventId);
     if (!event) throw new Error('Event not found');
 
@@ -15,7 +15,6 @@ export default {
     const client = await User.findById(clientId);
     if (!client) throw new Error('Client not found');
 
-    // --- Event Summary ---
     const basicEventSummary = `
       Event: ${event.name || 'N/A'}
       Date: ${event.date?.toLocaleDateString() || 'N/A'}
@@ -24,10 +23,8 @@ export default {
       Budget: ${event.budget || 'N/A'}
     `;
 
-    // --- Expiration (7 days) ---
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
-    // --- Create request ---
     const request = new SupplierRequest({
       eventId,
       supplierId,

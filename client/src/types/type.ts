@@ -191,16 +191,18 @@ export interface Message {
 // Notification
 // ---------------------
 export interface Notification {
-  _id: string;
+  id: string;
   userId: string;
   type: 'payment' | 'contract' | 'meeting' | 'system';
   payload: Record<string, unknown>;
   scheduledFor?: Date;
-  sentAt?: Date;
+  sentAt: Date;
   channel: 'in-app' | 'email';
   readAt?: Date;
   createdAt: Date;
+  updatedAt: Date;
 }
+
 
 // ---------------------
 // EventAudit

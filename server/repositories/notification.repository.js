@@ -1,3 +1,5 @@
+//deleted code
+
 import Notification from '../models/notification.model.js';
 
 export const NotificationRepository = {

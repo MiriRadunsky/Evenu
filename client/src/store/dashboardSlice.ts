@@ -6,6 +6,7 @@ import {
 } from "@reduxjs/toolkit";
 import axios from "axios";
 import type { DashboardState, Message, Payment , Request, Event} from "../types/type";
+import api from "../types/api/axiosInstance";
 
 const initialState: DashboardState = {
   events: [],
@@ -20,7 +21,10 @@ export const fetchDashboardData = createAsyncThunk(
   async (userEmail: string) => {
     
     const [events, requests, payments, messages] = await Promise.all([
-      axios.get(`http://localhost:3000/api/events`),
+      api.get(`/events`)
+    //   headers: { Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MTAzYzU3MjcxNmRkYWFiYzRiOTdlZSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzYyODY1ODYyLCJleHAiOjE3NjI5NTIyNjJ9.D35IufRDIKreEc-9OcAOTtQ_bbjuShGXmspoEMZweYs' },
+    // })
+    ,
       axios.get<Request[]>(`/api/requests?email=${userEmail}`),
       axios.get<Payment[]>(`/api/payments`),
       axios.get<Message[]>(`/api/messages`),

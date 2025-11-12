@@ -6,7 +6,7 @@ import { roleGuard } from '../middlewares/role.middleware.js';
 import { validateBody } from '../middlewares/validate.middleware.js';
 import validateObjectId from '../middlewares/validateObjectId.middleware.js';
 import { createEventSchema, updateEventSchema } from '../validation/event.validation.js';
-import { createRequest } from '../controllers/request.controller.js';
+import { RequestController } from '../controllers/request.controller.js';
 
 const router = Router();
 
@@ -17,6 +17,6 @@ router.get('/', asyncHandler(ctrl.list));
 router.get('/:id', validateObjectId(), asyncHandler(ctrl.getById));
 router.patch('/:id', validateObjectId(), validateBody(updateEventSchema), asyncHandler(ctrl.update));
 router.delete('/:id', validateObjectId(), asyncHandler(ctrl.remove));
-router.post('/:eventId/requests',authGuard, createRequest);
+router.post('/:eventId/requests',authGuard,RequestController.createRequest);
 
 export default router;

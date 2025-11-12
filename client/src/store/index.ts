@@ -1,10 +1,12 @@
 // src/store/index.ts
 import { configureStore } from '@reduxjs/toolkit'
 import dashboardReducer from './dashboardSlice'
+import notificationsReducer from './notificationsSlice'
 
 export const store = configureStore({
   reducer: {
     dashboard: dashboardReducer,
+    notifications: notificationsReducer,
   },
 })
 

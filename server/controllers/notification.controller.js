@@ -1,33 +1,19 @@
+import asyncHandler from '../middlewares/asyncHandler.middleware.js';
 import { NotificationService } from '../services/notification.service.js';
-import { NotificationRepository } from '../repositories/notification.repository.js';
 
 export const NotificationController = {
-  async create(req, res) {
-    try {
-      console.log(req.body);
-      
-      const notification = await NotificationService.createNotification({ ...req.body, userId: req.user._id });
+  create: asyncHandler(async (req, res) => {
+      const {_v, ...notification} = await NotificationService.createNotification({ ...req.body, userId: req.user._id });
       res.status(201).json(notification);
-    } catch (err) {
-      res.status(500).json({ message: err.message });
-    }
-  },
+  }),
 
-  async getUserNotifications(req, res) {
-    try {
-      const notifications = await NotificationRepository.findByUser(req.user._id);
-      res.json(notifications);
-    } catch (err) {
-      res.status(500).json({ message: err.message });
-    }
-  },
+  getUserNotifications: asyncHandler(async (req, res) => {
+      const {_v, ...notifications} = await NotificationService.getUserNotifications(req.user._id);
+      res.status(201).json(notifications);
+  }),
 
-  async markAsRead(req, res) {
-    try {
-      const updated = await NotificationRepository.markAsRead(req.user._id);
-      res.json(updated);
-    } catch (err) {
-      res.status(500).json({ message: err.message });
-    }
-  }
+  markAsRead: asyncHandler(async (req, res) =>  {
+      await NotificationService.markAsRead(req.user._id, req.body.notificationId);
+      res.status(201).end();
+  })
 };
