@@ -28,8 +28,7 @@ const contractSchema = new Schema(
     supplierId: { type: Types.ObjectId, ref: 'Supplier', required: true, index: true },
     clientId: { type: Types.ObjectId, ref: 'User', required: true, index: true },
 
-    fileUrl: { type: String, required: true },
-
+    s3Key: { type: String, required: true },
     // חתימת ספק
     supplierSignature: {
       signatureMeta: Schema.Types.Mixed,

@@ -5,6 +5,8 @@ import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import FileUploader from "./components/FileUploader";
+import A from "./components/a";
 
 export default function AppRouter() {
   const navigate = useNavigate();
@@ -29,7 +31,9 @@ export default function AppRouter() {
 
   return (
     <Routes>
-      <Route path="/" element={<LandingPage onNavigate={handleNavigate} />} />
+      {/* <Route path="/" element={<LandingPage onNavigate={handleNavigate} />} /> */}
+      {/* <Route path="/" element={ <FileUploader getPresignedUrlEndpoint="http://localhost:3000/api/contracts/upload-url" />} /> */}
+      <Route path="/" element={ <A/>} />
       <Route path="/login" element={<LoginPage onLogin={handleLogin} onNavigate={handleNavigate} />} />
       <Route path="/register" element={<RegisterPage onRegister={handleRegister} onNavigate={handleNavigate} />} />
       <Route
