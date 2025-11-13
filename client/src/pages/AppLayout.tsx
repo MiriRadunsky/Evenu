@@ -84,7 +84,7 @@ useEffect(() => {
     );
   }
 
-  return (
+  return (<>
     <SidebarProvider style={{ direction: "rtl" } as React.CSSProperties}>
       <Sidebar side="right">
         <SidebarHeader>
@@ -141,10 +141,11 @@ useEffect(() => {
         <div className="sticky top-0 z-10 bg-background border-b px-4 py-3 flex items-center gap-2">
           <SidebarTrigger />
         </div>
-      <NotificationsList />
 
         <main className="p-6">{children}</main>
       </SidebarInset>
     </SidebarProvider>
+      <NotificationsList />
+     </>
   );
 }
