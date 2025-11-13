@@ -30,6 +30,7 @@ import type { AppDispatch } from "../store";
 import { useDispatch } from "react-redux";
 import { fetchNotifications } from "../store/notificationsSlice";
 import NotificationsList from "./NotificationsList";
+import { logout } from "../api/auth";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
     const dispatch:AppDispatch = useDispatch();
@@ -128,7 +129,7 @@ useEffect(() => {
               </div>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton onClick={() => console.log("logout") /* כאן ניתן לקרוא לפונקציה logOut */}>
+              <SidebarMenuButton onClick={() =>logout()}>
                 <LogOut className="w-5 h-5" />
                 <span>התנתק</span>
               </SidebarMenuButton>

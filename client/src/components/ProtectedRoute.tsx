@@ -1,15 +1,16 @@
 import { Navigate } from 'react-router-dom';
+import type { ReactNode } from 'react';
 import { isAuthenticated } from '../api/auth';
 
 interface ProtectedRouteProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
+  console.log("iaathor", isAuthenticated());
+  
   if (!isAuthenticated()) {
-    // אם המשתמש לא מחובר, תעביר אותו להתחברות
     return <Navigate to="/login" replace />;
   }
-
   return <>{children}</>;
 }

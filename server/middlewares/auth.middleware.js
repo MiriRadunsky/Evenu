@@ -13,7 +13,7 @@ export async function authGuard(req, res, next) {
     const token = authHeader.replace('Bearer ', '');
 
     // 🔹 אימות ה-Token בעזרת הסוד
-    const decoded = jwt.verify(token, process.env.SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // 🔹 חיפוש המשתמש במסד הנתונים לפי ה-ID שב-Token
     const user = await userModel.findById(decoded.id);

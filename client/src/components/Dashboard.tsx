@@ -2,11 +2,11 @@
 import React, { useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Calendar, Send, DollarSign, MessageSquare, Plus, Search, FileText, AlertCircle } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
-import { Badge } from "../components/ui/badge";
-import { Progress } from "../components/ui/progress";
+import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
+import { Badge } from "./ui/badge";
+import { Progress } from "./ui/progress";
 import type { Payment, Event, Request, Message } from "../types/type";
-import Button from "../components/ui/button";
+import {Button} from "./ui/button";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../store";
 import { fetchDashboardData } from "../store/dashboardSlice";

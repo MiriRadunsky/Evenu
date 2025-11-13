@@ -9,8 +9,8 @@ import {
   Star,
   Zap,
 } from "lucide-react";
-import { Button } from "../components/shared/Button";
-import { ImageWithFallback } from "../components/shared/ImageWithFallback";
+import { Button } from "../components/ui/button";
+import { ImageWithFallback } from "../components/ui/ImageWithFallback";
 
 interface LandingPageProps {
   onNavigate: (page: "login" | "register") => void;

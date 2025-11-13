@@ -1,4 +1,7 @@
-import api from './axios';
+// import { useToken } from "../hooks/useToken";
+import { store } from "../store";
+import { clearToken, setToken } from "../store/authSlice";
+import api from "./axios";
 
 // Interface עבור נתוני משתמש
 export interface User {
@@ -33,13 +36,15 @@ export interface RegisterData {
 // פונקציית התחברות
 export const login = async (data: LoginData): Promise<AuthResponse> => {
   try {
-    const response = await api.post('/auth/login', data);
-    
+    const response = await api.post("/auth/login", data);
+    console.log(response);
+     
     // שמירת רק הטוקן ב-localStorage
     if (response.data.token) {
-      localStorage.setItem('token', response.data.token);
+      store.dispatch(setToken(response.data.token));
+      // localStorage.setItem("token", response.data.token);
     }
-    
+
     return response.data;
   } catch (error: any) {
     // טיפול בשגיאות
@@ -47,56 +52,63 @@ export const login = async (data: LoginData): Promise<AuthResponse> => {
       throw new Error(error.response.data.message);
     }
     if (error.response?.status === 401 || error.response?.status === 404) {
-      throw new Error('אימייל או סיסמה שגויים');
+      throw new Error("אימייל או סיסמה שגויים");
     }
-    throw new Error('שגיאה בהתחברות. אנא נסה שוב.');
+    throw new Error("שגיאה בהתחברות. אנא נסה שוב.");
   }
 };
 
 // פונקציית הרשמה
 export const register = async (data: RegisterData): Promise<AuthResponse> => {
   try {
-    console.log('Sending registration data:', data);
-    const response = await api.post('/auth/register', data);
-    console.log('Server response:', response.data);
-    
+    console.log("Sending registration data:", data);
+    const response = await api.post("/auth/register", data);
+    console.log("Server response:", response.data);
+
     // שמירת רק הטוקן ב-localStorage
     if (response.data.token) {
-      console.log('Saving token to localStorage:', response.data.token);
-      localStorage.setItem('token', response.data.token);
-      console.log('Token saved! Check localStorage now.');
+      console.log("Saving token to localStorage:", response.data.token);
+      store.dispatch(setToken(response.data.token));
+      // localStorage.setItem("token", response.data.token);
+      console.log("Token saved! Check localStorage now.");
     } else {
-      console.error('No token in response!', response.data);
+      console.error("No token in response!", response.data);
     }
-    
+
     return response.data;
   } catch (error: any) {
-    console.error('Registration error:', error);
-    
+    console.error("Registration error:", error);
+
     // טיפול בשגיאות מהשרת
     if (error.response?.data?.message) {
       throw new Error(error.response.data.message);
     }
-    
+
     // טיפול בשגיאות validation
     if (error.response?.status === 400) {
-      throw new Error('נתונים לא תקינים. ודא שהטלפון מתחיל ב-05 והסיסמה מכילה אות גדולה, אות קטנה ומספר.');
+      throw new Error(
+        "נתונים לא תקינים. ודא שהטלפון מתחיל ב-05 והסיסמה מכילה אות גדולה, אות קטנה ומספר."
+      );
     }
-    
+
     if (error.response?.status === 409) {
-      throw new Error('משתמש עם אימייל זה כבר קיים במערכת');
+      throw new Error("משתמש עם אימייל זה כבר קיים במערכת");
     }
-    
-    throw new Error('שגיאה בהרשמה. אנא נסה שוב.');
+
+    throw new Error("שגיאה בהרשמה. אנא נסה שוב.");
   }
 };
 
 // פונקציית התנתקות
 export const logout = (): void => {
-  localStorage.removeItem('token');
+  store.dispatch(clearToken());
+
 };
 
-// פונקציה לבדוק אם המשתמש מחובר
 export const isAuthenticated = (): boolean => {
-  return !!localStorage.getItem('token');
+
+  const token = store.getState().auth.token;
+  console.log(token);
+  if (!token) return false;
+  return true;
 };

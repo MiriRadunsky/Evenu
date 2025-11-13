@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Mail, Lock, ArrowLeft, Sparkles } from 'lucide-react';
-import { Button } from '../components/shared/Button';
-import { login } from '../api/auth';
+import { Button } from '../components/ui/button';
+import { isAuthenticated, login } from '../api/auth';
 
 interface LoginPageProps {
   onLogin: () => void;
@@ -9,12 +9,14 @@ interface LoginPageProps {
 }
 
 export function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
+  isAuthenticated();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
+    
     e.preventDefault();
     setError('');
     setLoading(true);

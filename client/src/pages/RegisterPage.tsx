@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Mail, Lock, User, Phone, ArrowLeft, Sparkles, Shield } from 'lucide-react';
-import { Button } from '../components/shared/Button';
+import { Button } from '../components/ui/button';
 import { register } from '../api/auth';
 
 interface RegisterPageProps {
