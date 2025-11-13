@@ -38,3 +38,22 @@ export const googleCallback = asyncHandler(async(req, res) => {
     });
  
 });
+
+// Google Auth - מקבל נתונים ישירות מהלקוח
+export const googleAuth = asyncHandler(async (req, res) => {
+  const { email, name, googleId, picture } = req.body;
+  
+  const { user, token } = await serv.googleAuth({ email, name, googleId, picture });
+  
+  res.json({
+    success: true,
+    message: "Google authentication successful",
+    token,
+    user: {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role
+    }
+  });
+});
