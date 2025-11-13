@@ -63,15 +63,6 @@ export default {
     },
   },
   plugins: [
-    plugin(function ({ addUtilities }) {
-      addUtilities({
-        ".bg-background": { backgroundColor: "hsl(var(--background))" },
-        ".text-foreground": { color: "hsl(var(--foreground))" },
-        ".bg-muted": { backgroundColor: "hsl(var(--muted))" },
-        ".bg-border": { backgroundColor: "hsl(var(--border))" },
-        ".bg-primary-50": { backgroundColor: "hsl(var(--primary)/0.5)" },
-      });
-    }),
     require("tailwindcss-animate"),
   ],
 };
