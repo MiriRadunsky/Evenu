@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Mail, Lock, User, Phone, ArrowLeft, Sparkles, Shield } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { register } from '../api/auth';
+import { GoogleLoginButton } from '../components/shared/GoogleLoginButton';
 
 interface RegisterPageProps {
   onRegister: () => void;
@@ -156,7 +157,7 @@ export function RegisterPage({ onRegister, onNavigate }: RegisterPageProps) {
             {errors.general && (
               <div className="px-4 py-3 text-sm font-light text-[#ef4444] border border-[#fca5a5] bg-[#fef2f2] rounded-xl flex items-center gap-2">
                 <div className="w-5 h-5 rounded-full bg-[#ef4444] flex items-center justify-center flex-shrink-0">
-                  <span className="text-white text-xs font-bold">!</span>
+                  <span className="text-xs font-bold text-white">!</span>
                 </div>
                 {errors.general}
               </div>
@@ -288,7 +289,7 @@ export function RegisterPage({ onRegister, onNavigate }: RegisterPageProps) {
                 />
               </div>
               {(passwordFocus || formData.password) && (
-                <div className="space-y-2 mt-3">
+                <div className="mt-3 space-y-2">
                   {!passwordRequirements.minLength && (
                     <div className="flex items-center gap-2">
                       <div className="w-4 h-4 rounded-full bg-[#f59e0b] flex items-center justify-center flex-shrink-0">
@@ -352,12 +353,12 @@ export function RegisterPage({ onRegister, onNavigate }: RegisterPageProps) {
                 <div className="mt-2">
                   {formData.confirmPassword === formData.password ? (
                     <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
+                      <div className="flex items-center justify-center flex-shrink-0 w-4 h-4 bg-green-500 rounded-full">
                         <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                         </svg>
                       </div>
-                      <p className="text-xs text-green-600 font-light">הסיסמאות תואמות</p>
+                      <p className="text-xs font-light text-green-600">הסיסמאות תואמות</p>
                     </div>
                   ) : (
                     <div className="flex items-center gap-2">
@@ -397,6 +398,23 @@ export function RegisterPage({ onRegister, onNavigate }: RegisterPageProps) {
               {loading ? 'נרשם...' : 'הירשם למערכת'}
             </Button>
           </form>
+
+          {/* Divider */}
+          <div className="relative my-8">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-[#e3e3e6]"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-4 bg-white/80 text-[#6d6d78] font-light">או</span>
+            </div>
+          </div>
+
+          {/* Google Login Button */}
+          <GoogleLoginButton
+            onSuccess={onRegister}
+            onError={(err) => setErrors(prev => ({ ...prev, general: err }))}
+            mode="register"
+          />
 
           <div className="mt-10 text-center">
             <p className="text-[#6d6d78] font-light">

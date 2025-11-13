@@ -33,6 +33,14 @@ export interface RegisterData {
   password: string;
 }
 
+// Interface עבור נתוני Google Auth
+export interface GoogleAuthData {
+  email: string;
+  name: string;
+  googleId: string;
+  picture?: string;
+}
+
 // פונקציית התחברות
 export const login = async (data: LoginData): Promise<AuthResponse> => {
   try {
@@ -111,4 +119,23 @@ export const isAuthenticated = (): boolean => {
   console.log(token);
   if (!token) return false;
   return true;
+};
+
+// פונקציית התחברות עם Google
+export const googleAuth = async (data: GoogleAuthData): Promise<AuthResponse> => {
+  try {
+    const response = await api.post('/auth/google', data);
+    
+    // שמירת הטוקן ב-localStorage
+    if (response.data.token) {
+      localStorage.setItem('token', response.data.token);
+    }
+    
+    return response.data;
+  } catch (error: any) {
+    if (error.response?.data?.message) {
+      throw new Error(error.response.data.message);
+    }
+    throw new Error('שגיאה בהתחברות עם Google. אנא נסה שוב.');
+  }
 };

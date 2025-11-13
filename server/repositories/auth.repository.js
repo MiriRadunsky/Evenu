@@ -13,6 +13,19 @@ export async function findUserByEmail(email) {
   return await User.findOne({ email });
 }
 
+// 🔹 מציאת משתמש לפי Google ID
+export async function findUserByGoogleId(googleId) {
+    return await User.findOne({ 'social.googleId': googleId });
+}
+
+// 🔹 עדכון Google ID למשתמש קיים
+export async function updateUserGoogleId(userId, googleId) {
+    return await User.findByIdAndUpdate(
+        userId,
+        { 'social.googleId': googleId },
+        { new: true }
+    );
+}
 
 export const findUserByGoogleId = async (googleId) => {
   return User.findOne({ 'social.googleId': googleId });
