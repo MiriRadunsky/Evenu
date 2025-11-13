@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Mail, Lock, ArrowLeft, Sparkles } from 'lucide-react';
 import { Button } from '../components/ui/button';
-import { isAuthenticated, login } from '../api/auth';
+import { login } from '../api/auth';
+import { GoogleLoginButton } from '../components/shared/GoogleLoginButton';
 
 interface LoginPageProps {
   onLogin: () => void;
@@ -9,7 +10,6 @@ interface LoginPageProps {
 }
 
 export function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
-  isAuthenticated();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
