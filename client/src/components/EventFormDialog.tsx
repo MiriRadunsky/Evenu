@@ -51,11 +51,12 @@ export const EventFormDialog = ({ open, onOpenChange, initialData }: EventFormDi
     });
 
     useEffect(() => {
+        
         if (initialData) {
             setFormData({
                 name: initialData.name || "",
                 type: initialData.type || "",
-                date: initialData.date || "",
+                date: initialData.date ? initialData.date.split("T")[0] : "",
                 locationRegion: initialData.locationRegion || "",
                 budget: initialData.budget?.toString() || "",
                 estimatedGuests: initialData.estimatedGuests?.toString() || "",

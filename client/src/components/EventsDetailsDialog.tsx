@@ -31,7 +31,6 @@ export const EventDetailsDialog = ({
   open,
   onOpenChange,
 }: EventDetailsDialogProps) => {
-    console.log("on updste ",event);
     
   const dispatch = useDispatch();
   const [showRecommendations, setShowRecommendations] = useState(false);
@@ -83,7 +82,7 @@ export const EventDetailsDialog = ({
         style={{ direction: "rtl" }}
       >
         <DialogHeader>
-          <DialogTitle>{event.eventName}</DialogTitle>
+          <DialogTitle>{event.name}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
@@ -95,19 +94,19 @@ export const EventDetailsDialog = ({
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="text-muted-foreground">סוג אירוע:</span>
-                  <p className="font-medium">{event.eventType}</p>
+                  <p className="font-medium">{event.type}</p>
                 </div>
                 <div>
                   <span className="text-muted-foreground">תאריך:</span>
-                  <p className="font-medium">{formatEventDate(event.eventDate)}</p>
+                  <p className="font-medium">{formatEventDate(event.date)}</p>
                 </div>
                 <div>
                   <span className="text-muted-foreground">מיקום:</span>
-                  <p className="font-medium">{event.location}</p>
+                  <p className="font-medium">{event.locationRegion}</p>
                 </div>
                 <div>
                   <span className="text-muted-foreground">מספר אורחים:</span>
-                  <p className="font-medium">{event.guestCount}</p>
+                  <p className="font-medium">{event.estimatedGuests}</p>
                 </div>
                 <div>
                   <span className="text-muted-foreground">תקציב:</span>
