@@ -1,6 +1,7 @@
 import { Routes, Route, useNavigate } from "react-router-dom";
 import AppLayout from "./pages/AppLayout";
 import Dashboard from "./components/Dashboard";
+import MyEvents from "./pages/MyEvents";
 import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
@@ -11,7 +12,7 @@ export default function AppRouter() {
   const navigate = useNavigate();
 
   const handleNavigate = (page: "landing" | "login" | "register") => {
-    console.log('handleNavigate', page); 
+    console.log('handleNavigate', page);
     if (page === "landing") navigate("/");
     else if (page === "login") navigate("/login");
     else if (page === "register") navigate("/register");
@@ -50,10 +51,9 @@ export default function AppRouter() {
               <Dashboard />
             </AppLayout>
           </ProtectedRoute>
-              
+
         }
       />
-
       <Route
         path="/SuppliersPage"
         element={
@@ -64,6 +64,17 @@ export default function AppRouter() {
           </ProtectedRoute>
         }
       />
-    </Routes>
+      <Route
+        path="/my-events"
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <MyEvents />
+            </AppLayout>
+          </ProtectedRoute>
+        }
+      />
+
+    </Routes >
   );
 }
