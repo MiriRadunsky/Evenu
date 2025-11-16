@@ -27,9 +27,7 @@ export async function updateUserGoogleId(userId, googleId) {
     );
 }
 
-export const findUserByGoogleId = async (googleId) => {
-  return User.findOne({ 'social.googleId': googleId });
-};
+
 
 export const createUserWithGoogle = async (profile) => {
   const tempPassword = Math.random().toString(36).slice(-8);
