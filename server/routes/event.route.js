@@ -11,7 +11,7 @@ import { RequestController } from '../controllers/request.controller.js';
 const router = Router();
 
 router.use(authGuard);
-router.use(roleGuard(['user'])); 
+router.use(roleGuard(['user', 'admin'])); 
 router.post('/', validateBody(createEventSchema), asyncHandler(ctrl.create));
 router.get('/', asyncHandler(ctrl.list));
 router.get('/:id', validateObjectId(), asyncHandler(ctrl.getById));

@@ -121,6 +121,31 @@ export const isAuthenticated = (): boolean => {
   return true;
 };
 
+// פונקציה לקבלת תפקיד המשתמש מה-token
+export const getUserRole = (): string | null => {
+  const token = store.getState().auth.token;
+  
+  if (!token) return null;
+
+  try {
+    // פענוח ה-JWT token (בצורה בסיסית - לא מאומת!)
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+
+    const decoded = JSON.parse(jsonPayload);
+    return decoded.role || null;
+  } catch (error) {
+    console.error('Error decoding token:', error);
+    return null;
+  }
+};
+
 // פונקציית התחברות עם Google
 export const googleAuth = async (data: GoogleAuthData): Promise<AuthResponse> => {
   try {

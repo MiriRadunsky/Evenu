@@ -6,6 +6,12 @@ import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import Suppliers from "./pages/Suppliers";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { AdminDashboard } from "./pages/admin/AdminDashboard";
+import { PendingSuppliersPage } from "./pages/admin/PendingSuppliersPage";
+import { ActiveSuppliersPage } from "./pages/admin/ActiveSuppliersPage";
+import { SupplierDetailsPage } from "./pages/admin/SupplierDetailsPage";
+import { UsersPage } from "./pages/admin/UsersPage";
+import { getUserRole } from "./api/auth";
 
 export default function AppRouter() {
   const navigate = useNavigate();
@@ -18,15 +24,27 @@ export default function AppRouter() {
   };
 
   const handleLogin = () => {
-    // TODO: Add login logic here
     console.log("User logged in");
-    navigate("/dashboard");
+    
+    // בדיקת תפקיד המשתמש והפניה לדשבורד המתאים
+    const userRole = getUserRole();
+    if (userRole === 'admin') {
+      navigate("/admin/dashboard");
+    } else {
+      navigate("/dashboard");
+    }
   };
 
   const handleRegister = () => {
-    // TODO: Add registration logic here
     console.log("User registered");
-    navigate("/dashboard");
+    
+    // בדיקת תפקיד המשתמש והפניה לדשבורד המתאים
+    const userRole = getUserRole();
+    if (userRole === 'admin') {
+      navigate("/admin/dashboard");
+    } else {
+      navigate("/dashboard");
+    }
   };
 
   return (
@@ -61,6 +79,48 @@ export default function AppRouter() {
             <AppLayout>
               <Suppliers />
             </AppLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Admin Routes */}
+      <Route
+        path="/admin/dashboard"
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <AdminDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/pending-suppliers"
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <PendingSuppliersPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/active-suppliers"
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <ActiveSuppliersPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/suppliers/:id"
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <SupplierDetailsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/users"
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <UsersPage />
           </ProtectedRoute>
         }
       />
