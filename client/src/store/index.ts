@@ -4,6 +4,8 @@ import notificationsReducer from './notificationsSlice'
 import suppliersReducer from './suppliersSlice'
 import authReducer from './authSlice'
 import eventsReducer from './eventsSlice'
+import chatReducer from './chatSlice'
+import supplierRequestsReducer from './supplierRequestsSlice'
 export const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -11,6 +13,8 @@ export const store = configureStore({
     notifications: notificationsReducer,
     suppliers: suppliersReducer,
     events: eventsReducer,
+    chat: chatReducer,
+    supplierRequests: supplierRequestsReducer,
   },
 })
 

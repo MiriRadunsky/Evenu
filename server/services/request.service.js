@@ -4,6 +4,8 @@ import Supplier from '../models/supplier.model.js';
 import User from '../models/user.model.js';
 import { AppError } from '../middlewares/error.middleware.js';
 import { RequestRepository } from '../repositories/request.repository.js';
+import { generateThreadId } from '../utils/thread.util.js';
+import { sendMessage } from './message.service.js';
 
 export const RequestService = {
  async createSupplierRequest  ({ eventId, supplierId, clientId, notesFromClient })  {
@@ -34,6 +36,7 @@ export const RequestService = {
     clientId,
     notesFromClient
   });
+   await openChatThread(request.eventId, request.supplierId, request.clientId);
 
   return request;
 },
@@ -47,8 +50,9 @@ async approveSupplierRequest  (id, supplierId) {
   if (request.status !== 'ממתין')
     throw new AppError(400, 'Request already processed');
 
-  await RequestRepository.updateStatus(id, 'מאושר');
-  
+  const updated = await RequestRepository.updateStatus(id, 'מאושר');
+
+  return updated;
 },
 
  async declineSupplierRequest(id, supplierId){

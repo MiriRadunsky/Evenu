@@ -7,6 +7,7 @@ import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import Suppliers from "./pages/Suppliers";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import Chat from "./pages/Chat";
 
 export default function AppRouter() {
   const navigate = useNavigate();
@@ -74,7 +75,17 @@ export default function AppRouter() {
           </ProtectedRoute>
         }
       />
+<Route
+        path="/chat"
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <Chat />
+            </AppLayout>
+          </ProtectedRoute>
 
+        }
+      />
     </Routes >
   );
 }

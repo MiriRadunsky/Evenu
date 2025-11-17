@@ -1,7 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import http from 'http';
 import { initWebSocket } from "./websocket/notification.socket.js"
 import helmet from 'helmet';
 import http from 'http';
@@ -17,6 +16,7 @@ import passport from './config/passport.config.js';
 const app = express();
 const server = http.createServer(app);
 initWebSocket(server);
+initSocket(server);
 const PORT = process.env.PORT || 3000;
 
 app.use(helmet());
@@ -42,8 +42,6 @@ app.use(limiter);
 app.use('/api',router)
 app.get('/health/mongo', mongoHealth);
 app.use(errorHandler);
-const server = http.createServer(app);
-initSocket(server);
 
 app.use(passport.initialize());
 connectMongo().then(() => {
