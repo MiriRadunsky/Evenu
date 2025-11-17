@@ -19,8 +19,8 @@ import { Button } from "../components/ui/button";
 
 import { formatEventDate, getEventStatusProgress } from "../utils/DataUtils";
 
-import { EventFormDialog } from "../components/EventFormDialog";
-import { EventDetailsDialog } from "../components/EventsDetailsDialog";
+import { EventFormDialog } from "../components/Event/EventFormDialog";
+import { EventDetailsDialog } from "../components/Event/EventsDetailsDialog";
 
 export default function MyEvents() {
   const dispatch:AppDispatch = useDispatch();

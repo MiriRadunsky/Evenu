@@ -4,19 +4,19 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "./ui/dialog";
-import {Button} from "./ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { Badge } from "./ui/badge";
+} from "../ui/dialog";
+import {Button} from "../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Badge } from "../ui/badge";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchEvents,
   createEvent,
   updateEvent,
   deleteEvent,
-} from "../store/eventsSlice";
-import type { RootState } from "../store";
-import { formatEventDate } from "../Utils/DataUtils";
+} from "../../store/eventsSlice";
+import type { RootState } from "../../store";
+import { formatEventDate } from "../../Utils/DataUtils";
 import { Loader2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
