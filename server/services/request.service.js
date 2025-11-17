@@ -6,6 +6,11 @@ import { AppError } from '../middlewares/error.middleware.js';
 import { RequestRepository } from '../repositories/request.repository.js';
 
 export const RequestService = {
+
+  async getRequestsByUserId(userId) {
+    const requests = await RequestRepository.getRequestsByUserId(userId);
+    return requests;
+  },
  async createSupplierRequest  ({ eventId, supplierId, clientId, notesFromClient })  {
   const [event, supplier, client] = await Promise.all([
     Event.findById(eventId),

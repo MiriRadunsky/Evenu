@@ -4,6 +4,16 @@ import User from '../models/user.model.js';
 import SupplierRequest from '../models/request.model.js';
 
 export const RequestRepository = {
+  async getRequestsByUserId(userId) {
+    return SupplierRequest.find({ clientId: userId }).populate('eventId') // מביא את כל פרטי האירוע
+    .populate({
+      path: 'supplierId', 
+      populate: {
+        path: 'user', 
+        select: 'name email' 
+      }
+    });
+  },
   async createRequest({ eventId, supplierId, clientId, notesFromClient }) {
 
     const event = await Event.findById(eventId);

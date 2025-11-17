@@ -7,6 +7,7 @@ import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import Suppliers from "./pages/Suppliers";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import Requests from "./pages/Request";
 
 export default function AppRouter() {
   const navigate = useNavigate();
@@ -70,6 +71,16 @@ export default function AppRouter() {
           <ProtectedRoute>
             <AppLayout>
               <MyEvents />
+            </AppLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/requests"
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <Requests />
             </AppLayout>
           </ProtectedRoute>
         }
