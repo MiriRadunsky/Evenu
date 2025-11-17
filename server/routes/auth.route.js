@@ -14,7 +14,7 @@ router.post('/register', validateBody(registerSchema), cont.register);
 router.post('/login', validateBody(loginSchema), cont.login);
 
 // Google Auth - קבלת נתונים ישירות מהלקוח (הגרסה המודרנית)
-router.post('/google', cont.googleAuth);
+// router.post('/google', cont.googleAuth);
 
 
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));

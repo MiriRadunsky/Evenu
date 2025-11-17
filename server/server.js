@@ -4,11 +4,14 @@ import cors from 'cors';
 import http from 'http';
 import { initWebSocket } from "./websocket/notification.socket.js"
 import helmet from 'helmet';
+import http from 'http';
 import rateLimit from 'express-rate-limit';
 import router from './routes/index.router.js';
 import { connectMongo } from './db/connect.db.js';
 import { mongoHealth } from './db/health.db.js';
 import { errorHandler } from './middlewares/error.middleware.js';
+import { initSocket } from './sockets/message.gateway.js';
+
 import session from 'express-session';
 import passport from './config/passport.config.js';
 const app = express();
@@ -39,6 +42,9 @@ app.use(limiter);
 app.use('/api',router)
 app.get('/health/mongo', mongoHealth);
 app.use(errorHandler);
+const server = http.createServer(app);
+initSocket(server);
+
 app.use(passport.initialize());
 connectMongo().then(() => {
   server.listen(PORT, () => console.log(`Server running on port ${PORT}`));

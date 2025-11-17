@@ -10,6 +10,10 @@ export async function getById(req, res) {
   res.json({ success: true, data: event });
 }
 
+export async function eventTypes(req, res) {
+  res.json({ success: true, data: eventService.getEvevtTypes() });
+}
+
 export async function list(req, res) {
   const result = await eventService.getUserEvents(req.user._id, req.query);
   res.json({ success: true, ...result });
@@ -17,9 +21,11 @@ export async function list(req, res) {
 
 export async function update(req, res) {
   const event = await eventService.updateEvent(req.params.id, req.user._id, req.body);
+  console.log("update event ", event);
   res.json({ success: true, data: event });
 }
 
 export async function remove(req, res) {
   await eventService.deleteEvent(req.params.id, req.user._id);
-  res.json({ success: true, message: 'The event deleted successfully' });}
+  res.json({ success: true, message: 'The event deleted successfully' });
+}

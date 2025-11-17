@@ -1,7 +1,10 @@
 import { AppError } from '../middlewares/error.middleware.js';
 import * as repo from '../repositories/event.repository.js';
+import { EVENT_TYPES } from '../shared/eventTypes.shared.js';
 
 export async function createEvent(ownerId, data) {
+ 
+  
   const event = await repo.create({ ...data, ownerId });
   return event;
 }
@@ -18,6 +21,10 @@ export async function getEventById(id, ownerId) {
   }
   
   return event;
+}
+export function getEvevtTypes() {
+  return EVENT_TYPES;
+
 }
 
 export async function getUserEvents(ownerId, query) {

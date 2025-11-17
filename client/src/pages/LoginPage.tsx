@@ -142,11 +142,11 @@ export function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
           </div>
 
           {/* Google Login Button */}
-          <GoogleLoginButton
+          {/* <GoogleLoginButton
             onSuccess={onLogin}
             onError={setError}
             mode="login"
-          />
+          /> */}
 
           <div className="mt-10 text-center">
             <p className="text-[#6d6d78] font-light">

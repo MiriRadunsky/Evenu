@@ -42,6 +42,10 @@ const connection = new Redis(process.env.REDIS_URL || 'redis://localhost:6379', 
 });
 
 // תור לניהול התראות
+
+
+
+// תור לניהול התראות (גם מיידיות וגם עתידיות)
 export const notificationQueue = new Queue('notifications', { connection });
 
 // Worker שמבצע שליחה בזמן הנכון

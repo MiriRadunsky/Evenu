@@ -12,8 +12,9 @@ const router = Router();
 
 router.use(authGuard);
 router.use(roleGuard(['user'])); 
-router.post('/', validateBody(createEventSchema), asyncHandler(ctrl.create));
+router.post('/', asyncHandler(ctrl.create));
 router.get('/', asyncHandler(ctrl.list));
+router.get('/types', asyncHandler(ctrl.eventTypes));
 router.get('/:id', validateObjectId(), asyncHandler(ctrl.getById));
 router.patch('/:id', validateObjectId(), validateBody(updateEventSchema), asyncHandler(ctrl.update));
 router.delete('/:id', validateObjectId(), asyncHandler(ctrl.remove));

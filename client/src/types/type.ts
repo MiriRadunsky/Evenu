@@ -1,12 +1,4 @@
 
-
-// interface Event {
-//   id: string;
-//   eventName: string;
-//   status: string;
-//   eventDate: string;
-//     eventType: string;
-// }
 export interface Request {
   id: string;
   status: string;
