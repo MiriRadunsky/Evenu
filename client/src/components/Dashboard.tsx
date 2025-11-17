@@ -47,6 +47,8 @@ export default function Dashboard() {
 
 const upcomingEvent = useMemo(() => {
   if (!Array.isArray(events)) return null;
+  console.log(events);
+  
   const activeEvents = events.filter(e => ["תכנון", "פעיל"].includes(e.status));
   return [...activeEvents].sort(
     (a, b) => new Date(a.date || 0).getTime() - new Date(b.date || 0).getTime()

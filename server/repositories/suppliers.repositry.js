@@ -129,11 +129,22 @@ async listSuppliers(query) {
   };
 },
 
- 
+  async getSupplierIdByUserId(userId) {
+   const supplier = await Supplier.findOne({ user: userId }).lean();
+  return supplier?._id || null;
+  },
   async findById(id) {
     return Supplier.findById(id).populate("category", "label").populate("user", "name email").lean();
   },
   async createSupplier(data) {
     return Supplier.create(data);
   },
+ async updateSupplierMedia(id, profileImage, media) {
+  return Supplier.findByIdAndUpdate(
+    id,
+    { profileImage, media },
+    { new: true }
+  );
+}
+
 };

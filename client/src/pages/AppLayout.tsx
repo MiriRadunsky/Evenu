@@ -30,7 +30,7 @@ import type { AppDispatch } from "../store";
 import { useDispatch } from "react-redux";
 import { fetchNotifications } from "../store/notificationsSlice";
 import NotificationsList from "./NotificationsList";
-import { logout } from "../api/auth";
+import { logout } from "../services/auth";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
     const dispatch:AppDispatch = useDispatch();
@@ -54,7 +54,7 @@ useEffect(() => {
     () => [
       { title: "לוח בקרה", url: "/dashboard", icon: LayoutDashboard },
       { title: "האירועים שלי", url: "/my-events", icon: Calendar },
-      { title: "ספקים", url: "/suppliers", icon: Store },
+      { title: "ספקים", url: "/SuppliersPage", icon: Store },
       { title: "בקשות", url: "/requests", icon: Send },
       { title: "צ'אט", url: "/chat", icon: MessageSquare },
       { title: "חוזים ותשלומים", url: "/contracts-payments", icon: FileText },

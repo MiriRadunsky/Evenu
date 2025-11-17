@@ -67,10 +67,12 @@ export const login = async (data: LoginData): Promise<AuthResponse> => {
 };
 
 // פונקציית הרשמה
-export const register = async (data: RegisterData): Promise<AuthResponse> => {
+export const register = async (data: RegisterData,role:string): Promise<AuthResponse> => {
   try {
     console.log("Sending registration data:", data);
-    const response = await api.post("/auth/register", data);
+    // if(d)
+    const route=role==='supplier'?'suppliers/register':'auth/register';
+    const response = await api.post(route, data);
     console.log("Server response:", response.data);
 
     // שמירת רק הטוקן ב-localStorage
@@ -128,7 +130,7 @@ export const googleAuth = async (data: GoogleAuthData): Promise<AuthResponse> =>
     
     // שמירת הטוקן ב-localStorage
     if (response.data.token) {
-      localStorage.setItem('token', response.data.token);
+      store.dispatch(setToken(response.data.token));
     }
     
     return response.data;

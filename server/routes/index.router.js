@@ -12,6 +12,7 @@ import userRouter from './user.route.js';
 import eventRoutes from './event.route.js';
 import requestsRouter from './request.route.js';
 import notificationRoutes from './notification.routes.js';
+import fileRouter from './file.route.js';
 const router = Router();
 
 router.get('/', (req, res) => res.send('🏠 This is the Home Page'));
@@ -28,6 +29,7 @@ router.use('/users', userRouter);
 router.use('/events', eventRoutes);
 router.use('/requests', requestsRouter);
 router.use('/notifications', notificationRoutes);
+router.use('/file', fileRouter);
 
 
 router.get('/health', (req, res) => res.json({ up: true }));

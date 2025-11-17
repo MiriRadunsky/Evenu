@@ -4,8 +4,7 @@ import jwt from 'jsonwebtoken';
 import * as repo from '../repositories/auth.repository.js';
 import { AppError } from '../middlewares/error.middleware.js';
 
-const SECRET = process.env.SECRET || 'secretkey';
-console.log("Secret",SECRET);
+const SECRET = process.env.JWT_SECRET || 'secretkey';
 
 
 export async function register({ name, email, phone, password ,role}) {

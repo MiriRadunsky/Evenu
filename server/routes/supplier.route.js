@@ -16,7 +16,7 @@ const allowAll = [ 'user', 'admin', 'supplier' ];
 router.get(
   '/',
   authGuard,
-  roleGuard(allowClientAdmin),
+  // roleGuard(allowClientAdmin),
   SupplierController.getAll
 );
 
@@ -24,14 +24,14 @@ router.get(
 router.get(
   '/:id',
   authGuard,
-  roleGuard(allowClientAdmin),
+  // roleGuard(allowClientAdmin),
   validateObjectId('id'),
   SupplierController.getOne
 );
 // POST /api/supplier/register
-router.post('/supplier/register', SupplierController.supplierRegister);
+router.post('/register', SupplierController.supplierRegister);
 // // POST /api/supplier/login
 //PATCH /api/suppliers/:id
+router.patch('/add-images', authGuard,SupplierController.updateMediaSupplier)
 router.patch('/:id', SupplierController.updateSupplierStatus);
-
 export default router;

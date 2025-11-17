@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/tool
 import type { Socket } from 'socket.io-client';
 
 import type { Notification } from './../types/type';
-import api from '../api/axios';
+import api from '../services/axios';
 
 interface NotificationsState {
   notifications: Notification[];

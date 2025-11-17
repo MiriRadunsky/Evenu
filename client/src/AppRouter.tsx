@@ -39,6 +39,7 @@ export default function AppRouter() {
       />
       <Route
         path="/register"
+        // element={<RegisterPage onRegister={handleRegister} onNavigate={handleNavigate} />}
         element={<RegisterPage onRegister={handleRegister} onNavigate={handleNavigate} />}
       />
 

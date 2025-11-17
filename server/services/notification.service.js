@@ -18,42 +18,40 @@ export const NotificationService = {
   /**
    * יצירת התראה חדשה למשתמש
    */
-  async createNotification({ userId, type, payload, scheduledFor, channel = 'in-app' }) {
-    const notification = {
-      id: randomUUID(),      // מזהה ייחודי
-      userId,
-      type,
-      payload,
-      scheduledFor,
-      channel,
-      createdAt: Date.now(),
-    };
+ 
+async createNotification({ userId, type, payload, scheduledFor, channel = 'in-app' }) {
+  const notification = {
+    id: randomUUID(),
+    userId,
+    type,
+    payload,
+    scheduledFor,
+    channel,
+    createdAt: Date.now(),
+  };
 
-    const listKey = `user:${userId}:notifications`;       // רשימה לשמירת סדר
-    const mapKey = `user:${userId}:notificationMap`;       // מפה לשליפה לפי id
+  const listKey = `user:${userId}:notifications`;
+  const mapKey = `user:${userId}:notificationMap`;
 
-    // 1️⃣ שמירה ברשימה (לסדר כרונולוגי)
-    await redis.rpush(listKey, notification.id);
-
-    // 2️⃣ שמירה במפה (גישה מהירה לפי id)
-    await redis.hset(mapKey, notification.id, JSON.stringify(notification));
-
-    // 3️⃣ שליחה מיידית או מתוזמנת
-    if (channel === 'in-app') {
-      if (scheduledFor && new Date(scheduledFor) > new Date()) {
-        await notificationQueue.add(
-          'scheduled',
-          { userId, type, payload },
-          { delay: new Date(scheduledFor).getTime() - Date.now() }
-        );
-      } else {
-        await sendNotification(notification);
-      }
+  if (channel === 'in-app') {
+    if (scheduledFor && new Date(scheduledFor) > new Date()) {
+      // 🔹 לא שומרים עדיין ב־Redis!
+      await notificationQueue.add(
+        'scheduled',
+        notification, // שולחים את כל ההתראה
+        { delay: new Date(scheduledFor).getTime() - Date.now() }
+      );
+    } else {
+      // 🔹 שולחים עכשיו ושומרים ב־Redis
+      await sendNotification(notification);
+      await redis.rpush(listKey, notification.id);
+      await redis.hset(mapKey, notification.id, JSON.stringify(notification));
     }
+  }
 
-    return notification;
-  },
-
+  return notification;
+}
+,
   /**
    * שליפת ההתראות למשתמש
    * (רק מה־Hash, כך שמחיקות "רכות" לא יופיעו)

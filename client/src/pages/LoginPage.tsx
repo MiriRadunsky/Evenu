@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Mail, Lock, ArrowLeft, Sparkles } from 'lucide-react';
 import { Button } from '../components/ui/button';
-import { login } from '../api/auth';
+import { login } from '../services/auth';
 import { GoogleLoginButton } from '../components/shared/GoogleLoginButton';
 
 interface LoginPageProps {

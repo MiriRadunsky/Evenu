@@ -23,14 +23,24 @@ export const SupplierController = {
 
 
   supplierRegister : asyncHandler(async (req, res) => {
-  const { name, email, phone, password, category, regions, kashrut, portfolio, profileImage, description } = req.body;
-  const { user, supplier } = await SupplierService.registerSupplier({
+    
+    const { name, email, phone, password, category, regions, kashrut, description } = req.body;
+  const { user, supplier, token } = await SupplierService.registerSupplier({
     userData: { name, email, phone, password ,role: 'supplier' },
-    supplierData: { category, regions, kashrut, portfolio, profileImage, description }
+    supplierData: { category, regions, kashrut, description }
   });
 
-  res.status(201).json({ message: 'Supplier created', user, supplier });
+  res.status(201).json({ message: 'Supplier created', user, supplier ,token });
 }),
+
+ updateMediaSupplier:asyncHandler(async (req, res) => {
+const id = req.user._id;
+  const { profileImage,media } = req.body; 
+  console.log(id,profileImage,media);
+  
+  const {_v, ...updated} = await SupplierService.updateSupplierMedia(id,profileImage, media);
+  res.status(201).json({ supplier: updated });
+ }),
 
   supplierLogin : asyncHandler(async (req, res) => {
   const { email, password } = req.body;

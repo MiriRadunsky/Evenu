@@ -6,7 +6,7 @@ import {
 } from "@reduxjs/toolkit";
 import axios from "axios";
 import type { DashboardState, Message, Payment , Request, Event} from "../types/type";
-import api from "../api/axios";
+import api from "../services/axios";
 
 const initialState: DashboardState = {
   events: [],

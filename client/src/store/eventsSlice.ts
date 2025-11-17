@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
-import api from "../api/axios";
 import type { Event } from "../types/type";
+import api from '../services/axios';
+
 
 export interface EventState {
   eventsList: Event[];
@@ -78,6 +79,7 @@ export const createEvent = createAsyncThunk<Event, Event>(
 //   "events/update",
 //   async ({ id, data }) => {
 //         console.log("UPDATE THUNK STARTED", id, data);  // 👈 בדיקה
+
 //     const { data: response } = await api.patch<{ event: Event }>(`/events/${id}`, data);
 //     return response.event;
 //   }
@@ -94,6 +96,7 @@ export const updateEvent = createAsyncThunk<
       const res = await api.patch(`/events/${id}`, data);
 
       console.log("🔍 SERVER RAW RESPONSE:", res.data); 
+
 
       return res.data.data; // ← אולי צריך לשנות
     } catch (err: any) {
@@ -178,4 +181,5 @@ const eventsSlice = createSlice({
 });
 
 export const { clearSelectedEvent } = eventsSlice.actions;
+
 export default eventsSlice.reducer;

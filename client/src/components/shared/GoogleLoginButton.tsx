@@ -1,6 +1,6 @@
 import { useGoogleLogin } from '@react-oauth/google';
 import { useState } from 'react';
-import { googleAuth } from '../../api/auth';
+import { googleAuth } from '../../services/auth';
 
 interface GoogleLoginButtonProps {
   onSuccess: () => void;
