@@ -1,7 +1,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import type { RootState } from "../store";
+import type { AppDispatch, RootState } from "../store";
 
 import {
   fetchEvents,
@@ -19,11 +19,11 @@ import { Button } from "../components/ui/button";
 
 import { formatEventDate, getEventStatusProgress } from "../utils/DataUtils";
 
-import { EventFormDialog } from "../components/EventFormDialog";
-import { EventDetailsDialog } from "../components/EventsDetailsDialog";
+import { EventFormDialog } from "../components/Event/EventFormDialog";
+import { EventDetailsDialog } from "../components/Event/EventsDetailsDialog";
 
 export default function MyEvents() {
-  const dispatch = useDispatch<any>();
+  const dispatch:AppDispatch = useDispatch();
 
   const { eventsList, loadingList, error } = useSelector(
     (state: RootState) => state.events

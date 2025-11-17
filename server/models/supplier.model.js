@@ -87,9 +87,6 @@ const supplierSchema = new Schema(
     profileImage: { type: profileImageSub, default: null },
 
     description: { type: String, trim: true },
-
-    isActive: { type: Boolean, default: false, index: true },
-
     status: {
       type: String,
       enum: ['בהמתנה', 'מאושר', 'נפסל', 'נחסם'],

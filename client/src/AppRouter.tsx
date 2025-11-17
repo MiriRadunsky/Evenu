@@ -13,6 +13,7 @@ import { ActiveSuppliersPage } from "./pages/admin/ActiveSuppliersPage";
 import { SupplierDetailsPage } from "./pages/admin/SupplierDetailsPage";
 import { UsersPage } from "./pages/admin/UsersPage";
 import { getUserRole } from "./services/auth";
+import Requests from "./pages/Request";
 
 export default function AppRouter() {
   const navigate = useNavigate();
@@ -88,6 +89,16 @@ export default function AppRouter() {
           <ProtectedRoute>
             <AppLayout>
               <MyEvents />
+            </AppLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/requests"
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <Requests />
             </AppLayout>
           </ProtectedRoute>
         }

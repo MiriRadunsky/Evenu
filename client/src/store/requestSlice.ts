@@ -1,18 +1,11 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import api from "../services/axios";
+import type { Request } from "../types/Request";
 
-export interface SupplierRequest {
-  _id: string;
-  eventId: string;
-  supplierId: string;
-  clientId: string;
-  notesFromClient: string;
-  status: "pending" | "approved" | "declined";
-  createdAt: string;
-}
+
 
 export interface RequestState {
-  requests: SupplierRequest[];
+  requests: Request[];
   loading: boolean;
   error?: string;
 }
@@ -22,13 +15,28 @@ const initialState: RequestState = {
   loading: false,
   error: undefined,
 };
+export const fetchRequests = createAsyncThunk<
+  Request[],
+  void,
+  { rejectValue: string }
+>("requests/fetchAll", async (_, { rejectWithValue }) => {
+  try {
+    const { data } = await api.get("/requests");
+    console.log(data);
+    
+    // return data.requests;
+      return Array.isArray(data.requests) ? data.requests : Object.values(data.requests || []);
 
+  } catch (err: any) {
+    return rejectWithValue(err.response?.data?.message || "Failed to fetch requests");
+  }
+})
 /* ---------------------------------------------------
    🔹 CREATE client → supplier request
    POST /requests/:eventId
 --------------------------------------------------- */
 export const createSupplierRequest = createAsyncThunk<
-  SupplierRequest,
+  Request,
   { eventId: string; supplierId: string; notesFromClient: string },
   { rejectValue: string }
 >("requests/create", async ({ eventId, supplierId, notesFromClient }, { rejectWithValue }) => {
@@ -49,7 +57,7 @@ export const createSupplierRequest = createAsyncThunk<
    PATCH /requests/approve/:id
 --------------------------------------------------- */
 export const approveRequest = createAsyncThunk<
-  SupplierRequest,
+  Request,
   string,
   { rejectValue: string }
 >("requests/approve", async (id, { rejectWithValue }) => {
@@ -66,7 +74,7 @@ export const approveRequest = createAsyncThunk<
    PATCH /requests/decline/:id
 --------------------------------------------------- */
 export const declineRequest = createAsyncThunk<
-  SupplierRequest,
+  Request,
   string,
   { rejectValue: string }
 >("requests/decline", async (id, { rejectWithValue }) => {
@@ -84,6 +92,18 @@ const requestSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      // Fetch All by User ID
+      .addCase(fetchRequests.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchRequests.fulfilled, (state, action) => {
+        state.loading = false;
+        state.requests = action.payload;
+      })
+      .addCase(fetchRequests.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
       // Create
       .addCase(createSupplierRequest.pending, (state) => {
         state.loading = true;

@@ -24,31 +24,27 @@ import {
   Send,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
-import type { User } from "../types/type";
 import { initSocket } from "../services/socket";
-import type { AppDispatch } from "../store";
-import { useDispatch } from "react-redux";
+import type { AppDispatch, RootState } from "../store";
+import { useDispatch, useSelector } from "react-redux";
 import { fetchNotifications } from "../store/notificationsSlice";
 import NotificationsList from "./NotificationsList";
 import { logout } from "../services/auth";
+import { fetchUser } from "../store/authSlice";
+
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
     const dispatch:AppDispatch = useDispatch();
-
-  const user: User = {
-    _id: "69103c572716ddaabc4b97ee",
-    token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-    name: "Eli sheva",
-    email: "elisheva@example.com",
-    phone: "+972501234567",
-    createdAt: new Date("2025-11-09T07:01:43.558Z"),
-    updatedAt: new Date("2025-11-09T09:35:24.160Z"),
-  };
-
+    const user=useSelector((state:RootState)=>state.auth.user);
+    
 useEffect(() => {
-    const userId = "69103c572716ddaabc4b97ee"; // תחליף ב־userId אמיתי
-    initSocket(userId, dispatch);
-    dispatch(fetchNotifications());
+   dispatch(fetchUser());
+    const userId = user?._id; 
+    if (userId)
+    {
+       initSocket(userId, dispatch);
+       dispatch(fetchNotifications());
+    }
   }, [dispatch]);
   const navigationItems = useMemo(
     () => [
@@ -63,26 +59,26 @@ useEffect(() => {
   );
 
   const userInitials = useMemo(() => {
+    if (!user) return "U";
     if (!user.name) return "U";
     const parts = user.name.split(" ");
     return parts.length > 1 ? `${parts[0][0]}${parts[1][0]}` : parts[0][0];
-  }, [user.name]);
+  }, [user?.name]);
 
-  if (!user.token) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background" style={{ direction: "rtl" }}>
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">ניהול אירועים</h1>
-          <p className="text-muted-foreground mb-6">אנא התחבר כדי להמשיך</p>
-          <Link to="/login">
-            <button className="bg-primary text-primary-foreground px-6 py-2 rounded-lg hover:bg-primary/90 transition-colors">
-              התחבר
-            </button>
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  {
+    // return (
+    //   <div className="min-h-screen flex items-center justify-center bg-background" style={{ direction: "rtl" }}>
+    //     <div className="text-center">
+    //       <h1 className="text-2xl font-bold mb-4">ניהול אירועים</h1>
+    //       <p className="text-muted-foreground mb-6">אנא התחבר כדי להמשיך</p>
+    //       <Link to="/login">
+    //         <button className="bg-primary text-primary-foreground px-6 py-2 rounded-lg hover:bg-primary/90 transition-colors">
+    //           התחבר
+    //         </button>
+    //       </Link>
+    //     </div>
+    //   </div>
+    // );
 
   return (<>
     <SidebarProvider style={{ direction: "rtl" } as React.CSSProperties}>
@@ -119,12 +115,12 @@ useEffect(() => {
               <div className="flex items-center gap-3 px-4 py-3 border-t">
                 <Avatar className="h-10 w-10">
                   {/* <AvatarImage src={user.profileImageUrl || ""} alt={user.name || ""} /> */}
-                  <AvatarImage src={ ""} alt={user.name || ""} />
+                  <AvatarImage src={ ""} alt={user?.name || ""} />
                   <AvatarFallback>{userInitials}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{user.name || user.email}</p>
-                  <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                  <p className="text-sm font-medium truncate">{user?.name || user?.email}</p>
+                  <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
                 </div>
               </div>
             </SidebarMenuItem>
@@ -148,4 +144,4 @@ useEffect(() => {
       <NotificationsList />
      </>
   );
-}
+}}

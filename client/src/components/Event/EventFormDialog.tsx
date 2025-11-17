@@ -5,15 +5,15 @@ import {
     DialogHeader,
     DialogTitle,
     DialogFooter,
-} from "./ui/dialog";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { Textarea } from "./ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+} from "../ui/dialog";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Textarea } from "../ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { useDispatch, useSelector } from "react-redux";
-import { createEvent, updateEvent, fetchEventTypes } from "../store/eventsSlice";
-import type { AppDispatch, RootState } from "../store";
-import { Button } from "./ui/button";
+import { createEvent, updateEvent, fetchEventTypes } from "../../store/eventsSlice";
+import type { AppDispatch, RootState } from "../../store";
+import { Button } from "../ui/button";
 
 // קומפוננטת Wrapper עבור Input עם מסגרת זהובה בעת ריחוף
 const GoldInput = (props: any) => (
