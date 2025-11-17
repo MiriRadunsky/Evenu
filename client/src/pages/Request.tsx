@@ -142,7 +142,7 @@ export default function Requests() {
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-12">
                 <p className="mb-4 text-muted-foreground">עדיין לא שלחת בקשות</p>
-                <Link to={'/SuppliersPage'}>
+                <Link to={'/suppliers'}>
                   <Button>חפש ספקים</Button>
                 </Link>
               </CardContent>

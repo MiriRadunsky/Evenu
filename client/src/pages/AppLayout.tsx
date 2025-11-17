@@ -50,7 +50,7 @@ useEffect(() => {
     () => [
       { title: "לוח בקרה", url: "/dashboard", icon: LayoutDashboard },
       { title: "האירועים שלי", url: "/my-events", icon: Calendar },
-      { title: "ספקים", url: "/SuppliersPage", icon: Store },
+      { title: "ספקים", url: "/suppliers", icon: Store },
       { title: "בקשות", url: "/requests", icon: Send },
       { title: "צ'אט", url: "/chat", icon: MessageSquare },
       { title: "חוזים ותשלומים", url: "/contracts-payments", icon: FileText },

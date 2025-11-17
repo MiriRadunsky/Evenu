@@ -39,12 +39,14 @@ export default function Suppliers() {
     if (selectedCategory !== "הכל") filters.category = selectedCategory;
     if (regionFilter) filters.region = regionFilter;
     if (debouncedSearch) filters.q = debouncedSearch;
+    console.log('🔍 Fetching suppliers with filters:', filters);
     dispatch(fetchSuppliers(filters));
   }, [dispatch, selectedCategory, regionFilter, debouncedSearch]);
 
   useEffect(() => {
     const loadUrls = async () => {
       if (!suppliersList) return;
+      console.log('📦 Suppliers from Redux:', suppliersList.length, 'suppliers');
       const updated = await Promise.all(
         suppliersList.map(async (s) => {
           if (s.profileImage?.key) {
@@ -55,6 +57,7 @@ export default function Suppliers() {
         })
       );
       setSuppliersWithUrls(updated);
+      console.log('✅ Suppliers with URLs ready:', updated.length);
     };
     loadUrls();
   }, [suppliersList]);

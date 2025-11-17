@@ -12,14 +12,13 @@ import { PendingSuppliersPage } from "./pages/admin/PendingSuppliersPage";
 import { ActiveSuppliersPage } from "./pages/admin/ActiveSuppliersPage";
 import { SupplierDetailsPage } from "./pages/admin/SupplierDetailsPage";
 import { UsersPage } from "./pages/admin/UsersPage";
-import { getUserRole } from "./services/auth";
-import Requests from "./pages/Request";
+import { getUserRole } from "./api/auth";
 
 export default function AppRouter() {
   const navigate = useNavigate();
 
   const handleNavigate = (page: "landing" | "login" | "register") => {
-    console.log('handleNavigate', page);
+    console.log('handleNavigate', page); 
     if (page === "landing") navigate("/");
     else if (page === "login") navigate("/login");
     else if (page === "register") navigate("/register");
@@ -70,11 +69,12 @@ export default function AppRouter() {
               <Dashboard />
             </AppLayout>
           </ProtectedRoute>
-
+              
         }
       />
+
       <Route
-        path="/SuppliersPage"
+        path="/suppliers"
         element={
           <ProtectedRoute>
             <AppLayout>
@@ -83,22 +83,13 @@ export default function AppRouter() {
           </ProtectedRoute>
         }
       />
+
       <Route
         path="/my-events"
         element={
           <ProtectedRoute>
             <AppLayout>
               <MyEvents />
-            </AppLayout>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/requests"
-        element={
-          <ProtectedRoute>
-            <AppLayout>
-              <Requests />
             </AppLayout>
           </ProtectedRoute>
         }

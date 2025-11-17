@@ -235,7 +235,7 @@ return (
           </Card>
         </Link>
 
-        <Link to={'/SuppliersPage'}>
+        <Link to={'/suppliers'}>
           <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
             <CardContent className="pt-6">
               <div className="flex flex-col items-center text-center space-y-2">
