@@ -78,7 +78,7 @@ export function UsersPage() {
     <AdminLayout>
       <div className="space-y-6">
         {/* Page Header */}
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
           <Button
             variant="outline"
             onClick={() => navigate('/admin/dashboard')}
@@ -88,8 +88,8 @@ export function UsersPage() {
             חזרה
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">משתמשים</h1>
-            <p className="text-gray-500 mt-1">כל המשתמשים במערכת</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">משתמשים</h1>
+            <p className="text-sm sm:text-base text-gray-500 mt-1">כל המשתמשים במערכת</p>
           </div>
         </div>
 
@@ -101,32 +101,32 @@ export function UsersPage() {
         )}
 
         {/* Filter Buttons */}
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-2 sm:gap-3">
           <Button
             onClick={() => setFilter('all')}
             variant={filter === 'all' ? 'default' : 'outline'}
-            className={filter === 'all' ? 'bg-gradient-to-r from-[#d4a960] to-[#c89645] text-white' : ''}
+            className={`text-sm ${filter === 'all' ? 'bg-gradient-to-r from-[#d4a960] to-[#c89645] text-white' : ''}`}
           >
             הכל ({users.length})
           </Button>
           <Button
             onClick={() => setFilter('user')}
             variant={filter === 'user' ? 'default' : 'outline'}
-            className={filter === 'user' ? 'bg-gradient-to-r from-[#d4a960] to-[#c89645] text-white' : ''}
+            className={`text-sm ${filter === 'user' ? 'bg-gradient-to-r from-[#d4a960] to-[#c89645] text-white' : ''}`}
           >
             משתמשים ({users.filter(u => u.role === 'user').length})
           </Button>
           <Button
             onClick={() => setFilter('supplier')}
             variant={filter === 'supplier' ? 'default' : 'outline'}
-            className={filter === 'supplier' ? 'bg-gradient-to-r from-[#d4a960] to-[#c89645] text-white' : ''}
+            className={`text-sm ${filter === 'supplier' ? 'bg-gradient-to-r from-[#d4a960] to-[#c89645] text-white' : ''}`}
           >
             ספקים ({users.filter(u => u.role === 'supplier').length})
           </Button>
           <Button
             onClick={() => setFilter('admin')}
             variant={filter === 'admin' ? 'default' : 'outline'}
-            className={filter === 'admin' ? 'bg-gradient-to-r from-[#d4a960] to-[#c89645] text-white' : ''}
+            className={`text-sm ${filter === 'admin' ? 'bg-gradient-to-r from-[#d4a960] to-[#c89645] text-white' : ''}`}
           >
             מנהלים ({users.filter(u => u.role === 'admin').length})
           </Button>
@@ -134,8 +134,8 @@ export function UsersPage() {
 
         {/* Users Table */}
         <Card className="overflow-hidden">
-          <div className="bg-gradient-to-r from-[#faf8f3] to-[#f5f3ed] px-6 py-4 border-b-2 border-[#d4a960]/30">
-            <h2 className="text-xl font-semibold text-[#8b6f47]">
+          <div className="bg-gradient-to-r from-[#faf8f3] to-[#f5f3ed] px-4 md:px-6 py-4 border-b-2 border-[#d4a960]/30">
+            <h2 className="text-lg md:text-xl font-semibold text-[#8b6f47]">
               רשימת משתמשים ({filteredUsers.length})
             </h2>
           </div>
@@ -145,54 +145,93 @@ export function UsersPage() {
               <p className="text-gray-500 font-light">אין משתמשים להצגה</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="bg-gray-50 border-b-2 border-gray-200">
-                    <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">שם</th>
-                    <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">אימייל</th>
-                    <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">טלפון</th>
-                    <th className="px-6 py-4 text-center text-sm font-semibold text-gray-700">תפקיד</th>
-                    <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">תאריך הצטרפות</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredUsers.map((user) => (
-                    <tr
-                      key={user._id}
-                      className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
-                    >
-                      <td className="px-6 py-4">
-                        <div className="font-medium text-gray-900">{user.name}</div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2 text-gray-600">
-                          <Mail className="w-4 h-4" />
-                          <span className="font-light">{user.email}</span>
+            <>
+              {/* Mobile View - Cards */}
+              <div className="block md:hidden divide-y divide-gray-200">
+                {filteredUsers.map((user) => (
+                  <div
+                    key={user._id}
+                    className="p-5 hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="space-y-3">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <div className="font-semibold text-gray-900 text-lg mb-2">{user.name}</div>
                         </div>
-                      </td>
-                      <td className="px-6 py-4">
+                        <div className="flex-shrink-0">
+                          {getRoleBadge(user.role)}
+                        </div>
+                      </div>
+
+                      <div className="space-y-2 text-sm">
                         <div className="flex items-center gap-2 text-gray-600">
-                          <Phone className="w-4 h-4" />
+                          <Mail className="w-4 h-4 flex-shrink-0" />
+                          <span className="font-light break-all">{user.email}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-gray-600">
+                          <Phone className="w-4 h-4 flex-shrink-0" />
                           <span className="font-light">{user.phone}</span>
                         </div>
-                      </td>
-                      <td className="px-6 py-4 text-center">
-                        {getRoleBadge(user.role)}
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2 text-gray-600">
-                          <Calendar className="w-4 h-4" />
-                          <span className="font-light">
-                            {new Date(user.createdAt).toLocaleDateString('he-IL')}
-                          </span>
+                        <div className="flex items-center gap-2 text-gray-500 text-xs">
+                          <Calendar className="w-4 h-4 flex-shrink-0" />
+                          <span>הצטרף: {new Date(user.createdAt).toLocaleDateString('he-IL')}</span>
                         </div>
-                      </td>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop View - Table */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="bg-gray-50 border-b-2 border-gray-200">
+                      <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">שם</th>
+                      <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">אימייל</th>
+                      <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">טלפון</th>
+                      <th className="px-6 py-4 text-center text-sm font-semibold text-gray-700">תפקיד</th>
+                      <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">תאריך הצטרפות</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {filteredUsers.map((user) => (
+                      <tr
+                        key={user._id}
+                        className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
+                      >
+                        <td className="px-6 py-4">
+                          <div className="font-medium text-gray-900">{user.name}</div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2 text-gray-600">
+                            <Mail className="w-4 h-4" />
+                            <span className="font-light">{user.email}</span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2 text-gray-600">
+                            <Phone className="w-4 h-4" />
+                            <span className="font-light">{user.phone}</span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          {getRoleBadge(user.role)}
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2 text-gray-600">
+                            <Calendar className="w-4 h-4" />
+                            <span className="font-light">
+                              {new Date(user.createdAt).toLocaleDateString('he-IL')}
+                            </span>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
         </Card>
       </div>
