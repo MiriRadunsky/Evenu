@@ -1,0 +1,122 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Light Mode Colors */
+    --background: 40 40 96; /* #FAF7F2 */
+    --foreground: 0 0 24; /* #3D3D3D */
+    --card: 0 0 100; /* #FFFFFF */
+    --card-foreground: 0 0 24; /* #3D3D3D */
+    --popover: 0 0 100; /* #FFFFFF */
+    --popover-foreground: 0 0 24; /* #3D3D3D */
+    --primary: 45 56 65; /* #C8A951 */
+    --primary-foreground: 0 0 100; /* #FFFFFF */
+    --secondary: 40 19 86; /* #E8E3D8 */
+    --secondary-foreground: 0 16 32; /* #605252 */
+    --muted: 40 24 92; /* #F5F2EB */
+    --muted-foreground: 0 0 42; /* #6B6B6B */
+    --accent: 45 56 65; /* #C8A951 */
+    --accent-foreground: 0 0 100; /* #FFFFFF */
+    --destructive: 14 85 46; /* #D84315 */
+    --destructive-foreground: 0 0 100; /* #FFFFFF */
+    --border: 40 19 86; /* #E8E3D8 */
+    --input: 40 19 86; /* #E8E3D8 */
+    --ring: 45 56 65; /* #C8A951 */
+    --radius: 0.5rem;
+    
+    /* Shadows */
+    --shadow-color: 0 0 0;
+    --shadow-opacity: 0.05;
+    --shadow-blur: 10px;
+    --shadow-spread: 0px;
+    --shadow-offset-x: 0px;
+    --shadow-offset-y: 2px;
+    
+    /* Typography */
+    --font-sans: 'Assistant', system-ui, sans-serif;
+    --font-serif: Georgia, serif;
+    --font-mono: 'Courier New', monospace;
+    
+    /* Spacing */
+    --spacing: 1rem;
+    --letter-spacing: 0em;
+  }
+
+  .dark {
+    /* Dark Mode Colors */
+    --background: 210 13 9; /* #1A1816 */
+    --foreground: 40 19 86; /* #E8E3D8 */
+    --card: 210 11 15; /* #2A2622 */
+    --card-foreground: 40 19 86; /* #E8E3D8 */
+    --popover: 210 11 15; /* #2A2622 */
+    --popover-foreground: 40 19 86; /* #E8E3D8 */
+    --primary: 45 56 32; /* #C8A951 */
+    --primary-foreground: 210 13 9; /* #1A1816 */
+    --secondary: 210 9 21; /* #3A3632 */
+    --secondary-foreground: 40 19 86; /* #E8E3D8 */
+    --muted: 210 11 15; /* #2A2622 */
+    --muted-foreground: 0 0 61; /* #9B9B9B */
+    --accent: 45 56 32; /* #C8A951 */
+    --accent-foreground: 210 13 9; /* #1A1816 */
+    --destructive: 0 56 68; /* #E57373 */
+    --destructive-foreground: 210 13 9; /* #1A1816 */
+    --border: 210 9 21; /* #3A3632 */
+    --input: 210 9 21; /* #3A3632 */
+    --ring: 45 56 32; /* #C8A951 */
+    
+    /* Dark Mode Shadows */
+    --shadow-opacity: 0.15;
+    --shadow-blur: 12px;
+  }
+
+  * {
+    border-color: hsl(var(--border));
+    direction: rtl;
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: var(--font-sans);
+    letter-spacing: var(--letter-spacing);
+  }
+
+  /* RTL Support */
+  [dir="rtl"] {
+    direction: rtl;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: hsl(var(--muted));
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--border));
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--primary) / 0.5);
+  }
+}
+
+@layer components {
+  /* Custom shadow utility */
+  .shadow-custom {
+    box-shadow: var(--shadow-offset-x) var(--shadow-offset-y) var(--shadow-blur) var(--shadow-spread) 
+                rgba(var(--shadow-color), var(--shadow-opacity));
+  }
+
+  /* Gold gradient button */
+  .gradient-gold {
+    background: linear-gradient(135deg, #d4a960 0%, #c89645 100%);
+  }
+}

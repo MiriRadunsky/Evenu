@@ -1,0 +1,22 @@
+import { uploadFileAwsService } from '../services/uploadFileAws.service.js';
+export const uploadFileAwsController = {
+  getUploadUrl :async (req, res) => {
+  const { fileName, contentType } = req.query;
+  try {
+    const url = await uploadFileAwsService.createPresignedUploadUrl(fileName, contentType);
+    res.json({ url });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+},
+
+  getDownloadUrl : async (req, res) => {
+  const { fileKey } = req.query;
+  try {
+    const url = await uploadFileAwsService.createPresignedDownloadUrl(fileKey);
+    res.json({ url });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+};

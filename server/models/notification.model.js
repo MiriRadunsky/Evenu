@@ -1,7 +1,9 @@
 import mongoose from 'mongoose';
 const { Schema, model, Types } = mongoose;
 
-// התראות In-App/Email/SMS
+
+
+// התראות In-App/Email
 const notificationSchema = new Schema(
   {
     userId:  { type: Types.ObjectId, ref: 'User', required: true, index: true },
@@ -9,7 +11,7 @@ const notificationSchema = new Schema(
     payload: Schema.Types.Mixed,      // { contractId, paymentId, ... }
     scheduledFor: { type: Date, index: true },
     sentAt:  { type: Date, index: true },
-    channel: { type: String, enum: ['in-app', 'email', 'sms'], default: 'in-app' },
+    channel: { type: String, enum: ['in-app', 'email'], default: 'in-app' },
     readAt:  { type: Date }
   },
   { timestamps: true }

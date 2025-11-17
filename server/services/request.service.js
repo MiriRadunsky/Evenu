@@ -1,10 +1,12 @@
-import SupplierRequest from '../models/SupplierRequest.js';
-import { AppError } from '../middleware/errorHandler.js';
-import Event from '../models/Event.js';
-import Supplier from '../models/Supplier.js';
-import User from '../models/User.js';
+import SupplierRequest from '../models/request.model.js';
+import Event from '../models/event.model.js';
+import Supplier from '../models/supplier.model.js';
+import User from '../models/user.model.js';
+import { AppError } from '../middlewares/error.middleware.js';
+import { RequestRepository } from '../repositories/request.repository.js';
 
-const createSupplierRequest = async ({ eventId, supplierId, clientId, notesFromClient }) => {
+export const RequestService = {
+ async createSupplierRequest  ({ eventId, supplierId, clientId, notesFromClient })  {
   const [event, supplier, client] = await Promise.all([
     Event.findById(eventId),
     Supplier.findById(supplierId),
@@ -26,19 +28,16 @@ const createSupplierRequest = async ({ eventId, supplierId, clientId, notesFromC
 
   const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
-  const request = await SupplierRequest.create({
+  const request = await RequestRepository.createRequest({
     eventId,
     supplierId,
     clientId,
-    notesFromClient,
-    expiresAt
+    notesFromClient
   });
 
   return request;
-};
-
-// אישור בקשה
-export const approveSupplierRequest = async (id, supplierId) => {
+},
+async approveSupplierRequest  (id, supplierId) {
   const request = await SupplierRequest.findById(id);
   if (!request) throw new AppError(404, 'Request not found');
 
@@ -48,12 +47,11 @@ export const approveSupplierRequest = async (id, supplierId) => {
   if (request.status !== 'ממתין')
     throw new AppError(400, 'Request already processed');
 
-  request.status = 'מאושר';
-  return await request.save();
-};
+  await RequestRepository.updateStatus(id, 'מאושר');
+  
+},
 
-// דחיית בקשה
-export const declineSupplierRequest = async (id, supplierId) => {
+ async declineSupplierRequest(id, supplierId){
   const request = await SupplierRequest.findById(id);
   if (!request) throw new AppError(404, 'Request not found');
 
@@ -62,13 +60,7 @@ export const declineSupplierRequest = async (id, supplierId) => {
 
   if (request.status !== 'ממתין')
     throw new AppError(400, 'Request already processed');
+  await RequestRepository.updateStatus(id, 'נפסל');
+}
 
-  request.status = 'נדחה';
-  return await request.save();
-};
-
-export default {
-  createSupplierRequest,
-  approveSupplierRequest,
-  declineSupplierRequest
-};
+}

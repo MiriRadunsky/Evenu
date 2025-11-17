@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import { createRequest, approveRequest, declineRequest } from '../controllers/request.controller';
-import auth from '../middlewares/auth.middleware.js';
+import { authGuard } from '../middlewares/auth.middleware.js';
+import { RequestController } from '../controllers/request.controller.js';
 const router = Router();
 
-router.post('/events/:eventId/requests',auth, createRequest);
-router.post('/requests/:id/approve', auth, approveRequest);
-router.post('/requests/:id/decline', auth, declineRequest);
+
+router.post('/:id/approve', authGuard, RequestController.approveRequest);
+router.post('/:id/decline', authGuard, RequestController.declineRequest);
 
 export default router;

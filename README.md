@@ -191,7 +191,11 @@ npm run dev:web
 
 MIT 
 
-
+ADMIN:
+{
+"email":"admin@admin.com",
+"password":"Admin1234"
+}
 USERS:
 // {
 //   "name": "Eli Sheva",
