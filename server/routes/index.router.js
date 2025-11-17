@@ -6,6 +6,7 @@ import supplierRouter from './supplier.route.js';
 // import requestRouter from './request.routes.js';
 import contractRouter from './contract.routes.js';
 // import notificationRouter from './notification.routes.js';
+import messageRouter from './message.route.js';
 
 import userRouter from './user.route.js'; 
 import eventRoutes from './event.route.js';
@@ -22,6 +23,7 @@ router.use('/users', userRouter); // ⬅️ שנה את זה!
 // router.use('/requests', requestRouter);
 router.use('/contracts', contractRouter);
 // router.use('/notifications', notificationRouter);
+router.use('/messages', messageRouter);
 router.use('/users', userRouter);
 router.use('/events', eventRoutes);
 router.use('/requests', requestsRouter);
