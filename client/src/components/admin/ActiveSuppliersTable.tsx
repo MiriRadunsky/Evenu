@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Ban, Eye, Calendar, CheckCircle } from 'lucide-react';
+import { Ban, Eye, Calendar, CheckCircle, User } from 'lucide-react';
 import { Button } from '../ui/button';
 
 interface ActiveSupplier {
@@ -10,6 +10,7 @@ interface ActiveSupplier {
   status: 'active' | 'blocked';
   eventsCount: number;
   joinedAt: string;
+  profileImage?: { url: string; alt?: string } | null;
 }
 
 interface ActiveSuppliersTableProps {
@@ -32,14 +33,14 @@ export function ActiveSuppliersTable({ suppliers, onBlock, onView }: ActiveSuppl
 
   if (suppliers.length === 0) {
     return (
-      <div className="bg-white rounded-2xl border-2 border-gray-100 p-8 text-center">
-        <p className="text-gray-500 font-light">אין ספקים פעילים</p>
+      <div className="p-8 text-center bg-white border-2 border-gray-100 rounded-2xl">
+        <p className="font-light text-gray-500">אין ספקים פעילים</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-2xl border-2 border-gray-100 overflow-hidden">
+    <div className="overflow-hidden bg-white border-2 border-gray-100 rounded-2xl">
       <div className="bg-gradient-to-r from-[#f5f3ed] to-[#f8f6f0] px-4 md:px-6 py-4 border-b-2 border-[#b8935a]/30">
         <h2 className="text-lg md:text-xl font-semibold text-[#8b6f47]">
           ספקים פעילים ({suppliers.length})
@@ -51,15 +52,25 @@ export function ActiveSuppliersTable({ suppliers, onBlock, onView }: ActiveSuppl
         {suppliers.map((supplier) => (
           <div
             key={supplier._id}
-            className="border-b border-gray-100 p-4 hover:bg-gray-50 transition-colors"
+            className="p-4 transition-colors border-b border-gray-100 hover:bg-gray-50"
           >
             <div className="space-y-3">
-              <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start gap-3">
+                {/* Profile Image */}
+                <div className="flex-shrink-0 w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-[#b8935a] to-[#a67c3d] flex items-center justify-center">
+                  {supplier.profileImage?.url ? (
+                    <img src={supplier.profileImage.url} alt={supplier.name} className="object-cover w-full h-full" />
+                  ) : (
+                    <User className="w-6 h-6 text-white" />
+                  )}
+                </div>
+                
                 <div className="flex-1">
-                  <div className="font-semibold text-gray-900 text-lg mb-1">{supplier.name}</div>
+                  <div className="mb-1 text-lg font-semibold text-gray-900">{supplier.name}</div>
                   <div className="text-sm text-gray-500">{supplier.email}</div>
                 </div>
-                <div>
+                
+                <div className="flex-shrink-0">
                   {supplier.status === 'active' ? (
                     <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gradient-to-r from-[#b8935a] to-[#a67c3d] text-white shadow-sm">
                       <CheckCircle className="w-3.5 h-3.5" />
@@ -85,7 +96,7 @@ export function ActiveSuppliersTable({ suppliers, onBlock, onView }: ActiveSuppl
                   <Calendar className="w-4 h-4" />
                   <span className="font-semibold">{supplier.eventsCount} אירועים</span>
                 </div>
-                <div className="text-gray-500 text-xs">
+                <div className="text-xs text-gray-500">
                   הצטרף: {new Date(supplier.joinedAt).toLocaleDateString('he-IL')}
                 </div>
               </div>
@@ -101,7 +112,7 @@ export function ActiveSuppliersTable({ suppliers, onBlock, onView }: ActiveSuppl
                 <Button
                   onClick={() => handleBlock(supplier._id)}
                   disabled={loading === supplier._id || supplier.status === 'blocked'}
-                  className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-3 py-2 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md text-sm"
+                  className="flex items-center justify-center flex-1 gap-2 px-3 py-2 text-sm text-white transition-all rounded-lg shadow-md bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Ban className="w-4 h-4" />
                   חסום
@@ -113,27 +124,38 @@ export function ActiveSuppliersTable({ suppliers, onBlock, onView }: ActiveSuppl
       </div>
 
       {/* Desktop View - Table */}
-      <div className="hidden md:block overflow-x-auto">
+      <div className="hidden overflow-x-auto md:block">
         <table className="w-full">
           <thead>
-            <tr className="bg-gray-50 border-b-2 border-gray-200">
-              <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">שם הספק</th>
-              <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">קטגוריה</th>
-              <th className="px-6 py-4 text-center text-sm font-semibold text-gray-700">סטטוס</th>
-              <th className="px-6 py-4 text-center text-sm font-semibold text-gray-700">אירועים פעילים</th>
-              <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">תאריך הצטרפות</th>
-              <th className="px-6 py-4 text-center text-sm font-semibold text-gray-700">פעולות</th>
+            <tr className="border-b-2 border-gray-200 bg-gray-50">
+              <th className="px-6 py-4 text-sm font-semibold text-right text-gray-700">שם הספק</th>
+              <th className="px-6 py-4 text-sm font-semibold text-right text-gray-700">קטגוריה</th>
+              <th className="px-6 py-4 text-sm font-semibold text-center text-gray-700">סטטוס</th>
+              <th className="px-6 py-4 text-sm font-semibold text-center text-gray-700">אירועים פעילים</th>
+              <th className="px-6 py-4 text-sm font-semibold text-right text-gray-700">תאריך הצטרפות</th>
+              <th className="px-6 py-4 text-sm font-semibold text-center text-gray-700">פעולות</th>
             </tr>
           </thead>
           <tbody>
             {suppliers.map((supplier) => (
               <tr
                 key={supplier._id}
-                className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
+                className="transition-colors border-b border-gray-100 hover:bg-gray-50"
               >
                 <td className="px-6 py-4">
-                  <div className="font-medium text-gray-900">{supplier.name}</div>
-                  <div className="text-sm text-gray-500 font-light">{supplier.email}</div>
+                  <div className="flex items-center gap-3">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-[#b8935a] to-[#a67c3d] flex items-center justify-center">
+                      {supplier.profileImage?.url ? (
+                        <img src={supplier.profileImage.url} alt={supplier.name} className="object-cover w-full h-full" />
+                      ) : (
+                        <User className="w-5 h-5 text-white" />
+                      )}
+                    </div>
+                    <div>
+                      <div className="font-medium text-gray-900">{supplier.name}</div>
+                      <div className="text-sm font-light text-gray-500">{supplier.email}</div>
+                    </div>
+                  </div>
                 </td>
                 <td className="px-6 py-4">
                   <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#faf8f3] text-[#8b6f47] border border-[#d4a960]/30">
@@ -147,7 +169,7 @@ export function ActiveSuppliersTable({ suppliers, onBlock, onView }: ActiveSuppl
                       פעיל
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                    <span className="inline-flex items-center gap-1 px-3 py-1 text-sm font-medium text-red-800 bg-red-100 rounded-full">
                       <Ban className="w-4 h-4" />
                       חסום
                     </span>
@@ -159,7 +181,7 @@ export function ActiveSuppliersTable({ suppliers, onBlock, onView }: ActiveSuppl
                     <span className="font-semibold text-[#d4a960]">{supplier.eventsCount}</span>
                   </div>
                 </td>
-                <td className="px-6 py-4 text-gray-600 font-light">
+                <td className="px-6 py-4 font-light text-gray-600">
                   {new Date(supplier.joinedAt).toLocaleDateString('he-IL')}
                 </td>
                 <td className="px-6 py-4">
@@ -174,7 +196,7 @@ export function ActiveSuppliersTable({ suppliers, onBlock, onView }: ActiveSuppl
                     <Button
                       onClick={() => handleBlock(supplier._id)}
                       disabled={loading === supplier._id || supplier.status === 'blocked'}
-                      className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
+                      className="flex items-center gap-2 px-4 py-2 text-white transition-all rounded-lg shadow-md bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg"
                     >
                       <Ban className="w-4 h-4" />
                       חסום

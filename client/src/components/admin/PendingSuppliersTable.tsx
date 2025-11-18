@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Check, X, Mail, Phone, Eye } from 'lucide-react';
+import { Check, X, Mail, Phone, Eye, User } from 'lucide-react';
 import { Button } from '../ui/button';
 
 interface PendingSupplier {
@@ -9,6 +9,7 @@ interface PendingSupplier {
   phone: string;
   category: string;
   createdAt: string;
+  profileImage?: { url: string; alt?: string } | null;
 }
 
 interface PendingSuppliersTableProps {
@@ -58,13 +59,23 @@ export function PendingSuppliersTable({ suppliers, onApprove, onReject, onView }
             className="border-b border-gray-100 p-4 hover:bg-gray-50 transition-colors"
           >
             <div className="space-y-3">
-              <div className="flex items-start justify-between gap-2">
+              <div className="flex items-start gap-3">
+                {/* Profile Image */}
+                <div className="flex-shrink-0 w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-[#d4a960] to-[#c89645] flex items-center justify-center">
+                  {supplier.profileImage?.url ? (
+                    <img src={supplier.profileImage.url} alt={supplier.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <User className="w-6 h-6 text-white" />
+                  )}
+                </div>
+                
                 <div className="flex-1 min-w-0">
                   <div className="font-semibold text-gray-900 text-lg mb-1">{supplier.name}</div>
                   <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-[#faf8f3] text-[#8b6f47] border border-[#d4a960]/30">
                     {supplier.category}
                   </span>
                 </div>
+                
                 <div className="flex-shrink-0">
                   <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-medium bg-gradient-to-r from-[#d4a960] to-[#c89645] text-white">
                     <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
@@ -139,7 +150,16 @@ export function PendingSuppliersTable({ suppliers, onApprove, onReject, onView }
                 className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
               >
                 <td className="px-6 py-4">
-                  <div className="font-medium text-gray-900">{supplier.name}</div>
+                  <div className="flex items-center gap-3">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-[#d4a960] to-[#c89645] flex items-center justify-center">
+                      {supplier.profileImage?.url ? (
+                        <img src={supplier.profileImage.url} alt={supplier.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <User className="w-5 h-5 text-white" />
+                      )}
+                    </div>
+                    <div className="font-medium text-gray-900">{supplier.name}</div>
+                  </div>
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-2 text-gray-600">

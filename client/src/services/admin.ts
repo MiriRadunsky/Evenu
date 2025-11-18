@@ -15,6 +15,7 @@ export interface PendingSupplier {
   phone: string;
   category: string;
   createdAt: string;
+  profileImage?: { url: string; alt?: string } | null;
 }
 
 export interface ActiveSupplier {
@@ -25,6 +26,7 @@ export interface ActiveSupplier {
   status: 'active' | 'blocked';
   eventsCount: number;
   joinedAt: string;
+  profileImage?: { url: string; alt?: string } | null;
 }
 
 // API functions
@@ -69,7 +71,7 @@ export interface SupplierDetails {
   description: string;
   regions: string[];
   kashrut: string;
-  portfolio: Array<{ url: string; title?: string }>;
+  portfolio: Array<{ url: string; alt?: string }>;
   profileImage: { url: string; alt?: string } | null;
   isActive: boolean;
   eventsCount: number;

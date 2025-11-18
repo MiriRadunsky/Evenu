@@ -1,6 +1,7 @@
 // admin.service.js
 import * as repo from '../repositories/admin.repository.js';
 import { AppError } from '../middlewares/error.middleware.js';
+import { uploadFileAwsService } from './uploadFileAws.service.js';
 
 // 🔹 קבלת סטטיסטיקות
 export async function getStats() {
@@ -11,27 +12,55 @@ export async function getStats() {
 export async function getPendingSuppliers() {
   const suppliers = await repo.getPendingSuppliers();
   
-  // פורמט הנתונים לצורך הצגה
-  return suppliers.map(supplier => ({
-    _id: supplier._id,
-    name: supplier.user?.name || 'לא ידוע',
-    email: supplier.user?.email || '',
-    phone: supplier.user?.phone || '',
-    category: supplier.category?.name || 'לא מוגדר',
-    createdAt: supplier.createdAt,
-    description: supplier.description,
-    regions: supplier.regions
-  }));
+  // פורמט הנתונים לצורך הצגה + הוספת URL חתום לתמונות
+  const suppliersWithImages = await Promise.all(
+    suppliers.map(async (supplier) => {
+      let profileImage = null;
+      
+      if (supplier.profileImage?.key) {
+        try {
+          const url = await uploadFileAwsService.createPresignedDownloadUrl(supplier.profileImage.key);
+          profileImage = { url, alt: supplier.profileImage.alt };
+        } catch (error) {
+          console.error('Error generating signed URL for profile image:', error);
+        }
+      }
+      
+      return {
+        _id: supplier._id,
+        name: supplier.user?.name || 'לא ידוע',
+        email: supplier.user?.email || '',
+        phone: supplier.user?.phone || '',
+        category: supplier.category?.name || 'לא מוגדר',
+        createdAt: supplier.createdAt,
+        description: supplier.description,
+        regions: supplier.regions,
+        profileImage
+      };
+    })
+  );
+  
+  return suppliersWithImages;
 }
 
 // 🔹 קבלת ספקים פעילים
 export async function getActiveSuppliers() {
   const suppliers = await repo.getActiveSuppliers();
   
-  // קבלת מספר אירועים לכל ספק
+  // קבלת מספר אירועים לכל ספק + הוספת URL חתום לתמונות
   const suppliersWithEvents = await Promise.all(
     suppliers.map(async (supplier) => {
       const eventsCount = await repo.getSupplierEventsCount(supplier._id);
+      
+      let profileImage = null;
+      if (supplier.profileImage?.key) {
+        try {
+          const url = await uploadFileAwsService.createPresignedDownloadUrl(supplier.profileImage.key);
+          profileImage = { url, alt: supplier.profileImage.alt };
+        } catch (error) {
+          console.error('Error generating signed URL for profile image:', error);
+        }
+      }
       
       return {
         _id: supplier._id,
@@ -40,7 +69,8 @@ export async function getActiveSuppliers() {
         category: supplier.category?.name || 'לא מוגדר',
         status: supplier.status === 'מאושר' ? 'active' : 'blocked',
         eventsCount,
-        joinedAt: supplier.createdAt
+        joinedAt: supplier.createdAt,
+        profileImage
       };
     })
   );
@@ -170,6 +200,34 @@ export async function getSupplierDetails(supplierId) {
   // קבלת מספר אירועים
   const eventsCount = await repo.getSupplierEventsCount(supplier._id);
 
+  // המרת profileImage ל-URL חתום
+  let profileImage = null;
+  if (supplier.profileImage?.key) {
+    try {
+      const url = await uploadFileAwsService.createPresignedDownloadUrl(supplier.profileImage.key);
+      profileImage = { url, alt: supplier.profileImage.alt };
+    } catch (error) {
+      console.error('Error generating signed URL for profile image:', error);
+    }
+  }
+
+  // המרת portfolio images ל-URLs חתומים
+  let portfolio = [];
+  if (supplier.media?.images && supplier.media.images.length > 0) {
+    portfolio = await Promise.all(
+      supplier.media.images.map(async (image) => {
+        try {
+          const url = await uploadFileAwsService.createPresignedDownloadUrl(image.key);
+          return { url, alt: image.alt };
+        } catch (error) {
+          console.error('Error generating signed URL for portfolio image:', error);
+          return null;
+        }
+      })
+    );
+    portfolio = portfolio.filter(item => item !== null);
+  }
+
   return {
     _id: supplier._id,
     name: supplier.user?.name || 'לא ידוע',
@@ -180,8 +238,8 @@ export async function getSupplierDetails(supplierId) {
     description: supplier.description || '',
     regions: supplier.regions || [],
     kashrut: supplier.kashrut || '',
-    portfolio: supplier.portfolio || [],
-    profileImage: supplier.profileImage || null,
+    portfolio,
+    profileImage,
     isActive: supplier.isActive,
     eventsCount,
     createdAt: supplier.createdAt,
