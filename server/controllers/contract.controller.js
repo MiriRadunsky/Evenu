@@ -1,5 +1,6 @@
 import * as srv from '../services/contract.service.js';
 import asyncHandler from '../middlewares/asyncHandler.middleware.js';
+import { uploadFileAwsService } from '../services/uploadFileAws.service.js';
 
 export const createContract = asyncHandler(async(req, res) =>{
         const contract = await srv.createContract(req.body, req.user._id);
@@ -13,8 +14,57 @@ export const getContract = asyncHandler(async(req, res) =>{
 
 export const signContract = asyncHandler(async(req, res) =>{
     const { id } = req.params;      // מזהה החוזה
-    const { party, signatureMeta } = req.body; // סוג החתימה ו-metadata
+    const { party, signatureMeta, signatureData } = req.body; // סוג החתימה, metadata, וציור
     const user = req.user;          
-    const updatedContract = await srv.signContractService(req.params.id, req.user,party, req.body.signatureMeta);
+    const updatedContract = await srv.signContractService(req.params.id, req.user, party, req.body.signatureMeta, req, signatureData);
         res.status(201).json({ message: 'Contract signed successfully', updatedContract });
+});
+export const cancelContract = asyncHandler(async(req, res) =>{
+    const { id } = req.params;
+    const { party } = req.body;
+    const updatedContract = await srv.cancelContractService(id, req.user, party);
+    res.status(201).json({ message: 'Contract canceled successfully', updatedContract });
+});
+export const getContractsBySupplier = asyncHandler(async(req, res) => {
+    const contracts = await srv.getContractsBySupplier(req.user._id);
+    res.json({ contracts });
+});
+
+export const getContractsByClient = asyncHandler(async(req, res) => {
+    const contracts = await srv.getContractsByClient(req.user._id);
+    res.json({ contracts });
+});
+
+export const updateContract = asyncHandler(async(req, res) => {
+    const { id } = req.params;
+    const { s3Key } = req.body;
+    const contract = await srv.updateContractService(id, s3Key);
+    res.json({ contract });
+});
+
+export const verifyContractSignature = asyncHandler(async(req, res) => {
+    const { id } = req.params;
+    const result = await srv.verifyContractSignatureService(id);
+    res.json({ 
+        message: 'Contract signature verification complete', 
+        verification: result 
+    });
+});
+
+export const getSignatureImage = asyncHandler(async(req, res) => {
+    const { key } = req.query;
+    console.log('📸 Requesting signature with key:', key);
+    
+    if (!key) {
+        return res.status(400).json({ error: 'Missing signature key' });
+    }
+    
+    try {
+        const url = await uploadFileAwsService.createPresignedDownloadUrl(key);
+        console.log('✅ Generated signed URL:', url.substring(0, 50) + '...');
+        res.json({ url });
+    } catch (error) {
+        console.error('❌ Error generating signed URL:', error.message);
+        res.status(500).json({ error: error.message });
+    }
 });

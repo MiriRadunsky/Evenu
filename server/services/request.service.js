@@ -11,6 +11,11 @@ export const RequestService = {
     const requests = await RequestRepository.getRequestsByUserId(userId);
     return requests;
   },
+
+  async getRequestsBySupplierUserId(userId) {
+    const requests = await RequestRepository.getBySupplierUserId(userId);
+    return requests;
+  },
  async createSupplierRequest  ({ eventId, supplierId, clientId, notesFromClient })  {
   const [event, supplier, client] = await Promise.all([
     Event.findById(eventId),
@@ -52,7 +57,8 @@ async approveSupplierRequest  (id, supplierId) {
   if (request.status !== 'ממתין')
     throw new AppError(400, 'Request already processed');
 
-  await RequestRepository.updateStatus(id, 'מאושר');
+  const result = await RequestRepository.updateStatus(id, 'מאושר');
+  return result;
   
 },
 

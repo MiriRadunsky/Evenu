@@ -1,20 +1,50 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import api from "../services/axios";
 import type { Request } from "../types/Request";
+import { clearSelectedSupplier } from "./suppliersSlice";
 
 
 
 export interface RequestState {
   requests: Request[];
+  selectedSupplierRequest: Request | null;
   loading: boolean;
   error?: string;
 }
 
 const initialState: RequestState = {
   requests: [],
+  selectedSupplierRequest: null,
   loading: false,
   error: undefined,
 };
+
+/* ---------------------------------------------------
+   🔹 FETCH ALL requests by supplier ID
+   GET /requests/supplier/requests
+--------------------------------------------------- */
+//getAllRequestsBySupplier
+export const fetchRequestsBySupplier = createAsyncThunk<
+  Request[],
+  void,
+  { rejectValue: string }
+>("requests/fetchRequestsBySupplier", async (_, { rejectWithValue }) => {
+  try {
+      const requestsResponse = await api.get("/requests/supplier/requests");
+      console.log("requestsResponse",requestsResponse);
+
+      return requestsResponse.data.requests || requestsResponse.data;
+
+  } catch (err: any) {
+    return rejectWithValue(err.response?.data?.message || "Failed to fetch requests");
+  }
+})
+//
+/* ---------------------------------------------------
+   🔹 FETCH ALL requests by user ID
+   GET /requests
+--------------------------------------------------- */
+//getAllRequestsByUserId
 export const fetchRequests = createAsyncThunk<
   Request[],
   void,
@@ -22,7 +52,7 @@ export const fetchRequests = createAsyncThunk<
 >("requests/fetchAll", async (_, { rejectWithValue }) => {
   try {
     const { data } = await api.get("/requests");
-    console.log(data);
+    console.log("data",data);
     
     // return data.requests;
       return Array.isArray(data.requests) ? data.requests : Object.values(data.requests || []);
@@ -62,7 +92,9 @@ export const approveRequest = createAsyncThunk<
   { rejectValue: string }
 >("requests/approve", async (id, { rejectWithValue }) => {
   try {
-    const { data } = await api.patch(`/requests/approve/${id}`);
+    const { data } = await api.post(`/requests/${id}/approve`);
+    console.log(data);
+    
     return data.request;
   } catch (err: any) {
     return rejectWithValue(err.response?.data?.message || "Failed to approve request");
@@ -79,7 +111,7 @@ export const declineRequest = createAsyncThunk<
   { rejectValue: string }
 >("requests/decline", async (id, { rejectWithValue }) => {
   try {
-    const { data } = await api.patch(`/requests/decline/${id}`);
+    const { data } = await api.post(`/requests/${id}/decline`);
     return data.request;
   } catch (err: any) {
     return rejectWithValue(err.response?.data?.message || "Failed to decline request");
@@ -89,7 +121,18 @@ export const declineRequest = createAsyncThunk<
 const requestSlice = createSlice({
   name: "requests",
   initialState,
-  reducers: {},
+ reducers: {
+  SetSelectedSupplierRequest(state, action: PayloadAction<{ id: string }>) {
+    const selected = state.requests.find(
+      (r) => r._id === action.payload.id
+    );
+    state.selectedSupplierRequest = selected || null;
+  },
+  clearSelectedSupplierRequest (state) {
+    state.selectedSupplierRequest = null;
+  }
+},
+
   extraReducers: (builder) => {
     builder
       // Fetch All by User ID
@@ -101,6 +144,18 @@ const requestSlice = createSlice({
         state.requests = action.payload;
       })
       .addCase(fetchRequests.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // Fetch All by Supplier ID
+      .addCase(fetchRequestsBySupplier.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchRequestsBySupplier.fulfilled, (state, action) => {
+        state.loading = false;
+        state.requests = action.payload;
+      })
+      .addCase(fetchRequestsBySupplier.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
@@ -148,3 +203,4 @@ const requestSlice = createSlice({
 });
 
 export default requestSlice.reducer;
+export const { SetSelectedSupplierRequest, clearSelectedSupplierRequest } = requestSlice.actions;

@@ -1,15 +1,23 @@
-import type { Supplier } from "./Supplier";
 import type { Event } from "./type";
 
 export interface Request {
   _id: string;
-  basicEventSummary: string; 
-  clientId: string;
-  createdAt: string; 
-  updatedAt: string; 
-  expiresAt: string; 
-  notesFromClient: string;
-  status: "ממתין" | "אושר" | "נדחה" | "פג תוקף";
-  eventId: Event
-  supplierId: Supplier
+  basicEventSummary: string;
+  notesFromClient?: string;
+  status: "ממתין" | "מאושר" | "נדחה" | "פג";
+  createdAt: string;
+  updatedAt: string;
+  eventId: Event;
+  clientId?: {
+    _id: string;
+    name: string;
+    email: string;
+  };
+  supplierId?: {
+    _id: string;
+    user: {
+      name: string;
+      email: string;
+    };
+  };
 }

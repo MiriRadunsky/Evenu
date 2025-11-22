@@ -26,11 +26,13 @@ export const RequestRepository = {
     if (!client) throw new Error('Client not found');
 
     const basicEventSummary = `
-      Event: ${event.name || 'N/A'}
-      Date: ${event.date?.toLocaleDateString() || 'N/A'}
-      Location: ${event.locationRegion || 'N/A'}
-      Type: ${event.type || 'N/A'}
-      Budget: ${event.budget || 'N/A'}
+      אירוע : ${event.name || 'N/A'}
+
+      תאריך: ${event.date?.toLocaleDateString() || 'N/A'}
+
+      מיקום: ${event.locationRegion || 'N/A'}
+      
+      סוג: ${event.type || 'N/A'}
     `;
 
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
@@ -48,11 +50,36 @@ export const RequestRepository = {
   },
 
   async updateStatus(id, status) {
-    return SupplierRequest.findByIdAndUpdate(id, { status }, { new: true });
+    return SupplierRequest.findByIdAndUpdate(id, { status }, { new: true })
+      .populate('eventId')
+      .populate({
+        path: 'supplierId',
+        populate: {
+          path: 'user',
+          select: 'name email'
+        }
+      })
+      .populate('clientId');
   },
 
   async getBySupplier(supplierId) {
-    return SupplierRequest.find({ supplierId }).populate('eventId clientId');
+    return SupplierRequest.find({ supplierId }).populate('clientId', 'name email').populate('eventId', 'name date');
+  },
+
+  async getBySupplierUserId(userId) {
+    const supplier = await Supplier.findOne({ user: userId });
+    if (!supplier) return [];
+    return SupplierRequest.find({ supplierId: supplier._id })
+      .populate('eventId')
+      .populate({
+        path: 'supplierId',
+        populate: {
+          path: 'user',
+          select: 'name email'
+        }
+      })
+      .populate('clientId')
+      .sort({ createdAt: -1 });
   },
 
   async getByClient(clientId) {

@@ -1,6 +1,5 @@
 import { Routes, Route, useNavigate } from "react-router-dom";
 import AppLayout from "./pages/AppLayout";
-import Dashboard from "./components/Dashboard";
 import MyEvents from "./pages/MyEvents";
 import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
@@ -13,8 +12,49 @@ import { ActiveSuppliersPage } from "./pages/admin/ActiveSuppliersPage";
 import { SupplierDetailsPage } from "./pages/admin/SupplierDetailsPage";
 import { UsersPage } from "./pages/admin/UsersPage";
 import { getUserRole } from "./api/auth";
+import ContractsPage from "./pages/ContractsPage";
+import { RequestPage } from "./pages/RequestPage";
+import SupplierDashboard from "./pages/Supplier/SupplierDashboard";
+import type { AppRoute } from "./types/AppRouter";
+import { Calendar, FileText, LayoutDashboard, Send, Store } from "lucide-react";
+import Dashboard from "./pages/Dashboard";
+import SupplierRequestPage from "./pages/Supplier/SupplierRequestPage";
+import SupplierContractsPage from "./pages/Supplier/SupplierContractsPage";
 
 export default function AppRouter() {
+
+
+
+ const userRoutes = [
+    { title: "לוח בקרה", path: "/dashboard", element: < Dashboard /> ,icon: LayoutDashboard },
+    { title: "האירועים שלי", path: "/my-events", element: <MyEvents /> ,icon: Calendar },
+    { title: "ספקים", path: "/suppliers", element: <Suppliers />, icon: Store },
+    { title: "בקשות", path: "/requests", element: <RequestPage />, icon: Send },
+    { title: "חוזים ותשלומים", path: "/contracts-payments", element: <ContractsPage />, icon: FileText },
+  ];
+ const supplierRoutes = [
+    { title: "לוח בקרה ספק", path: "/supplier/dashboard", element: <SupplierDashboard /> ,icon: LayoutDashboard },
+    {title: "בקשות", path: "/supplier/requests", element:<SupplierRequestPage /> , icon: Send },
+    {title: "חוזים ותשלומים", path: "/supplier/contracts", element: <SupplierContractsPage/>, icon: FileText },
+  ];
+  //  const adminRoutes = [
+  //   { path: "/admin/dashboard", element: <AdminDashboard /> },
+  //   { path: "/admin/pending-suppliers", element: <PendingSuppliersPage /> },
+  //   { path: "/admin/active-suppliers", element: <ActiveSuppliersPage /> },
+  //   { path: "/admin/users", element: <UsersPage /> },
+  // ];
+  const renderRoutes = (routes:AppRoute[]) =>
+    routes.map((route) => (
+      <Route
+        key={route.path}
+        path={route.path}
+        element={
+          <ProtectedRoute>
+            <AppLayout navigationItems={routes}>{route.element}</AppLayout>
+          </ProtectedRoute>
+        }
+      />
+    ));
   const navigate = useNavigate();
 
   const handleNavigate = (page: "landing" | "login" | "register") => {
@@ -31,7 +71,10 @@ export default function AppRouter() {
     const userRole = getUserRole();
     if (userRole === 'admin') {
       navigate("/admin/dashboard");
-    } else {
+    } else if (userRole === 'supplier') {
+      navigate("/supplier/dashboard");
+    }
+    else {
       navigate("/dashboard");
     }
   };
@@ -43,7 +86,10 @@ export default function AppRouter() {
     const userRole = getUserRole();
     if (userRole === 'admin') {
       navigate("/admin/dashboard");
-    } else {
+    } else if (userRole === 'supplier') {
+      navigate("/supplier/dashboard");
+    }
+    else {
       navigate("/dashboard");
     }
   };
@@ -61,12 +107,14 @@ export default function AppRouter() {
       />
 
       {/* Protected Routes */}
-      <Route
+      {renderRoutes(userRoutes)}
+      {renderRoutes(supplierRoutes)}
+      {/* <Route
         path="/dashboard"
         element={
           <ProtectedRoute>
             <AppLayout>
-              <Dashboard />
+              <DashboardRouter />
             </AppLayout>
           </ProtectedRoute>
               
@@ -94,6 +142,26 @@ export default function AppRouter() {
           </ProtectedRoute>
         }
       />
+ <Route
+        path="/requests"
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <RequestPage />
+            </AppLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/contracts-payments"
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <ContractsPage />
+            </AppLayout>
+          </ProtectedRoute>
+        }
+      /> */}
 
       {/* Admin Routes */}
       <Route
