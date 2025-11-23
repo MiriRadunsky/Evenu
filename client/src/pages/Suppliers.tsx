@@ -11,7 +11,7 @@ import { SupplierDetailsDialog } from "../components/supplier/SupplierDetailsDia
 import { SendRequestDialog } from "../components/SendRequestDialog";
 import type { Supplier } from "../types/Supplier";
 import { getImageUrl } from "../services/uploadFile";
-import { createSupplierRequest } from "../store/requestSlice";
+import { createSupplierRequest } from "../store/supplierRequestsSlice";
 import { Badge } from "../components/ui/badge";
 
 export default function Suppliers() {

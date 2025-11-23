@@ -16,7 +16,6 @@ const app = express();
 const server = http.createServer(app);
 initWebSocket(server);
 initSocket(server);
-
 const PORT = process.env.PORT || 3000;
 
 app.use(helmet());
@@ -42,7 +41,6 @@ app.use(limiter);
 app.use('/api',router)
 app.get('/health/mongo', mongoHealth);
 app.use(errorHandler);
-
 
 app.use(passport.initialize());
 connectMongo().then(() => {

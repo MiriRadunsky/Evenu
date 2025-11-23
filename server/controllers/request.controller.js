@@ -21,7 +21,7 @@ getSupplierRequests : asyncHandler(async (req, res) => {
   const { supplierId, notesFromClient } = req.body;
   const clientId = req.user._id; 
 
-  const request = await RequestService.createSupplierRequest({
+  const {request,threadId} = await RequestService.createSupplierRequest({
     eventId,
     supplierId,
     clientId,
@@ -30,7 +30,8 @@ getSupplierRequests : asyncHandler(async (req, res) => {
 
   res.status(201).json({
     message: 'Supplier request created successfully',
-    request
+    request,
+    threadId
   });
 }),
 

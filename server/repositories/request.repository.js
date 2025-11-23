@@ -84,5 +84,12 @@ export const RequestRepository = {
 
   async getByClient(clientId) {
     return SupplierRequest.find({ clientId }).populate('eventId supplierId');
+  },
+
+  async updateRequestTheardId(requestId, threadId) {
+    return SupplierRequest.findByIdAndUpdate( requestId,
+    { threadId },        // עדכון השדה
+    { new: true } );
   }
-};
+  };
+

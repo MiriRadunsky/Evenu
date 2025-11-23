@@ -82,13 +82,13 @@ export const EventDetailsDialog = ({
         style={{ direction: "rtl" }}
       >
         <DialogHeader>
-          <DialogTitle>{event.name}</DialogTitle>
+          <DialogTitle>פרטי האירוע</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>פרטי האירוע</CardTitle>
+              <CardTitle>{event.name}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="grid grid-cols-2 gap-4 text-sm">

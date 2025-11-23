@@ -4,6 +4,7 @@ import notificationsReducer from './notificationsSlice'
 import suppliersReducer from './suppliersSlice'
 import authReducer from './authSlice'
 import eventsReducer from './eventsSlice'
+import chatReducer from './chatSlice'
 import requestReducer from './requestSlice'
 import contractsReducer  from './contractsSlice'
 
@@ -13,8 +14,9 @@ export const store = configureStore({
     dashboard: dashboardReducer,
     notifications: notificationsReducer,
     suppliers: suppliersReducer,
-    events:eventsReducer,
-    requests:requestReducer,
+    events: eventsReducer,
+    chat: chatReducer,
+    requests: requestReducer,
     contracts:contractsReducer,
 
   },

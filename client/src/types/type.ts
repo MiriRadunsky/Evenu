@@ -36,8 +36,13 @@ export interface User {
   name: string;
   email: string;
   phone: string;
+<<<<<<< HEAD
+  role: 'user' | 'supplier' | 'admin';
+  social?: {
+=======
  role?: "client" | "supplier" | "admin";
    social?: {
+>>>>>>> bc9106c40dca0c9f314f6cf3af80dfdacb45214d
     googleId?: string;
   };
   createdAt: Date;

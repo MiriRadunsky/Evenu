@@ -14,6 +14,7 @@ import requestsRouter from './request.route.js';
 import notificationRoutes from './notification.routes.js';
 import adminRouter from './admin.route.js';
 import fileRouter from './file.route.js';
+import threadRouter from './threads.route.js';
 const router = Router();
 
 router.get('/', (req, res) => res.send('🏠 This is the Home Page'));
@@ -32,7 +33,7 @@ router.use('/requests', requestsRouter);
 router.use('/notifications', notificationRoutes);
 router.use('/admin', adminRouter);
 router.use('/file', fileRouter);
-
+router.use('/threads', threadRouter);
 
 router.get('/health', (req, res) => res.json({ up: true }));
 

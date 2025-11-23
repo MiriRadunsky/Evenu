@@ -30,10 +30,10 @@ export const fetchRequestsBySupplier = createAsyncThunk<
   { rejectValue: string }
 >("requests/fetchRequestsBySupplier", async (_, { rejectWithValue }) => {
   try {
-      const requestsResponse = await api.get("/requests/supplier/requests");
-      console.log("requestsResponse",requestsResponse);
+    const requestsResponse = await api.get("/requests/supplier/requests");
+    console.log("requestsResponse", requestsResponse);
 
-      return requestsResponse.data.requests || requestsResponse.data;
+    return requestsResponse.data.requests || requestsResponse.data;
 
   } catch (err: any) {
     return rejectWithValue(err.response?.data?.message || "Failed to fetch requests");
@@ -52,10 +52,10 @@ export const fetchRequests = createAsyncThunk<
 >("requests/fetchAll", async (_, { rejectWithValue }) => {
   try {
     const { data } = await api.get("/requests");
-    console.log("data",data);
-    
+    console.log("data", data);
+
     // return data.requests;
-      return Array.isArray(data.requests) ? data.requests : Object.values(data.requests || []);
+    return Array.isArray(data.requests) ? data.requests : Object.values(data.requests || []);
 
   } catch (err: any) {
     return rejectWithValue(err.response?.data?.message || "Failed to fetch requests");
@@ -94,7 +94,7 @@ export const approveRequest = createAsyncThunk<
   try {
     const { data } = await api.post(`/requests/${id}/approve`);
     console.log(data);
-    
+
     return data.request;
   } catch (err: any) {
     return rejectWithValue(err.response?.data?.message || "Failed to approve request");
@@ -121,17 +121,17 @@ export const declineRequest = createAsyncThunk<
 const requestSlice = createSlice({
   name: "requests",
   initialState,
- reducers: {
-  SetSelectedSupplierRequest(state, action: PayloadAction<{ id: string }>) {
-    const selected = state.requests.find(
-      (r) => r._id === action.payload.id
-    );
-    state.selectedSupplierRequest = selected || null;
+  reducers: {
+    SetSelectedSupplierRequest(state, action: PayloadAction<{ id: string }>) {
+      const selected = state.requests.find(
+        (r) => r._id === action.payload.id
+      );
+      state.selectedSupplierRequest = selected || null;
+    },
+    clearSelectedSupplierRequest(state) {
+      state.selectedSupplierRequest = null;
+    }
   },
-  clearSelectedSupplierRequest (state) {
-    state.selectedSupplierRequest = null;
-  }
-},
 
   extraReducers: (builder) => {
     builder
@@ -149,57 +149,61 @@ const requestSlice = createSlice({
       })
       // Fetch All by Supplier ID
       .addCase(fetchRequestsBySupplier.pending, (state) => {
+        console.log("fetchRequestsBySupplier pending");
         state.loading = true;
       })
       .addCase(fetchRequestsBySupplier.fulfilled, (state, action) => {
+        console.log("fetchRequestsBySupplier fulfilled", action.payload);
         state.loading = false;
         state.requests = action.payload;
       })
       .addCase(fetchRequestsBySupplier.rejected, (state, action) => {
+        console.log("fetchRequestsBySupplier rejected", action.payload);
         state.loading = false;
         state.error = action.payload;
       })
+
       // Create
       .addCase(createSupplierRequest.pending, (state) => {
         state.loading = true;
       })
-      .addCase(createSupplierRequest.fulfilled, (state, action) => {
-        state.loading = false;
-        state.requests.push(action.payload);
-      })
-      .addCase(createSupplierRequest.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
+    .addCase(createSupplierRequest.fulfilled, (state, action) => {
+      state.loading = false;
+      state.requests.push(action.payload);
+    })
+    .addCase(createSupplierRequest.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    })
 
-      // Approve
-      .addCase(approveRequest.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(approveRequest.fulfilled, (state, action) => {
-        state.loading = false;
-        const idx = state.requests.findIndex((r) => r._id === action.payload._id);
-        if (idx !== -1) state.requests[idx] = action.payload;
-      })
-      .addCase(approveRequest.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
+    // Approve
+    .addCase(approveRequest.pending, (state) => {
+      state.loading = true;
+    })
+    .addCase(approveRequest.fulfilled, (state, action) => {
+      state.loading = false;
+      const idx = state.requests.findIndex((r) => r._id === action.payload._id);
+      if (idx !== -1) state.requests[idx] = action.payload;
+    })
+    .addCase(approveRequest.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    })
 
-      // Decline
-      .addCase(declineRequest.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(declineRequest.fulfilled, (state, action) => {
-        state.loading = false;
-        const idx = state.requests.findIndex((r) => r._id === action.payload._id);
-        if (idx !== -1) state.requests[idx] = action.payload;
-      })
-      .addCase(declineRequest.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      });
-  },
+    // Decline
+    .addCase(declineRequest.pending, (state) => {
+      state.loading = true;
+    })
+    .addCase(declineRequest.fulfilled, (state, action) => {
+      state.loading = false;
+      const idx = state.requests.findIndex((r) => r._id === action.payload._id);
+      if (idx !== -1) state.requests[idx] = action.payload;
+    })
+    .addCase(declineRequest.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    });
+},
 });
 
 export default requestSlice.reducer;

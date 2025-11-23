@@ -7,5 +7,8 @@ export async function sendMessage({ threadId, from, to, body }) {
 }
 
 export async function getThreadMessages(threadId) {
-  return await repo.getMessagesByThread(threadId);
+  const res =  await repo.getMessagesByThread(threadId);
+  console.log("res ", res);
+  return res;
+  
 }

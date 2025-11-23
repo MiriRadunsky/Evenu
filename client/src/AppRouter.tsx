@@ -6,36 +6,41 @@ import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import Suppliers from "./pages/Suppliers";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import Chat from "./pages/Chat";
 import { AdminDashboard } from "./pages/admin/AdminDashboard";
 import { PendingSuppliersPage } from "./pages/admin/PendingSuppliersPage";
 import { ActiveSuppliersPage } from "./pages/admin/ActiveSuppliersPage";
 import { SupplierDetailsPage } from "./pages/admin/SupplierDetailsPage";
 import { UsersPage } from "./pages/admin/UsersPage";
 import { getUserRole } from "./api/auth";
-import ContractsPage from "./pages/ContractsPage";
-import { RequestPage } from "./pages/RequestPage";
-import SupplierDashboard from "./pages/Supplier/SupplierDashboard";
+import Requests from "./pages/Request";
 import type { AppRoute } from "./types/AppRouter";
+import SupplierDashboard from "./pages/Supplier/SupplierDashboard";
+import { RequestPage } from "./pages/RequestPage";
 import { Calendar, FileText, LayoutDashboard, Send, Store } from "lucide-react";
 import Dashboard from "./pages/Dashboard";
 import SupplierRequestPage from "./pages/Supplier/SupplierRequestPage";
 import SupplierContractsPage from "./pages/Supplier/SupplierContractsPage";
+import ContractsPage from "./pages/ContractsPage";
 
 export default function AppRouter() {
 
 
 
- const userRoutes = [
-    { title: "לוח בקרה", path: "/dashboard", element: < Dashboard /> ,icon: LayoutDashboard },
-    { title: "האירועים שלי", path: "/my-events", element: <MyEvents /> ,icon: Calendar },
+  const userRoutes = [
+    { title: "לוח בקרה", path: "/dashboard", element: < Dashboard />, icon: LayoutDashboard },
+    { title: "האירועים שלי", path: "/my-events", element: <MyEvents />, icon: Calendar },
     { title: "ספקים", path: "/suppliers", element: <Suppliers />, icon: Store },
     { title: "בקשות", path: "/requests", element: <RequestPage />, icon: Send },
+    {title: "צ'אט", path:"/chat", element: <Chat/>, icon: FileText},
     { title: "חוזים ותשלומים", path: "/contracts-payments", element: <ContractsPage />, icon: FileText },
   ];
- const supplierRoutes = [
-    { title: "לוח בקרה ספק", path: "/supplier/dashboard", element: <SupplierDashboard /> ,icon: LayoutDashboard },
-    {title: "בקשות", path: "/supplier/requests", element:<SupplierRequestPage /> , icon: Send },
-    {title: "חוזים ותשלומים", path: "/supplier/contracts", element: <SupplierContractsPage/>, icon: FileText },
+  const supplierRoutes = [
+    { title: "לוח בקרה ספק", path: "/supplier/dashboard", element: <SupplierDashboard />, icon: LayoutDashboard },
+    { title: "בקשות", path: "/supplier/requests", element: <SupplierRequestPage />, icon: Send },
+    { title: "חוזים ותשלומים", path: "/supplier/contracts", element: <SupplierContractsPage />, icon: FileText },
+    { title: "חוזים ותשלומים", path: "/supplier/chat", element: <Chat/>, icon: FileText },
+
   ];
   //  const adminRoutes = [
   //   { path: "/admin/dashboard", element: <AdminDashboard /> },
@@ -43,7 +48,7 @@ export default function AppRouter() {
   //   { path: "/admin/active-suppliers", element: <ActiveSuppliersPage /> },
   //   { path: "/admin/users", element: <UsersPage /> },
   // ];
-  const renderRoutes = (routes:AppRoute[]) =>
+  const renderRoutes = (routes: AppRoute[]) =>
     routes.map((route) => (
       <Route
         key={route.path}
@@ -58,7 +63,7 @@ export default function AppRouter() {
   const navigate = useNavigate();
 
   const handleNavigate = (page: "landing" | "login" | "register") => {
-    console.log('handleNavigate', page); 
+    console.log('handleNavigate', page);
     if (page === "landing") navigate("/");
     else if (page === "login") navigate("/login");
     else if (page === "register") navigate("/register");
@@ -66,7 +71,7 @@ export default function AppRouter() {
 
   const handleLogin = () => {
     console.log("User logged in");
-    
+
     // בדיקת תפקיד המשתמש והפניה לדשבורד המתאים
     const userRole = getUserRole();
     if (userRole === 'admin') {
@@ -81,7 +86,7 @@ export default function AppRouter() {
 
   const handleRegister = () => {
     console.log("User registered");
-    
+
     // בדיקת תפקיד המשתמש והפניה לדשבורד המתאים
     const userRole = getUserRole();
     if (userRole === 'admin') {
@@ -93,7 +98,6 @@ export default function AppRouter() {
       navigate("/dashboard");
     }
   };
-
   return (
     <Routes>
       <Route path="/" element={<LandingPage onNavigate={handleNavigate} />} />
@@ -105,6 +109,9 @@ export default function AppRouter() {
         path="/register"
         element={<RegisterPage onRegister={handleRegister} onNavigate={handleNavigate} />}
       />
+
+
+
 
       {/* Protected Routes */}
       {renderRoutes(userRoutes)}
@@ -204,6 +211,7 @@ export default function AppRouter() {
           </ProtectedRoute>
         }
       />
+
     </Routes>
   );
 }

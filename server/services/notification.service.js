@@ -1,5 +1,4 @@
 
-import { notificationQueue } from '../queues/scheduler.js';
 import { io, sendNotification } from '../websocket/notification.socket.js';
 import { randomUUID } from 'crypto';
 import Redis from 'ioredis';
