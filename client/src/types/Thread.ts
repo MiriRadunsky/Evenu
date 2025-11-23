@@ -1,13 +1,10 @@
 export interface Thread {
   _id: string;
-  participants: {
-    id: string;
-    type: 'user' | 'supplier';
-  }[];
+  userId: string;          // מזהה הלקוח
+  supplierId?: string;     // מזהה הספק
   eventId?: string;
   createdAt?: string;
   updatedAt?: string;
-  // אם רוצים לשמור מידע לשימוש ב־UI:
   supplierName?: string;
   clientName?: string;
   eventName?: string;

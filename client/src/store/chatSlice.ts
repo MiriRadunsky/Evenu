@@ -25,24 +25,30 @@ const initialState: ChatState = {
 // ==========================
 
 // 1️⃣ Fetch user threads
-export const fetchUserThreads = createAsyncThunk<
+export const fetchThreads = createAsyncThunk<
   Thread[],
-  { userId: string },
+  { id: string; role: "user" | "supplier" },
   { rejectValue: string }
 >(
-  "chat/fetchUserThreads",
-  async ({ userId }, { rejectWithValue }) => {
-    console.log("[Thunk] fetchUserThreads called with userId:", userId);
+  "chat/fetchThreads",
+  async ({ id, role }, { rejectWithValue }) => {
     try {
-      const res = await api.get(`/threads/user/${userId}`);
-      console.log("[Thunk] fetchUserThreads response:", res.data);
+      const url =
+        role === "supplier"
+          ? `/threads/supplier/${id}`
+          : `/threads/user/${id}`;
+
+      const res = await api.get(url);
+
       return res.data?.data ?? res.data;
     } catch (err: any) {
-      console.error("[Thunk] fetchUserThreads error:", err);
-      return rejectWithValue(err.response?.data?.message || "Error fetching threads");
+      return rejectWithValue(
+        err.response?.data?.message || "Error fetching threads"
+      );
     }
   }
 );
+
 
 // 2️⃣ Fetch messages for a thread
 export const fetchMessages = createAsyncThunk<
@@ -68,14 +74,15 @@ export const fetchMessages = createAsyncThunk<
 // 3️⃣ Send message
 export const sendMessage = createAsyncThunk<
   Message,
-  { threadId: string; body: string },
+  { threadId: string; body: string; from: string; to?: string },
   { rejectValue: string }
 >(
   "chat/sendMessage",
-  async ({ threadId, body }, { rejectWithValue }) => {
+  async ({ threadId, body, from, to  }, { rejectWithValue }) => {
     console.log("[Thunk] sendMessage called for threadId:", threadId, "body:", body);
+    const data = {threadId,from, to, body};
     try {
-      const res = await api.post("/messages", { threadId, body });
+      const res = await api.post("/messages", data);
       console.log("[Thunk] sendMessage response:", res.data);
       return res.data?.data ?? res.data;
     } catch (err: any) {
@@ -131,26 +138,28 @@ const chatSlice = createSlice({
   extraReducers: (builder) => {
     builder
       // Threads
-      .addCase(fetchUserThreads.pending, (state) => {
-        console.log("[ExtraReducer] fetchUserThreads pending");
+      .addCase(fetchThreads.pending, (state) => {
+        console.log("[ExtraReducer] fetchThreads pending");
         state.loading = true;
         state.error = undefined;
       })
-      .addCase(fetchUserThreads.fulfilled, (state, action) => {
-        console.log("[ExtraReducer] fetchUserThreads fulfilled:", action.payload);
+      .addCase(fetchThreads.fulfilled, (state, action) => {
+        console.log("[ExtraReducer] fetchThreads fulfilled:", action.payload);
         state.loading = false;
         state.threads = action.payload;
       })
-      .addCase(fetchUserThreads.rejected, (state, action) => {
-        console.error("[ExtraReducer] fetchUserThreads rejected:", action.payload);
+      .addCase(fetchThreads.rejected, (state, action) => {
+        console.error("[ExtraReducer] fetchThreads rejected:", action.payload);
         state.loading = false;
         state.error = action.payload || action.error?.message;
       })
 
       // Messages
       .addCase(fetchMessages.fulfilled, (state, action) => {
-        console.log("[ExtraReducer] fetchMessages fulfilled for threadId:", action.payload.threadId);
+        console.log("[ExtraReducer] fetchMessages fulfilled for threadId:", action.payload.threadId , action.payload);
         state.messagesByThread[action.payload.threadId] = action.payload.messages;
+        console.log("addCase in the reducer ", state.messagesByThread);
+        
       })
 
       // Send message

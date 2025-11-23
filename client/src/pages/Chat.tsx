@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../store";
-import { fetchUserThreads, fetchMessages, sendMessage } from "../store/chatSlice";
+import { fetchThreads, fetchMessages, sendMessage, addLocalMessage } from "../store/chatSlice";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Textarea } from "../components/ui/textarea";
@@ -19,66 +19,103 @@ export default function Chat() {
   const messagesByThread = useSelector((state: RootState) => state.chat.messagesByThread ?? {});
   const token = useSelector((state: RootState) => state.auth?.token);
 
-  // Extract user id from token
-  const user = useMemo(() => {
-    if (!token) return { _id: "" };
-    try {
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      return { _id: payload.id || payload.sub || "" };
-    } catch {
-      return { _id: "" };
-    }
-  }, [token]);
+
+  const user = useSelector((state: RootState) => state.auth.user);
+
+  useEffect(() => {
+    if (!user?._id) return;
+
+    dispatch(
+      fetchThreads({
+        id: user.role === "supplier" ? user.supplier._id : user._id,
+        role: user.role === "supplier" ? "supplier" : "user",
+      })
+    );
+
+  }, [user]);
+
+
+
+
+
 
   const [selectedThreadId, setSelectedThreadId] = useState<string | null>(null);
   const [messageText, setMessageText] = useState("");
   const [isMobileView, setIsMobileView] = useState(false);
 
-  // Fetch threads on mount
-  useEffect(() => {
-    if (!user._id) return;
-    dispatch(fetchUserThreads({ userId: user._id }));
-  }, [dispatch, user._id]);
+  // Convert ObjectId to string for threads
+  const safeThreads = useMemo(() => {
+    return threads.map(t => ({ ...t, _id: t._id.toString() }));
+  }, [threads]);
 
-  // Select first thread if none selected
+  // Fetch threads
+  // useEffect(() => {
+  //   if (user._id) dispatch(fetchThreads({ userId: user._id }));
+  // }, [dispatch, user._id]);
+
+  // Select first thread
   useEffect(() => {
-    if (!selectedThreadId && threads.length > 0) {
-      setSelectedThreadId(threads[0]._id);
-    }
-  }, [threads, selectedThreadId]);
+    if (!selectedThreadId && safeThreads.length > 0) setSelectedThreadId(safeThreads[0]._id);
+  }, [safeThreads, selectedThreadId]);
 
   // Fetch messages for selected thread
   useEffect(() => {
-    if (!selectedThreadId) return;
-    dispatch(fetchMessages({ threadId: selectedThreadId }));
+    if (selectedThreadId) dispatch(fetchMessages({ threadId: selectedThreadId }));
   }, [dispatch, selectedThreadId]);
 
-  // Memoize sorted messages
+  // Prepare conversation messages and convert _id to string
   const conversationMessages = useMemo(() => {
     if (!selectedThreadId) return [];
+
     const messages = messagesByThread[selectedThreadId];
     if (!Array.isArray(messages)) return [];
-    return [...messages].sort(
-      (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-    );
+
+    return messages
+      .map((m, idx) => ({
+        ...m,
+        _id: m._id?.toString() || `msg-${idx}`, // fallback key ייחודי
+        threadId: m.threadId?.toString() || selectedThreadId,
+        from: m.from?.toString() || "",
+        to: m.to?.toString() || "",
+        createdAt: m.createdAt || new Date().toISOString(), // fallback לתאריך אם חסר
+      }))
+      .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
   }, [messagesByThread, selectedThreadId]);
 
-  // Scroll to bottom when messages update
+  // Scroll to bottom on message update
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [conversationMessages]);
 
+
   const handleSendMessage = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!messageText.trim() || !selectedThreadId) return;
+
+    const thread = safeThreads.find(t => t._id === selectedThreadId);
+    const from = user?._id;
+    const to = from === thread?.userId ? thread?.supplierId : thread?.userId;
+
+    if (!to) {
+      console.warn("No recipient found in thread", thread);
+      toast.error("לא ניתן לשלוח הודעה – הספק עדיין לא צורף");
+      return;
+    }
+
     try {
-      await dispatch(sendMessage({ threadId: selectedThreadId, body: messageText.trim() })).unwrap();
+      const newMessage = await dispatch(sendMessage({
+        threadId: selectedThreadId,
+        body: messageText.trim(),
+        from,
+        to
+      })).unwrap();
+
       setMessageText("");
-      dispatch(fetchMessages({ threadId: selectedThreadId }));
     } catch {
       toast.error("שגיאה בשליחת ההודעה");
     }
   };
+
 
   return (
     <div className="h-[calc(100vh-8rem)]" style={{ direction: "rtl" }}>
@@ -89,7 +126,7 @@ export default function Chat() {
           <CardHeader><CardTitle>שיחות</CardTitle></CardHeader>
           <CardContent className="p-0">
             <div className="overflow-y-auto h-[calc(100vh-14rem)]">
-              {threads.length > 0 ? threads.map(thread => (
+              {safeThreads.length > 0 ? safeThreads.map(thread => (
                 <div
                   key={thread._id}
                   className={`p-4 border-b cursor-pointer hover:bg-muted transition-colors ${selectedThreadId === thread._id ? "bg-primary/10" : ""}`}
@@ -102,9 +139,9 @@ export default function Chat() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
                         <p className="font-medium truncate">{thread.supplierName}</p>
-                        {thread.unreadCount > 0 && <Badge variant="destructive" className="text-xs">{thread.unreadCount}</Badge>}
+                        {/* {thread.unreadCount > 0 && <Badge variant="destructive" className="text-xs">{thread.unreadCount}</Badge>} */}
                       </div>
-                      {/* <p className="text-xs text-muted-foreground mb-1">{thread.eventName}</p> */}
+                      <p className="text-xs text-muted-foreground mb-1">{thread.eventName}</p>
                     </div>
                   </div>
                 </div>
@@ -123,37 +160,25 @@ export default function Chat() {
                     <ArrowRight className="h-4 w-4" />
                   </Button>
                   <div className="flex-1">
-                    <CardTitle className="text-lg">
-                      {threads.find(t => t._id === selectedThreadId)?.supplierName}
-                    </CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      {threads.find(t => t._id === selectedThreadId)?.eventName}
-                    </p>
+                    <CardTitle className="text-lg">{safeThreads.find(t => t._id === selectedThreadId)?.supplierName}</CardTitle>
+                    <p className="text-sm text-muted-foreground">{safeThreads.find(t => t._id === selectedThreadId)?.eventName}</p>
                   </div>
-                  <Badge>{threads.find(t => t._id === selectedThreadId)?.status}</Badge>
+                  <Badge>{safeThreads.find(t => t._id === selectedThreadId)?.status}</Badge>
                 </div>
               </CardHeader>
 
               <CardContent className="flex-1 overflow-y-auto p-4 space-y-4">
-
                 {conversationMessages.length > 0 ? conversationMessages.map(msg => {
-                  console.log("SelectedThreadId:", selectedThreadId);
-                  console.log("MessagesByThread keys:", Object.keys(messagesByThread));
-                  console.log("Messages for selected thread:", messagesByThread[selectedThreadId]);
-                  console.log("message: ", msg);
-                  // Use senderId for comparison since email is not in token
-                  const isCurrentUser = msg.to === user._id || msg.from === user._id;
+                  const isCurrentUser = msg.from === user._id;
                   return (
                     <div key={msg._id} className={`flex ${isCurrentUser ? "justify-end" : "justify-start"}`}>
                       <div className={`max-w-[70%] rounded-lg p-3 ${isCurrentUser ? "bg-background text-foreground" : "bg-primary/10"}`}>
-                        <p className="text-sm whitespace-pre-wrap">{  msg.body}</p>
-                        <p className="text-xs text-muted-foreground mt-1">{formatMessageTime( msg.createdAt)}</p>
+                        <p className="text-sm whitespace-pre-wrap">{msg.body}</p>
+                        <p className="text-xs text-muted-foreground mt-1">{formatMessageTime(msg.createdAt)}</p>
                       </div>
                     </div>
                   );
-                }) : (
-                  <p className="text-center text-muted-foreground">אין הודעות להצגה</p>
-                )}
+                }) : <p className="text-center text-muted-foreground">אין הודעות להצגה</p>}
                 <div ref={messagesEndRef} />
               </CardContent>
 
@@ -181,58 +206,3 @@ export default function Chat() {
     </div>
   );
 }
-
-
-// import React, { useEffect } from "react";
-// import { useDispatch, useSelector } from "react-redux";
-// import type { AppDispatch, RootState } from "../store";
-// import { fetchUserThreads, fetchMessages } from "../store/chatSlice";
-
-// export default function DebugChat() {
-//   const dispatch = useDispatch<AppDispatch>();
-
-//   const user = useSelector((state: RootState) => {
-//       const token = state.auth?.token;
-//   console.log("Token in selector:", token); // <- בדיקה
-//     // const token = state.auth?.token;
-//     if (!token) return { _id: null };
-//     try {
-//       const payload = JSON.parse(atob(token.split(".")[1]));
-//       return { _id: payload.id || payload.sub };
-//     } catch {
-//       return { _id: null };
-//     }
-//   });
-
-// const threads = useSelector((state: RootState) => state.chat.threads);
-// const messagesByThread = useSelector((state: RootState) => state.chat.messagesByThread);
-
-//   // Fetch all threads
-//   useEffect(() => {
-//     if (user._id) {
-//       console.log("Fetching threads for user:", user._id);
-//       dispatch(fetchUserThreads({ userId: user._id }));
-//     }
-//   }, [dispatch, user._id]);
-
-//   // Fetch messages for each thread when threads update
-//   useEffect(() => {
-//     threads.forEach(thread => {
-//       console.log("Fetching messages for thread:", thread._id);
-//       dispatch(fetchMessages({ threadId: thread._id }));
-//     });
-//   }, [dispatch, threads]);
-
-//   // Log threads and messages whenever they update
-//   useEffect(() => {
-//     console.log("Threads:", threads);
-//     console.log("Messages by thread:", messagesByThread);
-//   }, [threads, messagesByThread]);
-
-//   return (
-//     <div>
-//       <h2>Debug Chat</h2>
-//       <p>Open console to see threads and messages</p>
-//     </div>
-//   );
-// }
