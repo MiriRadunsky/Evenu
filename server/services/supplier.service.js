@@ -57,3 +57,5 @@ export const SupplierService = {
     return supplier;
   },
 };
+
+export default SupplierService;

@@ -12,10 +12,12 @@ export async function getThreadById(threadId) {
   return await Thread.findById(threadId);
 }
 
-export async function getThreadsForUser(userId) {
-  return await Thread.find({ userId })
-    .populate({path: "supplierId",
-      populate: { path: "user", select: "name" }}) // נותן supplierName
+async function getThreadsByFilter(filter) {
+  return Thread.find(filter)
+    .populate({
+      path: "supplierId",
+      populate: { path: "user", select: "name" }
+    })
     .populate({
       path: "requestId",
       model: "SupplierRequest",
@@ -25,7 +27,11 @@ export async function getThreadsForUser(userId) {
     .lean();
 }
 
+export async function getThreadsForUser(userId) {
+  return getThreadsByFilter({ userId });
+}
 
 export async function getThreadsForSupplier(supplierId) {
-  return await Thread.find({ supplierId });
+  return getThreadsByFilter({ supplierId });
 }
+

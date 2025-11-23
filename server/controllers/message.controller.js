@@ -6,14 +6,14 @@ export const getMessages = asyncHandler(async (req, res) => {
   const threadId = req.params.threadId;
   const messages = await messageService.getThreadMessages(threadId);
   console.log('Messages:', messages);
-  res.json({ threadId, messages });
+  res.json(messages);
 });
 
 export const createMessage = asyncHandler(async (req, res) => {
   // console.log('📦 Request body:', req.body);
-  const {threadId, from, to, body } = req.body;
+  const { threadId, from, to, body } = req.body;
   if (!body) return res.status(400).json({ message: 'Message body is required' });
 
-  const newMsg = await messageService.sendMessage({ threadId, from, to, body });
-  res.status(201).json({ threadId, newMsg });
+  const message = await messageService.sendMessage({ threadId, from, to, body });
+  res.status(201).json(message);
 });
