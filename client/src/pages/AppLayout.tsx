@@ -15,13 +15,7 @@ import {
   SidebarTrigger,
 } from "../components/ui/sidebar";
 import {
-  LayoutDashboard,
-  Calendar,
-  Store,
-  MessageSquare,
-  FileText,
   LogOut,
-  Send,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { initSocket } from "../services/socket";
@@ -31,9 +25,10 @@ import { fetchNotifications } from "../store/notificationsSlice";
 import NotificationsList from "./NotificationsList";
 import { logout } from "../services/auth";
 import { fetchUser } from "../store/authSlice";
+import type { AppRoute } from "../types/AppRouter";
 
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+export default function AppLayout({navigationItems, children }: { navigationItems: AppRoute[], children: React.ReactNode }) {
     const dispatch:AppDispatch = useDispatch();
     const user=useSelector((state:RootState)=>state.auth.user);
     
@@ -46,17 +41,7 @@ useEffect(() => {
        dispatch(fetchNotifications());
     }
   }, [dispatch]);
-  const navigationItems = useMemo(
-    () => [
-      { title: "לוח בקרה", url: "/dashboard", icon: LayoutDashboard },
-      { title: "האירועים שלי", url: "/my-events", icon: Calendar },
-      { title: "ספקים", url: "/suppliers", icon: Store },
-      { title: "בקשות", url: "/requests", icon: Send },
-      { title: "צ'אט", url: "/chat", icon: MessageSquare },
-      { title: "חוזים ותשלומים", url: "/contracts-payments", icon: FileText },
-    ],
-    []
-  );
+
 
   const userInitials = useMemo(() => {
     if (!user) return "U";
@@ -93,12 +78,12 @@ useEffect(() => {
             <SidebarGroupContent>
               <SidebarMenu>
                 {navigationItems.map((item) => {
-                  const isActive = location.pathname.startsWith(item.url);
+                  const isActive = location.pathname.startsWith(item.path);
                   return (
                     <SidebarMenuItem key={item.title}>
                       <SidebarMenuButton asChild isActive={isActive}>
-                        <Link to={item.url} className="flex items-center gap-2">
-                          <item.icon className="w-5 h-5" />
+                        <Link to={item.path} className="flex items-center gap-2">
+                          <item.icon/>
                           <span>{item.title}</span>
                         </Link>
                       </SidebarMenuButton>

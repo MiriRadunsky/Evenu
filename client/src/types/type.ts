@@ -36,7 +36,8 @@ export interface User {
   name: string;
   email: string;
   phone: string;
-  social?: {
+ role?: "client" | "supplier" | "admin";
+   social?: {
     googleId?: string;
   };
   createdAt: Date;

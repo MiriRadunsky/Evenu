@@ -3,8 +3,11 @@ export const uploadFileAwsController = {
   getUploadUrl :async (req, res) => {
   const { fileName, contentType } = req.query;
   try {
-    const url = await uploadFileAwsService.createPresignedUploadUrl(fileName, contentType);
-    res.json({ url });
+    const urlData = await uploadFileAwsService.createPresignedUploadUrl(fileName, contentType);
+res.json(urlData); // { url: "...", key: "contracts/abc.pdf" }
+
+    // const url = await uploadFileAwsService.createPresignedUploadUrl(fileName, contentType);
+    // res.json({ url });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

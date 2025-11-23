@@ -6,14 +6,14 @@ interface AuthState {
   token: string | null;
   user:User|null,
   loading:boolean,
-  error:boolean
+  error:string
 }
 
 const initialState: AuthState = {
   token: localStorage.getItem('token') || null,
   user:null,
   loading:false,
-  error:false
+  error:''
   
 };
 export const fetchUser = createAsyncThunk<
@@ -59,7 +59,7 @@ const authSlice = createSlice({
       })
       .addCase(fetchUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.payload||"Failed to fetch user";
       })
 },
 });

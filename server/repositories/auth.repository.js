@@ -14,6 +14,10 @@ export async function findUserByEmail(email) {
   return await User.findOne({ email });
 }
 
+export async function findUserByGoogleId(googleId) {
+  return await User.findOne({ 'social.googleId': googleId });
+}
+
 
 
 
@@ -25,9 +29,6 @@ export async function updateUserGoogleId(userId, googleId) {
     );
 }
 
-export async function findUserByGoogleId(googleId) {
-    return await User.findOne({ 'social.googleId': googleId });
-}
 
 export const createUserWithGoogle = async (profile) => {
   const tempPassword = Math.random().toString(36).slice(-8);

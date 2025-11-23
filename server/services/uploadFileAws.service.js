@@ -8,15 +8,25 @@ const s3 = new AWS.S3({
 
 const BUCKET = process.env.AWS_BUCKET;
 export const uploadFileAwsService = {
- createPresignedUploadUrl: async (fileName, contentType) => {
-    const params = {
-      Bucket: BUCKET,
-      Key: fileName,
-      Expires: 3600, // 1 שעה
-      ContentType: contentType,
-    };
-    return await s3.getSignedUrlPromise('putObject', params);
-  },
+//  createPresignedUploadUrl: async (fileName, contentType) => {
+//     const params = {
+//       Bucket: BUCKET,
+//       Key: fileName,
+//       Expires: 3600, // 1 שעה
+//       ContentType: contentType,
+//     };
+//     return await s3.getSignedUrlPromise('putObject', params);
+//   },
+createPresignedUploadUrl: async (fileName, contentType) => {
+  const params = {
+    Bucket: BUCKET,
+    Key: fileName,
+    Expires: 3600,
+    ContentType: contentType,
+  };
+  const url = await s3.getSignedUrlPromise('putObject', params);
+  return { url, key: fileName }; 
+},
 
   createPresignedDownloadUrl: async (fileKey) => {
     const params = {
