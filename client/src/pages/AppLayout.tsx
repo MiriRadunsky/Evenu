@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
@@ -42,6 +42,11 @@ useEffect(() => {
     }
   }, [dispatch]);
 
+  const navigate = useNavigate();
+const handleLogout = () => {
+  logout();      
+  navigate("/login"); 
+};
 
   const userInitials = useMemo(() => {
     if (!user) return "U";
@@ -99,7 +104,6 @@ useEffect(() => {
             <SidebarMenuItem>
               <div className="flex items-center gap-3 px-4 py-3 border-t">
                 <Avatar className="h-10 w-10">
-                  {/* <AvatarImage src={user.profileImageUrl || ""} alt={user.name || ""} /> */}
                   <AvatarImage src={ ""} alt={user?.name || ""} />
                   <AvatarFallback>{userInitials}</AvatarFallback>
                 </Avatar>
@@ -110,7 +114,7 @@ useEffect(() => {
               </div>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton onClick={() =>logout()}>
+              <SidebarMenuButton onClick={handleLogout}>
                 <LogOut className="w-5 h-5" />
                 <span>התנתק</span>
               </SidebarMenuButton>

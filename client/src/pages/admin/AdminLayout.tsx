@@ -24,6 +24,7 @@ import {
   Shield,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
+import { logout } from "../../services/auth";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
@@ -41,10 +42,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     []
   );
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/login');
-  };
+ const handleLogout = () => {
+  logout();     
+  navigate("/login"); 
+};
 
   return (
     <SidebarProvider style={{ direction: "rtl" } as React.CSSProperties}>
