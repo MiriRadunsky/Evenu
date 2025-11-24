@@ -22,6 +22,12 @@ const threadSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+
+    deleteAt: {
+      type: Date,
+      index: { expireAfterSeconds: 0 },
+    },
+
   },
   {
     timestamps: true, // יוצר createdAt + updatedAt אוטומטית

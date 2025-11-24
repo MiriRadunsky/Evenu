@@ -18,6 +18,10 @@ async function getThreadsByFilter(filter) {
       path: "supplierId",
       populate: { path: "user", select: "name" }
     })
+     .populate({
+      path: "userId",           
+      select: "name"            
+    })
     .populate({
       path: "requestId",
       model: "SupplierRequest",

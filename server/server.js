@@ -12,6 +12,7 @@ import { errorHandler } from './middlewares/error.middleware.js';
 import { initSocket } from './sockets/message.gateway.js';
 import session from 'express-session';
 import passport from './config/passport.config.js';
+import { startCleanupJob } from './jobs/cleanupThreads.jobs.js';
 const app = express();
 const server = http.createServer(app);
 initWebSocket(server);
@@ -44,5 +45,6 @@ app.use(errorHandler);
 
 app.use(passport.initialize());
 connectMongo().then(() => {
+   startCleanupJob(); 
   server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 });

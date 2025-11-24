@@ -11,7 +11,6 @@ const eventSchema = new Schema(
       required: true
     },
     date: { type: Date, index: true, required: true },
-    date: { type: Date, index: true, required: true },
     locationRegion: { type: String, trim: true },
     budget: { type: Number },
     estimatedGuests: { type: Number, required: true },

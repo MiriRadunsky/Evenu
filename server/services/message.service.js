@@ -12,3 +12,6 @@ export async function getThreadMessages(threadId) {
   return res;
   
 }
+export async function markMessagesAsRead(threadId, userId) {
+  return await repo.markThreadMessagesAsRead(threadId, userId);
+}

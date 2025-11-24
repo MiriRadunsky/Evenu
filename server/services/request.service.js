@@ -7,7 +7,6 @@ import { RequestRepository } from '../repositories/request.repository.js';
 import { generateThreadId, openChatThread } from '../utils/thread.util.js';
 import { sendMessage } from './message.service.js';
 import { getOrCreateThread } from './threads.service.js';
-
 export const RequestService = {
 
   async getRequestsByUserId(userId) {
@@ -57,7 +56,8 @@ export const RequestService = {
       notesFromClient,
       expiresAt
     });
-    const thread = await getOrCreateThread({ requestId: request._id, userId: clientId, supplierId });
+
+    const thread = await getOrCreateThread({ requestId: request._id, userId: clientId, supplierId ,delDate: event.date});
     const res = await RequestRepository.updateRequestTheardId(request._id, thread._id);
     console.log('Created thread:', thread._id  , "res", res);
     return { request };

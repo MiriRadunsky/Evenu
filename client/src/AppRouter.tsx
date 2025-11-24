@@ -39,7 +39,7 @@ export default function AppRouter() {
     { title: "לוח בקרה ספק", path: "/supplier/dashboard", element: <SupplierDashboard />, icon: LayoutDashboard },
     { title: "בקשות", path: "/supplier/requests", element: <SupplierRequestPage />, icon: Send },
     { title: "חוזים ותשלומים", path: "/supplier/contracts", element: <SupplierContractsPage />, icon: FileText },
-    { title: "חוזים ותשלומים", path: "/supplier/chat", element: <Chat/>, icon: FileText },
+    { title: "צ'אט", path: "/supplier/chat", element: <Chat/>, icon: FileText },
 
   ];
   //  const adminRoutes = [

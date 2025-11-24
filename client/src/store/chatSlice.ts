@@ -24,91 +24,60 @@ const initialState: ChatState = {
 //     THUNKS
 // ==========================
 
-// 1️⃣ Fetch user threads
+// Fetch threads (user or supplier)
 export const fetchThreads = createAsyncThunk<
   Thread[],
   { id: string; role: "user" | "supplier" },
   { rejectValue: string }
->(
-  "chat/fetchThreads",
-  async ({ id, role }, { rejectWithValue }) => {
-    try {
-      const url =
-        role === "supplier"
-          ? `/threads/supplier/${id}`
-          : `/threads/user/${id}`;
+>("chat/fetchThreads", async ({ id, role }, { rejectWithValue }) => {
+  try {
+    const url = role === "supplier" ? `/threads/supplier/${id}` : `/threads/user/${id}`;
+    const res = await api.get(url);
+    // API צריך להחזיר גם שמות הצד השני (supplierName / clientName)
+    console.log("[Thunk] fetchThreads response:", res.data);  // ✅ בדיקה כאן
 
-      const res = await api.get(url);
-
-      return res.data?.data ?? res.data;
-    } catch (err: any) {
-      return rejectWithValue(
-        err.response?.data?.message || "Error fetching threads"
-      );
-    }
+    return res.data?.data ?? res.data;
+  } catch (err: any) {
+    return rejectWithValue(err.response?.data?.message || "Error fetching threads");
   }
-);
+});
 
-
-// 2️⃣ Fetch messages for a thread
+// Fetch messages for a thread
 export const fetchMessages = createAsyncThunk<
   { threadId: string; messages: Message[] },
   { threadId: string },
   { rejectValue: string }
->(
-  "chat/fetchMessages",
-  async ({ threadId }, { rejectWithValue }) => {
-    console.log("[Thunk] fetchMessages called for threadId:", threadId);
-    try {
-      const res = await api.get(`/messages/${threadId}`);
-      console.log("[Thunk] fetchMessages response:", res.data);
-      const messages = res.data?.data ?? res.data;
-      return { threadId, messages };
-    } catch (err: any) {
-      console.error("[Thunk] fetchMessages error:", err);
-      return rejectWithValue(err.response?.data?.message || "Error fetching messages");
-    }
+>("chat/fetchMessages", async ({ threadId }, { rejectWithValue }) => {
+  try {
+    const res = await api.get(`/messages/${threadId}`);
+    const messages = res.data?.data ?? res.data;
+    return { threadId, messages };
+  } catch (err: any) {
+    return rejectWithValue(err.response?.data?.message || "Error fetching messages");
   }
-);
+});
 
-// 3️⃣ Send message
+// Send message
 export const sendMessage = createAsyncThunk<
   Message,
   { threadId: string; body: string; from: string; to?: string },
   { rejectValue: string }
->(
-  "chat/sendMessage",
-  async ({ threadId, body, from, to  }, { rejectWithValue }) => {
-    console.log("[Thunk] sendMessage called for threadId:", threadId, "body:", body);
-    const data = {threadId,from, to, body};
-    try {
-      const res = await api.post("/messages", data);
-      console.log("[Thunk] sendMessage response:", res.data);
-      return res.data?.data ?? res.data;
-    } catch (err: any) {
-      console.error("[Thunk] sendMessage error:", err);
-      return rejectWithValue(err.response?.data?.message || "Error sending message");
-    }
+>("chat/sendMessage", async ({ threadId, body, from, to }, { rejectWithValue }) => {
+  const data = { threadId, from, to, body };
+  try {
+    const res = await api.post("/messages", data);
+    return res.data?.data ?? res.data;
+  } catch (err: any) {
+    return rejectWithValue(err.response?.data?.message || "Error sending message");
   }
-);
+});
 
-// 4️⃣ Update message
-export const updateMessage = createAsyncThunk<
-  Message,
-  { id: string; data: Partial<Message> },
-  { rejectValue: string }
->(
-  "chat/updateMessage",
-  async ({ id, data }, { rejectWithValue }) => {
-    console.log("[Thunk] updateMessage called for id:", id, "data:", data);
-    try {
-      const res = await api.patch(`/messages/${id}`, data);
-      console.log("[Thunk] updateMessage response:", res.data);
-      return res.data?.data ?? res.data;
-    } catch (err: any) {
-      console.error("[Thunk] updateMessage error:", err);
-      return rejectWithValue(err.response?.data?.message || "Error updating message");
-    }
+// Mark all messages in a thread as read
+export const markThreadAsRead = createAsyncThunk<{ threadId: string }, { threadId: string }>(
+  "chat/markThreadAsRead",
+  async ({ threadId }) => {
+    await api.patch(`/messages/read/${threadId}`);
+    return { threadId };
   }
 );
 
@@ -120,67 +89,62 @@ const chatSlice = createSlice({
   initialState,
   reducers: {
     clearMessages: (state, action: PayloadAction<string>) => {
-      const threadId = action.payload;
-      console.log("[Reducer] clearMessages for threadId:", threadId);
-      delete state.messagesByThread[threadId];
+      delete state.messagesByThread[action.payload];
     },
-
     addLocalMessage: (state, action: PayloadAction<Message>) => {
       const msg = action.payload;
-      console.log("[Reducer] addLocalMessage:", msg);
-      if (!state.messagesByThread[msg.threadId]) {
-        state.messagesByThread[msg.threadId] = [];
-      }
+      if (!state.messagesByThread[msg.threadId]) state.messagesByThread[msg.threadId] = [];
       state.messagesByThread[msg.threadId].push(msg);
+
+      // סימון thread כחדש אם השולח הוא הצד השני
+      const thread = state.threads.find(t => t._id === msg.threadId);
+      if (thread && msg.from !== thread.userId && msg.from !== thread.supplierId) {
+        thread.hasUnread = true;
+      }
     },
   },
-
   extraReducers: (builder) => {
     builder
       // Threads
       .addCase(fetchThreads.pending, (state) => {
-        console.log("[ExtraReducer] fetchThreads pending");
         state.loading = true;
         state.error = undefined;
       })
       .addCase(fetchThreads.fulfilled, (state, action) => {
-        console.log("[ExtraReducer] fetchThreads fulfilled:", action.payload);
         state.loading = false;
-        state.threads = action.payload;
+        state.threads = action.payload.map(t => ({
+          ...t,
+          _id: t._id.toString(),
+          hasUnread: t.hasUnread ?? false,
+        }));
       })
       .addCase(fetchThreads.rejected, (state, action) => {
-        console.error("[ExtraReducer] fetchThreads rejected:", action.payload);
         state.loading = false;
         state.error = action.payload || action.error?.message;
       })
 
       // Messages
       .addCase(fetchMessages.fulfilled, (state, action) => {
-        console.log("[ExtraReducer] fetchMessages fulfilled for threadId:", action.payload.threadId , action.payload);
-        state.messagesByThread[action.payload.threadId] = action.payload.messages;
-        console.log("addCase in the reducer ", state.messagesByThread);
-        
+        state.messagesByThread[action.payload.threadId] = action.payload.messages.map(m => ({
+          ...m,
+          _id: m._id?.toString() ?? "",
+          threadId: m.threadId?.toString() ?? "",
+          from: m.from?.toString() ?? "",
+          to: m.to?.toString() ?? "",
+        }));
       })
 
       // Send message
       .addCase(sendMessage.fulfilled, (state, action) => {
-        console.log("[ExtraReducer] sendMessage fulfilled:", action.payload);
         const msg = action.payload;
-        if (!state.messagesByThread[msg.threadId]) {
-          state.messagesByThread[msg.threadId] = [];
-        }
+        if (!state.messagesByThread[msg.threadId]) state.messagesByThread[msg.threadId] = [];
         state.messagesByThread[msg.threadId].push(msg);
       })
 
-      // Update message
-      .addCase(updateMessage.fulfilled, (state, action) => {
-        console.log("[ExtraReducer] updateMessage fulfilled:", action.payload);
-        const msg = action.payload;
-        const list = state.messagesByThread[msg.threadId];
-        if (!list) return;
-
-        const idx = list.findIndex(m => m._id === msg._id);
-        if (idx !== -1) list[idx] = msg;
+      // Mark thread as read
+      .addCase(markThreadAsRead.fulfilled, (state, action) => {
+        const thread = state.threads.find(t => t._id === action.payload.threadId);
+        if (thread) thread.hasUnread = false;
       });
   },
 });
