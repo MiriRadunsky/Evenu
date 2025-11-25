@@ -53,7 +53,6 @@ export const verifyContractSignature = asyncHandler(async(req, res) => {
 
 export const getSignatureImage = asyncHandler(async(req, res) => {
     const { key } = req.query;
-    console.log('📸 Requesting signature with key:', key);
     
     if (!key) {
         return res.status(400).json({ error: 'Missing signature key' });
@@ -61,7 +60,6 @@ export const getSignatureImage = asyncHandler(async(req, res) => {
     
     try {
         const url = await uploadFileAwsService.createPresignedDownloadUrl(key);
-        console.log('✅ Generated signed URL:', url.substring(0, 50) + '...');
         res.json({ url });
     } catch (error) {
         console.error('❌ Error generating signed URL:', error.message);

@@ -42,6 +42,8 @@ export default function NotificationsList() {
   const notifications: Notification[] = useSelector(
     (state: RootState) => state.notifications.notifications
   );
+  console.log(notifications);
+  
   const dispatch: AppDispatch = useDispatch();
 
   if (!notifications || notifications.length === 0) return null;
@@ -57,16 +59,16 @@ export default function NotificationsList() {
           }`}
         >
           <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-gray-800">{n.payload.title}</p>
+            <p className="text-sm font-medium text-gray-800">{n.payload.note}</p>
             {!n.readAt && (
               <span className="w-2 h-2 rounded-full bg-yellow-400 ml-2"></span>
             )}
           </div>
           <p className="text-xs text-gray-500 mt-1">
-            {formatEventDate(n.payload.time.toString())}
+            {formatEventDate(n.payload.time)}
           </p>
         </div>
       ))}
     </div>
   );
-}
+} 

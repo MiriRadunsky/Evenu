@@ -1,14 +1,29 @@
-import Payment from "../models/payment.model";
+import Payment from "../models/payment.model.js";
 
-// 🔹 הוספת תשלום חדש לחוזה
-export async function addPayment(contractId, paymentData) {
-    return Payment.create({
-        contractId,
-        ...paymentData
-    });
+export const PaymentRepository = {
+  // יצירת תשלום חדש
+  async create(contractId, data, session = null) {
+  return Payment.create([{ contractId, ...data }], { session }).then(r => r[0]);
 }
+,
 
-// 🔹 עדכון סטטוס של תשלום קיים
-export async function updatePayment(paymentId, updateData) {
-    return Payment.findByIdAndUpdate(paymentId, updateData, { new: true });
-}
+  // עדכון תשלום קיים
+  async update(paymentId, data) {
+    return Payment.findByIdAndUpdate(paymentId, data, { new: true });
+  },
+
+  // שליפת תשלום לפי מזהה
+  async getById(paymentId) {
+    return Payment.findById(paymentId);
+  },
+
+  // שליפת כל התשלומים לחוזה
+  async getByContract(contractId) {
+    return Payment.find({ contractId }).sort({ dueDate: 1 });
+  },
+
+  // מחיקת תשלום
+  async delete(paymentId) {
+    return Payment.findByIdAndDelete(paymentId);
+  }
+};

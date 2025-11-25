@@ -10,7 +10,6 @@ const SECRET = process.env.JWT_SECRET || 'secretkey';
 export async function register({ name, email, phone, password ,role}) {
     const existingUser = await repo.findUserByEmail(email);
     if (existingUser) throw new AppError(409, 'User already exists');
-    console.log('password:', password);
     const hashedPassword = await bcrypt.hash(password, 10);
     const userData = { name, email, phone, password: hashedPassword, role };
     const user = await repo.createUser(userData);
@@ -19,10 +18,8 @@ export async function register({ name, email, phone, password ,role}) {
 }
 
 export async function login(email, password) {
-    console.log("credentials: ", email, password);
     const user = await repo.findUserByEmail(email);
     if (!user) throw new AppError(404, 'User not found');
-    console.log("BCYRPT ", password, user.password);
 
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) throw new AppError(401, 'Invalid credentials');

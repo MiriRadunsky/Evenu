@@ -9,6 +9,7 @@ const paymentSchema = new Schema(
     paidAt:     { type: Date },
     status:     { type: String, enum: ['pending', 'paid', 'overdue'], default: 'pending', index: true },
     method:     { type: String, enum: ['cash', 'bank_transfer', 'check', 'other'] },
+    note:       { type: String },
     documentUrl:{ type: String }, // קישור לקבלה או אסמכתא
   },
   { timestamps: true }

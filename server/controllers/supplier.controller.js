@@ -36,7 +36,6 @@ export const SupplierController = {
  updateMediaSupplier:asyncHandler(async (req, res) => {
 const id = req.user._id;
   const { profileImage,media } = req.body; 
-  console.log(id,profileImage,media);
   
   const {_v, ...updated} = await SupplierService.updateSupplierMedia(id,profileImage, media);
   res.status(201).json({ supplier: updated });

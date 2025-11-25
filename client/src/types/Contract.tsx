@@ -16,6 +16,12 @@ ipAddress: string;
 at: Date;
 }
 
+interface ContractPayment {
+dueDate: string;
+amount: number;
+note: string;
+}
+
 export interface Contract {
 _id: string;
 s3Key: string;
@@ -41,5 +47,6 @@ user: {
 name: string;
 email: string;
 };
+paymentPlan: ContractPayment[];
 };
 }

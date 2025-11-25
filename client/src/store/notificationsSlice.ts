@@ -1,8 +1,8 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
-import type { Socket } from 'socket.io-client';
 
 import type { Notification } from './../types/type';
 import api from '../services/axios';
+import type { Socket } from 'socket.io-client';
 
 interface NotificationsState {
   notifications: Notification[];
@@ -17,8 +17,6 @@ export const fetchNotifications = createAsyncThunk(
   'notifications/fetch',
   async () => {
     const res = await api.get<Notification[]>('/notifications');
-    console.log(res);
-    
     return res.data ;
 
   }
@@ -35,35 +33,6 @@ export const markNotificationAsRead = createAsyncThunk(
   }
 );
 
-// export const notificationsSlice = createSlice({
-//   name: 'notifications',
-//   initialState,
-//   reducers: {
-//     setSocket(state, action: PayloadAction<Socket>) {
-//       state.socket = action.payload;
-//     },
-//     addNotification(state, action: PayloadAction<Notification>) {
-//       state.notifications.unshift(action.payload);
-//     },
-//     // markAsRead(state, action: PayloadAction<string>) {
-//     //   state.notifications = state.notifications.map((n) =>
-//     //     n._id === action.payload ? { ...n, readAt: new Date() } : n
-//     //   );
-//     // },
-//   },
-//   extraReducers: (builder) => {
-//     builder.addCase(fetchNotifications.fulfilled, (state, action) => {
-//       state.notifications = action.payload;
-//     }),
-//     builder.addCase(markNotificationAsRead.fulfilled, (state, action) => {
-//       state.notifications = state.notifications.filter(
-//         n => n._id !== action.payload
-//       );
-//     })
-    
-//     }
-    
-// });
 export const notificationsSlice = createSlice({
   name: 'notifications',
   initialState,

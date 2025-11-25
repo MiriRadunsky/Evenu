@@ -21,7 +21,6 @@ export async function list(req, res) {
 
 export async function update(req, res) {
   const event = await eventService.updateEvent(req.params.id, req.user._id, req.body);
-  console.log("update event ", event);
   res.json({ success: true, data: event });
 }
 

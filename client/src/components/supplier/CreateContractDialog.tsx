@@ -17,6 +17,7 @@ import type { AppDispatch, RootState } from "../../store";
 import { SetSelectedSupplierRequest, clearSelectedSupplierRequest } from "../../store/requestSlice";
 import { createContract } from "../../store/contractsSlice";
 import { uploadFileToS3 } from "../../services/uploadFile";
+import PaymentsContract from "./PaymentsContract";
 
 interface CreateContractDialogProps {
   open: boolean;
@@ -38,6 +39,7 @@ export const CreateContractDialog = ({
   const [contractFile, setContractFile] = useState<File | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [payments, setPayments] = useState<{ amount: string; dueDate: string,note:string }[]>([]);
 
   const approvedRequests = requests.filter((r) => r.status === "מאושר");
 
@@ -82,9 +84,9 @@ export const CreateContractDialog = ({
         eventId: selectedRequest.eventId._id,
         clientId: selectedRequest.clientId?._id,
         s3Key,
-        paymentPlan: [],
         totalAmount: parseFloat(totalAmount),
         terms: specialTerms || serviceDescription,
+        paymentPlan: payments.map(p => ({ amount: parseFloat(p.amount), dueDate: p.dueDate ,note:p.note})),
       })).unwrap();
 
       alert("החוזה נוצר בהצלחה");
@@ -141,7 +143,7 @@ export const CreateContractDialog = ({
               placeholder="תאר את השירותים שתספק"
             />
           </div>
-
+          <PaymentsContract payments={payments} setPayments={setPayments} />
           <div className="space-y-2">
             <Label htmlFor="terms">תנאים מיוחדים (אופציונלי)</Label>
             <Textarea

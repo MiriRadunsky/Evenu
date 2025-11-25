@@ -52,7 +52,6 @@ export const notificationWorker = new Worker(
   'notifications',
   async (job) => {
     const notification = job.data;
-
     // שולח בפועל דרך Socket.IO
     await sendNotification(notification);
 

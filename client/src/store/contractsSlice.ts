@@ -61,7 +61,7 @@ export const createContract = createAsyncThunk<
     eventId: string;
     clientId?: string;
     s3Key: string;
-    paymentPlan: Array<{ dueDate?: string; amount?: number; note?: string }>;
+    paymentPlan: Array<{ dueDate: string; amount: number; note: string }>;
     totalAmount: number;
     terms?: string;
   }

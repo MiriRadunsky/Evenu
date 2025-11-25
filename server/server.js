@@ -1,7 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import { initWebSocket } from "./websocket/notification.socket.js"
 import helmet from 'helmet';
 import http from 'http';
 import rateLimit from 'express-rate-limit';
@@ -10,12 +9,13 @@ import { connectMongo } from './db/connect.db.js';
 import { mongoHealth } from './db/health.db.js';
 import { errorHandler } from './middlewares/error.middleware.js';
 import { initSocket } from './sockets/message.gateway.js';
-import session from 'express-session';
 import passport from './config/passport.config.js';
+import { initWebSocket } from './websocket/notification.socket.js';
+import './queues/scheduler.js';
 const app = express();
 const server = http.createServer(app);
 initWebSocket(server);
-initSocket(server);
+// initSocket(server);
 
 const PORT = process.env.PORT || 3000;
 
@@ -46,5 +46,6 @@ app.use(errorHandler);
 
 app.use(passport.initialize());
 connectMongo().then(() => {
-  server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+  server.listen(PORT, () => console.log(`Server running on port ${PORT}`)
+);
 });

@@ -20,7 +20,6 @@ import {
   Clock,
   Upload,
 } from "lucide-react";
-import { Link } from "react-router-dom";
 import type { AppDispatch, RootState } from "../../store";
 import { CreateContractDialog } from "../supplier/CreateContractDialog";
 
@@ -234,7 +233,7 @@ export default function RequestList({ type }: RequestListProps) {
                           {request.eventId?.name || "אירוע"}
                         </CardTitle>
 
-                        <p className="mt-1 text-sm text-muted-foreground">
+                        <p className="mt-1 text-sm">
                           {resolvedMode === "supplier"
                             ? `מ: ${
                                 request.clientId?.name ||

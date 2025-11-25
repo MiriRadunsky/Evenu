@@ -1,4 +1,3 @@
-
 export interface Request {
   id: string;
   status: string;
@@ -23,8 +22,6 @@ export interface DashboardState {
 }
 // export type { Event, Request, Payment, Message, DashboardState };
 
-
-
 // types.ts
 
 // ---------------------
@@ -32,12 +29,12 @@ export interface DashboardState {
 // ---------------------
 export interface User {
   _id: string;
-  token:string
+  token: string;
   name: string;
   email: string;
   phone: string;
- role?: "client" | "supplier" | "admin";
-   social?: {
+  role?: "client" | "supplier" | "admin";
+  social?: {
     googleId?: string;
   };
   createdAt: Date;
@@ -51,12 +48,12 @@ export interface Event {
   _id: string;
   ownerId: string;
   name: string;
-  type: 'חתונה' | 'ברית' | 'בר מצווה' | 'בת מצווה' | 'שבע ברכות' | 'אחר';
+  type: "חתונה" | "ברית" | "בר מצווה" | "בת מצווה" | "שבע ברכות" | "אחר";
   date: Date;
   locationRegion: string;
   budget?: number;
   estimatedGuests: number;
-  status: 'פעיל' | 'הושלם' | 'בוטל';
+  status: "פעיל" | "הושלם" | "בוטל";
   createdAt: Date;
   updatedAt: Date;
 }
@@ -66,7 +63,7 @@ export interface Event {
 // ---------------------
 export interface Category {
   _id: string;
-  label: 'צלם' | 'להקה' | 'אולם' | 'קייטרינג' | 'עיצוב' | 'אחר';
+  label: "צלם" | "להקה" | "אולם" | "קייטרינג" | "עיצוב" | "אחר";
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -109,7 +106,7 @@ export interface SupplierRequest {
   clientId: string; // User _id
   basicEventSummary: string;
   notesFromClient?: string;
-  status: 'בהזמנה' | 'מאושר' | 'נדחה' | 'פג תוקף';
+  status: "בהזמנה" | "מאושר" | "נדחה" | "פג תוקף";
   expiresAt?: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -119,7 +116,7 @@ export interface SupplierRequest {
 // Contract
 // ---------------------
 export interface ContractSignature {
-  party: 'user' | 'supplier';
+  party: "user" | "supplier";
   at: Date;
   signatureMeta?: {
     [key: string]: unknown;
@@ -129,7 +126,7 @@ export interface ContractSignature {
 export interface PaymentPlanItem {
   dueDate: Date;
   amount: number;
-  status: 'ממתין' | 'שולם' | 'פג תוקף';
+  status: "ממתין" | "שולם" | "פג תוקף";
   receiptUrl?: string;
 }
 
@@ -140,7 +137,7 @@ export interface Contract {
   clientId: string;
   fileUrl: string;
   signatures: ContractSignature[];
-  status: 'טיוטה' | 'ממתין לחתימה' | 'פעיל' | 'הושלם' | 'בוטל';
+  status: "טיוטה" | "ממתין לחתימה" | "פעיל" | "הושלם" | "בוטל";
   paymentPlan?: PaymentPlanItem[];
   createdAt: Date;
   updatedAt: Date;
@@ -155,8 +152,8 @@ export interface Payment {
   amount: number;
   dueDate: Date;
   paidAt?: Date;
-  status: 'ממתין' | 'שולם' | 'פג תוקף';
-  method?: 'cash' | 'bank_transfer' | 'check' | 'other';
+  status: "ממתין" | "שולם" | "פג תוקף";
+  method?: "cash" | "bank_transfer" | "check" | "other";
   documentUrl?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -167,7 +164,7 @@ export interface Payment {
 // ---------------------
 export interface MessageUser {
   id: string;
-  type: 'user' | 'supplier';
+  type: "user" | "supplier";
 }
 
 export interface Message {
@@ -184,25 +181,29 @@ export interface Message {
 // Notification
 // ---------------------
 export interface Notification {
-  id: string;
+  _id: string;
   userId: string;
-  type: 'payment' | 'contract' | 'meeting' | 'system';
-  payload: Record<string, unknown>;
+  type: "payment" | "contract" | "meeting" | "system";
+  payload: {
+    contractId: string;
+    paymentId: string;
+    amount: number;
+    note: string;
+    time: Date;
+  };
   scheduledFor?: Date;
-  sentAt: Date;
-  channel: 'in-app' | 'email';
+  channel: "in-app" | "email";
   readAt?: Date;
+  isRead: boolean;
   createdAt: Date;
-  updatedAt: Date;
 }
-
 
 // ---------------------
 // EventAudit
 // ---------------------
 export interface EventAudit {
   _id: string;
-  entityType: 'event' | 'supplier' | 'contract' | 'payment' | 'request';
+  entityType: "event" | "supplier" | "contract" | "payment" | "request";
   entityId: string;
   action: string;
   actorId: string; // User _id

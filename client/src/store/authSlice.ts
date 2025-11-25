@@ -23,6 +23,7 @@ export const fetchUser = createAsyncThunk<
 >("auth/fetchUser", async (_, { rejectWithValue }) => {
   try {
     const { data } = await api.get("/users/me");
+    
     return data;
   } catch (err: any) {
     return rejectWithValue(err.response?.data?.message || "Failed to fetch user");
@@ -56,6 +57,8 @@ const authSlice = createSlice({
       .addCase(fetchUser.fulfilled, (state, action: PayloadAction<User>) => {
         state.loading = false;
         state.user = action.payload;
+        state.error = '';
+        
       })
       .addCase(fetchUser.rejected, (state, action) => {
         state.loading = false;

@@ -15,6 +15,7 @@ export function initWebSocket(server) {
       console.log(`📦 User ${userId} joined room`);
 
       // שולף התראות קיימות
+      
       const notifications = await NotificationService.getUserNotifications(userId);
       notifications.forEach(n => socket.emit('notification', n));
     });
@@ -25,14 +26,33 @@ export function initWebSocket(server) {
 
 export { io };
 
+// export async function sendNotification(notification) {
+//   if (!io) {
+//     console.error('❌ WebSocket not initialized!');
+//     return;
+//   }
+
+//   if (notification.channel === 'in-app') {
+//     io.to(notification.userId.toString()).emit('notification', notification);
+//   } else {
+//     console.log(`📧 Sending email to ${notification.userId}`);
+//   }
+// }
 export async function sendNotification(notification) {
   if (!io) {
     console.error('❌ WebSocket not initialized!');
     return;
   }
 
+  const room = io.sockets.adapter.rooms.get(notification.userId.toString());
+  
   if (notification.channel === 'in-app') {
-    io.to(notification.userId.toString()).emit('notification', notification);
+    if (room && room.size > 0) {
+      // יש לקוח מחובר – שולח מיידית
+      io.to(notification.userId.toString()).emit('notification', notification);
+    }
+    // תמיד שמור ב־Redis כדי שאם הלקוח יחזור או יעשה ריענון, ההתראה תישמר
+   
   } else {
     console.log(`📧 Sending email to ${notification.userId}`);
   }

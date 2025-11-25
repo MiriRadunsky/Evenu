@@ -24,27 +24,23 @@ async createNotification({ userId, type, payload, scheduledFor, channel = 'in-ap
     createdAt: Date.now(),
   };
 
-  const listKey = `user:${userId}:notifications`;
-  const mapKey = `user:${userId}:notificationMap`;
-
   if (channel === 'in-app') {
     if (scheduledFor && new Date(scheduledFor) > new Date()) {
-      // 🔹 לא שומרים עדיין ב־Redis!
-      await notificationQueue.add(
-        'scheduled',
-        notification, // שולחים את כל ההתראה
-        { delay: new Date(scheduledFor).getTime() - Date.now() }
-      );
+      await notificationQueue.add('scheduled', notification, {
+        delay: new Date(scheduledFor).getTime() - Date.now(),
+      });
     } else {
-      // 🔹 שולחים עכשיו ושומרים ב־Redis
+      // 🔹 שולחים עכשיו ושומרים ב-Redis
       await sendNotification(notification);
-      await redis.rpush(listKey, notification.id);
-      await redis.hset(mapKey, notification.id, JSON.stringify(notification));
+      await redis.rpush(`user:${userId}:notifications`, notification.id);
+      await redis.hset(`user:${userId}:notificationMap`, notification.id, JSON.stringify(notification));
     }
   }
 
   return notification;
 }
+
+
 ,
   /**
    * שליפת ההתראות למשתמש

@@ -33,14 +33,22 @@ export default function AppLayout({navigationItems, children }: { navigationItem
     const user=useSelector((state:RootState)=>state.auth.user);
     
 useEffect(() => {
-   dispatch(fetchUser());
-    const userId = user?._id; 
-    if (userId)
-    {
-       initSocket(userId, dispatch);
-       dispatch(fetchNotifications());
-    }
-  }, [dispatch]);
+  dispatch(fetchUser());
+}, [dispatch]);
+
+useEffect(() => {
+  if (user?._id) {
+    console.log('userId in init', user, user._id);
+
+    // 1️⃣ אתחול ה-socket קודם
+    const socket = initSocket(user._id, dispatch);
+
+    // 2️⃣ אפשר להביא התראות קיימות אם רוצים, אבל העיקר שה-socket פעיל
+    dispatch(fetchNotifications());
+  }
+}, [user, dispatch]);
+
+
 
   const navigate = useNavigate();
 const handleLogout = () => {
