@@ -13,33 +13,35 @@ import { ActiveSuppliersPage } from "./pages/admin/ActiveSuppliersPage";
 import { SupplierDetailsPage } from "./pages/admin/SupplierDetailsPage";
 import { UsersPage } from "./pages/admin/UsersPage";
 import { getUserRole } from "./api/auth";
-import Requests from "./pages/Request";
 import type { AppRoute } from "./types/AppRouter";
 import SupplierDashboard from "./pages/Supplier/SupplierDashboard";
 import { RequestPage } from "./pages/RequestPage";
 import { Calendar, FileText, LayoutDashboard, Send, Store } from "lucide-react";
-import Dashboard from "./pages/Dashboard";
 import SupplierRequestPage from "./pages/Supplier/SupplierRequestPage";
 import SupplierContractsPage from "./pages/Supplier/SupplierContractsPage";
 import ContractsPage from "./pages/ContractsPage";
+import NotificationsPage from "./pages/NotificationsPage";
+import DashboardUser from "./pages/DahboardUser";
 
 export default function AppRouter() {
 
 
 
   const userRoutes = [
-    { title: "לוח בקרה", path: "/dashboard", element: < Dashboard />, icon: LayoutDashboard },
+    { title: "לוח בקרה", path: "/dashboard", element: < DashboardUser />, icon: LayoutDashboard },
     { title: "האירועים שלי", path: "/my-events", element: <MyEvents />, icon: Calendar },
     { title: "ספקים", path: "/suppliers", element: <Suppliers />, icon: Store },
     { title: "בקשות", path: "/requests", element: <RequestPage />, icon: Send },
     {title: "צ'אט", path:"/chat", element: <Chat/>, icon: FileText},
     { title: "חוזים ותשלומים", path: "/contracts-payments", element: <ContractsPage />, icon: FileText },
+    { title: "התראות", path: "/notifications", element: <NotificationsPage />, icon: FileText },
   ];
   const supplierRoutes = [
     { title: "לוח בקרה ספק", path: "/supplier/dashboard", element: <SupplierDashboard />, icon: LayoutDashboard },
     { title: "בקשות", path: "/supplier/requests", element: <SupplierRequestPage />, icon: Send },
     { title: "חוזים ותשלומים", path: "/supplier/contracts", element: <SupplierContractsPage />, icon: FileText },
-    { title: "חוזים ותשלומים", path: "/supplier/chat", element: <Chat/>, icon: FileText },
+    { title: "צ'אט", path: "/supplier/chat", element: <Chat/>, icon: FileText },
+    { title: "התראות", path: "/supplier/notifications", element: <NotificationsPage />, icon: FileText },
 
   ];
   //  const adminRoutes = [
@@ -71,8 +73,6 @@ export default function AppRouter() {
 
   const handleLogin = () => {
     console.log("User logged in");
-
-    // בדיקת תפקיד המשתמש והפניה לדשבורד המתאים
     const userRole = getUserRole();
     if (userRole === 'admin') {
       navigate("/admin/dashboard");
@@ -108,66 +108,10 @@ export default function AppRouter() {
         element={<RegisterPage onRegister={handleRegister} onNavigate={handleNavigate} />}
       />
 
-
-
-
       {/* Protected Routes */}
       {renderRoutes(userRoutes)}
       {renderRoutes(supplierRoutes)}
-      {/* <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <AppLayout>
-              <DashboardRouter />
-            </AppLayout>
-          </ProtectedRoute>
-              
-        }
-      />
-
-      <Route
-        path="/suppliers"
-        element={
-          <ProtectedRoute>
-            <AppLayout>
-              <Suppliers />
-            </AppLayout>
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/my-events"
-        element={
-          <ProtectedRoute>
-            <AppLayout>
-              <MyEvents />
-            </AppLayout>
-          </ProtectedRoute>
-        }
-      />
- <Route
-        path="/requests"
-        element={
-          <ProtectedRoute>
-            <AppLayout>
-              <RequestPage />
-            </AppLayout>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/contracts-payments"
-        element={
-          <ProtectedRoute>
-            <AppLayout>
-              <ContractsPage />
-            </AppLayout>
-          </ProtectedRoute>
-        }
-      /> */}
-
+    
       {/* Admin Routes */}
       <Route
         path="/admin/dashboard"

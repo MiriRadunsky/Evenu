@@ -3,6 +3,8 @@
 // import Redis from 'ioredis';
 // import { sendNotification } from '../websocket/notification.socket.js';
 
+import Redis from "ioredis";
+
 // const connection = new Redis(process.env.REDIS_URL || 'redis://localhost:6379', {
 
 //   maxRetriesPerRequest: null, // ✅ חובה כדי למנוע את השגיאת BullMQ

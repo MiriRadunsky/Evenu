@@ -452,7 +452,7 @@ import { Button } from "../ui/button";
 import type { Contract } from "../../types/Contract";
 import { getImageUrl, uploadFileToS3 } from "../../services/uploadFile";
 import { signContract } from "../../store/contractsSlice";
-import { SignContractDialog } from "../ContractsAndPayments/SignContractDialog";
+import { SignContractDialog } from "./SignContractDialog";
 
 interface ContactListProps {
   type: "client" | "supplier";

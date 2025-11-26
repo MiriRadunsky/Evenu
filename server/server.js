@@ -15,7 +15,7 @@ import './queues/scheduler.js';
 const app = express();
 const server = http.createServer(app);
 initWebSocket(server);
-initSocket(server);
+// initSocket(server);
 
 const PORT = process.env.PORT || 3000;
 

@@ -46,25 +46,11 @@ export const getNotificationColor = (notificationType?: string) => {
   }
 };
 
-export const getPriorityVariant = (
-  priority?: string
-): "default" | "secondary" | "destructive" | "outline" => {
-  switch (priority) {
-    case "גבוהה":
-      return "destructive";
-    case "בינונית":
-      return "default";
-    case "נמוכה":
-      return "secondary";
-    default:
-      return "outline";
-  }
-};
 
-export const formatRelativeTime = (dateString?: string) => {
-  if (!dateString) return "";
+
+export const formatRelativeTime = (date?: Date) => {
+  if (!date) return "";
   try {
-    const date = new Date(dateString);
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffMins = Math.floor(diffMs / 60000);
@@ -85,10 +71,9 @@ export const formatRelativeTime = (dateString?: string) => {
   }
 };
 
-export const formatFullDate = (dateString?: string) => {
-  if (!dateString) return "לא צוין";
+export const formatFullDate = (date: Date) => {
+  if (!date) return "לא צוין";
   try {
-    const date = new Date(dateString);
     return date.toLocaleString("he-IL", {
       year: "numeric",
       month: "long",

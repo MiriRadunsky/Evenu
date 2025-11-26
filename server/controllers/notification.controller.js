@@ -13,7 +13,7 @@ export const NotificationController = {
   }),
 
   markAsRead: asyncHandler(async (req, res) =>  {
-      await NotificationService.markAsRead(req.user._id, req.body.notificationId);
-      res.status(201).end();
+      const notificationId = await NotificationService.markAsRead(req.user._id, req.body.notificationId);
+      res.status(201).json({ notificationId });
   })
 };
