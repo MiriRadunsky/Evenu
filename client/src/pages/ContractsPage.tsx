@@ -2,7 +2,7 @@ import { useDispatch } from "react-redux";
 import { fetchContractsByClient } from "../store/contractsSlice";
 import type { AppDispatch } from "../store";
 import { useEffect } from "react";
-import ContractList from "../components/Contracts/contractList";
+import ContractList from "../components/ContractsAndPayments/contractList";
 
 export default function ContractsPage() {
   const dispatch:AppDispatch= useDispatch();

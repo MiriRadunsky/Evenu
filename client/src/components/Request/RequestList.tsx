@@ -21,7 +21,7 @@ import {
   Upload,
 } from "lucide-react";
 import type { AppDispatch, RootState } from "../../store";
-import { CreateContractDialog } from "../supplier/CreateContractDialog";
+import { CreateContractDialog } from "../ContractsAndPayments/CreateContractDialog";
 
 interface RequestListProps {
   type: "client" | "supplier";

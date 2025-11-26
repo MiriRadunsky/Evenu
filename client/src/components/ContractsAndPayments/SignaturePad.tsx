@@ -1,5 +1,5 @@
 import { useRef, forwardRef, useImperativeHandle } from "react";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { RotateCcw } from "lucide-react";
 
 interface SignaturePadRef {

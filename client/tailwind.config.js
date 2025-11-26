@@ -9,6 +9,20 @@ export default {
   ],
   theme: {
     extend: {
+      animation: {
+        "in": "fadeIn 0.2s ease-out",
+        "out": "fadeOut 0.2s ease-in",
+      },
+       keyframes: {
+        fadeIn: {
+          "0%": { opacity: 0, transform: "translateY(-10px)" },
+          "100%": { opacity: 1, transform: "translateY(0)" },
+        },
+        fadeOut: {
+          "0%": { opacity: 1, transform: "translateY(0)" },
+          "100%": { opacity: 0, transform: "translateY(-10px)" },
+        }
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

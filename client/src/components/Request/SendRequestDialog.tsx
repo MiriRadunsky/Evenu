@@ -5,22 +5,22 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "../components/ui/dialog";
-import { Button } from "../components/ui/button";
-import { Label } from "../components/ui/label";
-import { Textarea } from "../components/ui/textarea";
+} from "../../components/ui/dialog";
+import { Button } from "../../components/ui/button";
+import { Label } from "../../components/ui/label";
+import { Textarea } from "../../components/ui/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../components/ui/select";
+} from "../../components/ui/select";
 import { useDispatch, useSelector } from "react-redux";
-import type { Supplier } from "../types/Supplier";
-import type { Event } from "../types/type";
-import type { AppDispatch, RootState } from "../store";
-import { fetchEvents } from "../store/eventsSlice";
+import type { Supplier } from "../../types/Supplier";
+import type { Event } from "../../types/type";
+import type { AppDispatch, RootState } from "../../store";
+import { fetchEvents } from "../../store/eventsSlice";
 
 interface SendRequestDialogProps {
   supplier: Supplier;

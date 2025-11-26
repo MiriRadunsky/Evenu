@@ -24,11 +24,8 @@ export const PaymentService = {
   // }
   // ,
 
-  async createPayment(contractId, data, session = null, userId) {
-    console.log('data payment beafor create',data);
-    
+  async createPayment(contractId, data, session = null, userId) {    
     const payment = await PaymentRepository.create(contractId, data, session);
-
     const payloadTime = new Date(); // עכשיו
     const dueDate = moment.tz(payment.dueDate, "Asia/Jerusalem").toDate();
     const reminderBeforeMinutes = 60; // לדוגמה, התראה שעה לפני
@@ -39,7 +36,7 @@ export const PaymentService = {
     // התראה רגילה בזמן התשלום
     await NotificationService.createNotification({
       userId,
-      type: "payment_due",
+      type: "payment",
       payload: {
         contractId,
         paymentId: payment._id,

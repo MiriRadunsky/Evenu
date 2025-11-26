@@ -8,11 +8,11 @@ import { Input } from "../components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { MapPin, Search, Send } from "lucide-react";
 import { SupplierDetailsDialog } from "../components/supplier/SupplierDetailsDialog";
-import { SendRequestDialog } from "../components/SendRequestDialog";
 import type { Supplier } from "../types/Supplier";
 import { getImageUrl } from "../services/uploadFile";
 import { createSupplierRequest } from "../store/supplierRequestsSlice";
 import { Badge } from "../components/ui/badge";
+import { SendRequestDialog } from "../components/Request/SendRequestDialog";
 
 export default function Suppliers() {
   const dispatch: AppDispatch = useDispatch();

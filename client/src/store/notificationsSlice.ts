@@ -1,40 +1,48 @@
-import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
+import {
+  createSlice,
+  createAsyncThunk,
+  type PayloadAction,
+} from "@reduxjs/toolkit";
 
-import type { Notification } from './../types/type';
-import api from '../services/axios';
-import type { Socket } from 'socket.io-client';
+import type { Notification } from "./../types/type";
+import api from "../services/axios";
+import type { Socket } from "socket.io-client";
 
 interface NotificationsState {
   notifications: Notification[];
   socket?: Socket;
+  loading: boolean;
+  error: string;
 }
 
 const initialState: NotificationsState = {
   notifications: [],
+  loading: false,
+  error: "",
+  socket: undefined,
 };
 
 export const fetchNotifications = createAsyncThunk(
-  'notifications/fetch',
+  "notifications/fetch",
   async () => {
-    const res = await api.get<Notification[]>('/notifications');
-    return res.data ;
-
+    const res = await api.get<Notification[]>("/notifications");
+    return res.data;
   }
 );
 export const markNotificationAsRead = createAsyncThunk(
-  'notifications/markAsRead',
+  "notifications/markAsRead",
   async (notificationId: string) => {
-   const res = await api.post(`/notifications/markAsRead`, {
+    const res = await api.post(`/notifications/markAsRead`, {
       notificationId, // 👈 זה נשלח בתוך body
     });
     console.log(res);
-    
+
     return notificationId; // נניח שהשרת מחזיר את ההודעה המעודכנת
   }
 );
 
 export const notificationsSlice = createSlice({
-  name: 'notifications',
+  name: "notifications",
   initialState,
   reducers: {
     setSocket(state, action: PayloadAction<Socket>) {
@@ -45,20 +53,38 @@ export const notificationsSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    // builder.addCase(fetchNotifications.fulfilled, (state, action) => {
-    //   state.notifications = action.payload;
-    // });
-    builder.addCase(fetchNotifications.fulfilled, (state, action) => {
-  state.notifications = Array.isArray(action.payload)
-    ? action.payload
-    : Object.values(action.payload);
-});
-
-    builder.addCase(markNotificationAsRead.fulfilled, (state, action) => {
-      state.notifications = state.notifications.filter(
-        n => n.id !== action.payload
-      );
-    });
+    builder
+      .addCase(fetchNotifications.pending, (state) => {
+        state.loading = true;
+        state.error = "";
+      })
+      .addCase(fetchNotifications.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch notifications";
+      })
+      .addCase(fetchNotifications.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = "";
+        state.notifications = Array.isArray(action.payload)
+          ? action.payload
+          : Object.values(action.payload);
+      })
+      .addCase(markNotificationAsRead.pending, (state) => {
+        state.loading = true;
+        state.error = "";
+      })
+      .addCase(markNotificationAsRead.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.error.message || "Failed to mark notification as read";
+      })
+      .addCase(markNotificationAsRead.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = "";
+        state.notifications = state.notifications.filter(
+          (n) => n.id !== action.payload
+        );
+      });
   },
 });
 

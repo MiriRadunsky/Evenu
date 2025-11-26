@@ -13,13 +13,6 @@ export interface Request {
 //   sentAt?: string;
 // }
 
-export interface DashboardState {
-  events: Event[];
-  requests: Request[];
-  payments: Payment[];
-  messages: Message[];
-  loading: boolean;
-}
 // export type { Event, Request, Payment, Message, DashboardState };
 
 // types.ts
@@ -113,37 +106,6 @@ export interface SupplierRequest {
 }
 
 // ---------------------
-// Contract
-// ---------------------
-export interface ContractSignature {
-  party: "user" | "supplier";
-  at: Date;
-  signatureMeta?: {
-    [key: string]: unknown;
-  };
-}
-
-export interface PaymentPlanItem {
-  dueDate: Date;
-  amount: number;
-  status: "ממתין" | "שולם" | "פג תוקף";
-  receiptUrl?: string;
-}
-
-export interface Contract {
-  _id: string;
-  eventId: string;
-  supplierId: string;
-  clientId: string;
-  fileUrl: string;
-  signatures: ContractSignature[];
-  status: "טיוטה" | "ממתין לחתימה" | "פעיל" | "הושלם" | "בוטל";
-  paymentPlan?: PaymentPlanItem[];
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-// ---------------------
 // Payment
 // ---------------------
 export interface Payment {
@@ -181,9 +143,9 @@ export interface Message {
 // Notification
 // ---------------------
 export interface Notification {
-  _id: string;
+  id: string;
   userId: string;
-  type: "payment" | "contract" | "meeting" | "system";
+  type: "payment" | "contract" | "meeting" | "system"|"event"|"request";
   payload: {
     contractId: string;
     paymentId: string;
@@ -194,8 +156,8 @@ export interface Notification {
   scheduledFor?: Date;
   channel: "in-app" | "email";
   readAt?: Date;
-  isRead: boolean;
   createdAt: Date;
+  priority?: "high" | "medium" | "low";
 }
 
 // ---------------------
