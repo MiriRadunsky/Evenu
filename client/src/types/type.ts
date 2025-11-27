@@ -26,7 +26,7 @@ export interface User {
   name: string;
   email: string;
   phone: string;
- role?: "client" | "supplier" | "admin";
+ role?: "user" | "supplier" | "admin";
    social?: {
     googleId?: string;
   };

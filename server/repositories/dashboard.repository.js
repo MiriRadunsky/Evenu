@@ -105,7 +105,7 @@ export const DashboardRepository ={
 
     return Payment.find({
       contractId: { $in: contractIds },
-      status: "pending",
+      status: "ממתין",
     }).lean();
   }
 ,
@@ -115,7 +115,7 @@ export const DashboardRepository ={
 
     return Payment.find({
       contractId: { $in: contractIds },
-      status: "pending",
+      status: "ממתין",
     }).lean();
   }
 ,
@@ -125,7 +125,7 @@ export const DashboardRepository ={
 
     return Payment.countDocuments({
       contractId: { $in: contractIds },
-      status: "pending",
+      status: "ממתין",
     });
   }
 ,
@@ -135,7 +135,7 @@ export const DashboardRepository ={
 
     return Payment.countDocuments({
       contractId: { $in: contractIds },
-      status: "pending",
+      status: "ממתין",
     });
   }
 ,
@@ -148,7 +148,7 @@ export const DashboardRepository ={
 
     return Payment.countDocuments({
       contractId: { $in: contractIds },
-      status: "pending",
+      status: "ממתין",
       dueDate: { $lt: today },
     });
   },
@@ -162,7 +162,7 @@ export const DashboardRepository ={
 
     return Payment.countDocuments({
       contractId: { $in: contractIds },
-      status: "pending",
+      status: "ממתין",
       dueDate: { $lt: today },
     });
   }
@@ -173,7 +173,7 @@ export const DashboardRepository ={
 
     return Payment.countDocuments({
       contractId: { $in: contractIds },
-      status: "paid",
+      status: "שולם",
     });
   }
 ,
@@ -183,7 +183,7 @@ export const DashboardRepository ={
 
     return Payment.countDocuments({
       contractId: { $in: contractIds },
-      status: "paid",
+      status: "שולם",
     });
   }
 }

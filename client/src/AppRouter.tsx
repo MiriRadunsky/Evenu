@@ -22,6 +22,7 @@ import SupplierContractsPage from "./pages/Supplier/SupplierContractsPage";
 import ContractsPage from "./pages/ContractsPage";
 import NotificationsPage from "./pages/NotificationsPage";
 import DashboardUser from "./pages/DahboardUser";
+import ContractsPaymentsPage from "./pages/ContractsPaymentsPage";
 
 export default function AppRouter() {
 
@@ -35,6 +36,7 @@ export default function AppRouter() {
     {title: "צ'אט", path:"/chat", element: <Chat/>, icon: FileText},
     { title: "חוזים ותשלומים", path: "/contracts-payments", element: <ContractsPage />, icon: FileText },
     { title: "התראות", path: "/notifications", element: <NotificationsPage />, icon: FileText },
+    {title:'תשלומים',path:'/payments',element:<ContractsPaymentsPage/>,icon:FileText}
   ];
   const supplierRoutes = [
     { title: "לוח בקרה ספק", path: "/supplier/dashboard", element: <SupplierDashboard />, icon: LayoutDashboard },
@@ -42,6 +44,7 @@ export default function AppRouter() {
     { title: "חוזים ותשלומים", path: "/supplier/contracts", element: <SupplierContractsPage />, icon: FileText },
     { title: "צ'אט", path: "/supplier/chat", element: <Chat/>, icon: FileText },
     { title: "התראות", path: "/supplier/notifications", element: <NotificationsPage />, icon: FileText },
+    {title:'תשלומים',path:'/supplier/payments',element:<ContractsPaymentsPage/>,icon:FileText}
 
   ];
   //  const adminRoutes = [

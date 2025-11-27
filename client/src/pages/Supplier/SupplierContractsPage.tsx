@@ -5,11 +5,11 @@ import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { fetchRequestsBySupplier } from "../../store/requestSlice";
-import { CreateContractDialog } from "../../components/ContractsAndPayments/CreateContractDialog";
 import ContractList from "../../components/ContractsAndPayments/contractList";
+import { CreateContractDialog } from "../../components/ContractsAndPayments/CreateContractDialog";
 
 export default function SupplierContractsPage() {
-    const dispatch: AppDispatch = useDispatch();
+  const dispatch: AppDispatch = useDispatch();
   useEffect(() => {
     dispatch(fetchContractsBySupplier());
     dispatch(fetchRequestsBySupplier());
