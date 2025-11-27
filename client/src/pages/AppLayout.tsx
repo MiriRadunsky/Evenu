@@ -88,6 +88,67 @@ export default function AppLayout({
     return parts.length > 1 ? `${parts[0][0]}${parts[1][0]}` : parts[0][0];
   }, [user?.name]);
 
+  {
+    // return (
+    //   <div className="min-h-screen flex items-center justify-center bg-background" style={{ direction: "rtl" }}>
+    //     <div className="text-center">
+    //       <h1 className="text-2xl font-bold mb-4">ניהול אירועים</h1>
+    //       <p className="text-muted-foreground mb-6">אנא התחבר כדי להמשיך</p>
+    //       <Link to="/login">
+    //         <button className="bg-primary text-primary-foreground px-6 py-2 rounded-lg hover:bg-primary/90 transition-colors">
+    //           התחבר
+    //         </button>
+    //       </Link>
+    //     </div>
+    //   </div>
+    // );
+
+  return (<>
+    <SidebarProvider style={{ direction: "rtl" } as React.CSSProperties}>
+      <Sidebar side="right">
+        <SidebarHeader>
+          <div className="flex flex-col items-center justify-start p-0 m-0">
+            <img
+              src="/src/assets/logo.png"
+              alt="Évenu לוגו"
+              className="h-28 w-auto mb-2 mt-2"
+              style={{ maxWidth: '90%', display: 'block' }}
+            />
+            <div className="w-full border-b border-[#e3e3e6] mt-2"></div>
+          </div>
+        </SidebarHeader>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {navigationItems.map((item) => {
+                  const isActive = location.pathname.startsWith(item.path);
+                  return (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton asChild isActive={isActive}>
+                        <Link to={item.path} className="flex items-center gap-2">
+                          <item.icon/>
+                          <span>{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+        <SidebarFooter>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <div className="flex items-center gap-3 px-4 py-3 border-t">
+                <Avatar className="h-10 w-10">
+                  <AvatarImage src={ ""} alt={user?.name || ""} />
+                  <AvatarFallback>{userInitials}</AvatarFallback>
+                </Avatar>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium truncate">{user?.name || user?.email}</p>
+                  <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
   // ===== התראות מה-STORE =====
 
   const unreadCount = useMemo(

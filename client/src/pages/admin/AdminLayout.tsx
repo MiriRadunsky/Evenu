@@ -51,16 +51,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <SidebarProvider style={{ direction: "rtl" } as React.CSSProperties}>
       <Sidebar side="right">
         <SidebarHeader>
-          <div className="px-4 py-6 border-b">
-            <div className="flex items-center gap-3">
-              <div className="bg-gradient-to-r from-[#d4a960] to-[#c89645] p-2 rounded-lg">
-                <Shield className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-primary">פאנל מנהל</h1>
-                <p className="text-xs text-muted-foreground">ניהול מערכת</p>
-              </div>
-            </div>
+          <div className="flex flex-col items-center justify-start p-0 m-0">
+            <img
+              src="/src/assets/logo.png"
+              alt="Évenu לוגו"
+              className="h-28 w-auto mb-2 mt-2"
+              style={{ maxWidth: '90%', display: 'block' }}
+            />
+            <div className="w-full border-b border-[#e3e3e6] mt-2"></div>
           </div>
         </SidebarHeader>
         <SidebarContent>
