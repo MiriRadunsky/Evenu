@@ -7,7 +7,7 @@ import supplierRouter from './supplier.route.js';
 import contractRouter from './contract.routes.js';
 // import notificationRouter from './notification.routes.js';
 import messageRouter from './message.route.js';
-
+import categoriesRouter from './categories.route.js';
 import userRouter from './user.route.js'; 
 import eventRoutes from './event.route.js';
 import requestsRouter from './request.route.js';
@@ -34,7 +34,7 @@ router.use('/notifications', notificationRoutes);
 router.use('/admin', adminRouter);
 router.use('/file', fileRouter);
 router.use('/threads', threadRouter);
-
+router.use('/categories', categoriesRouter); 
 router.get('/health', (req, res) => res.json({ up: true }));
 
 export default router;
