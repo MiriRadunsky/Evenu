@@ -38,14 +38,14 @@ export const SupplierService = {
 
   async registerSupplier({ userData, supplierData }) {
     const { token, user } = await authServ.register({ ...userData });
-    const category = await Category.findOne({ label: supplierData.category }).lean();
+    const category = await Category.findOne({ _id: supplierData.category }).lean();
     if(!category) throw new AppError(404, "Category not found");
     supplierData.category = category._id;
+    console.log("user ", user)
     const supplier = await SupplierRepository.createSupplier({
       user: user._id,
       ...supplierData,
     });
-
     return { user, supplier, token };
   },
  

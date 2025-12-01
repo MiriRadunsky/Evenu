@@ -23,15 +23,36 @@ export const SupplierController = {
 
 
   supplierRegister : asyncHandler(async (req, res) => {
-    
-    const { name, email, phone, password, category, regions, kashrut, description } = req.body;
+  const {
+    name,
+    email,
+    phone,
+    password,
+    role,
+    category,
+    regions,
+    kashrut,
+    description,
+  } = req.body;
+
+  console.log("userData:", { name, email, phone, password, role });
+  console.log("supplierData:", { category, regions, kashrut, description });
+
+  // קריאה לשירות הרישום
   const { user, supplier, token } = await SupplierService.registerSupplier({
-    userData: { name, email, phone, password ,role: 'supplier' },
-    supplierData: { category, regions, kashrut, description }
+    userData: { name, email, phone, password, role: role || "supplier" },
+    supplierData: { category, regions, kashrut, description },
   });
 
-  res.status(201).json({ message: 'Supplier created', user, supplier ,token });
+  res.cookie('token', token, {
+    httpOnly: true,        
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+    maxAge: 1000 * 60 * 60 * 24 * 7, 
+  });
+  return res.status(201).json({ success: true });
 }),
+
 
  updateMediaSupplier:asyncHandler(async (req, res) => {
 const id = req.user._id;

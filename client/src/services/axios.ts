@@ -1,31 +1,22 @@
 import axios from 'axios';
 import { store } from '../store';
+import { redirect } from 'react-router-dom';
 
-const API_URL = 'http://localhost:3000/api';
+const url =  import.meta.env.VITE_API_URL;
 
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: url || 'http://localhost:8000',
+  withCredentials: true,
   headers: { 'Content-Type': 'application/json' },
 });
 
-// Authorization interceptor
-api.interceptors.request.use((config) => {
-  const token = store.getState().auth.token; 
-  // const token = localStorage.getItem('token');
-  console.log("token",token);
-  
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
 
 // Error handling interceptor
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // store.dispatch({ type: 'auth/clearToken' }); 
-
-      // window.location.href = '/login'; 
+      redirect('/login');
     }
     return Promise.reject(error);
   }

@@ -9,7 +9,7 @@ import { Badge } from "../components/ui/badge";
 import { Send, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback } from "../components/ui/avatar";
-import { formatMessageTime } from "../utils/DataUtils";
+import { formatMessageTime } from "../Utils/DataUtils";
 
 export default function Chat() {
   const dispatch = useDispatch<AppDispatch>();
