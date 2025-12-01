@@ -20,10 +20,6 @@ export function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
     e.preventDefault();
     setError('');
     setLoading(true);
-
-
-    
-
     try {
       await login({ email, password });
       onLogin(); 
@@ -51,7 +47,6 @@ export function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
       <div className="absolute bottom-20 left-20 w-96 h-96 bg-[#2d2d35]/5 rounded-full blur-3xl"></div>
       
       <div className="relative z-10 w-full max-w-md">
-        {/* Back Button */}
         <button
           onClick={() => onNavigate('landing')}
           className="flex items-center gap-2 text-[#6d6d78] hover:text-[#2d2d35] mb-8 transition-colors group font-light"
@@ -60,7 +55,6 @@ export function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
           <span>חזרה לדף הבית</span>
         </button>
 
-        {/* Login Card */}
         <div className="p-10 border border-gray-100 shadow-xl bg-white/80 backdrop-blur-xl rounded-3xl">
           <div className="mb-10 text-center">
             <div className="relative inline-block mb-6">
@@ -116,13 +110,13 @@ export function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
             </div>
 
             <div className="flex items-center justify-between">
-              <label className="flex items-center gap-3 cursor-pointer group">
+              {/* <label className="flex items-center gap-3 cursor-pointer group">
                 <input 
                   type="checkbox" 
                   className="rounded-lg border-[#cfcfd4] text-[#d4a960] focus:ring-[#d4a960] w-5 h-5 transition-all" 
                 />
                 <span className="text-[#6d6d78] group-hover:text-[#2d2d35] transition-colors text-sm font-light">זכור אותי</span>
-              </label>
+              </label> */}
               <button 
                 type="button" 
                 className="text-[#d4a960] hover:text-[#c89645] transition-colors text-sm font-light"
@@ -140,7 +134,6 @@ export function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
             </Button>
           </form>
 
-          {/* Divider */}
           <div className="relative my-8">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-[#e3e3e6]"></div>
@@ -150,7 +143,6 @@ export function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
             </div>
           </div>
 
-          {/* Google Login Button */}
           <GoogleLoginButton
             onSuccess={onLogin}
             onError={setError}
@@ -170,7 +162,6 @@ export function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
           </div>
         </div>
 
-        {/* Security Notice */}
         <div className="mt-8 text-center">
           <div className="inline-flex items-center gap-2 bg-white/50 backdrop-blur-sm px-4 py-2 rounded-xl border border-[#d4a960]/20">
             <Lock className="w-4 h-4 text-[#d4a960]" />

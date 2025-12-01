@@ -1,6 +1,7 @@
 // import { useToken } from "../hooks/useToken";
 import { store } from "../store";
 import { clearToken, setToken } from "../store/authSlice";
+import type { AuthResponse, RegisterData } from "../types/AuthTypes";
 import api from "./axios";
 
 // Interface עבור נתוני משתמש
@@ -12,12 +13,6 @@ export interface User {
 }
 
 // Interface עבור תשובת התחברות/הרשמה
-export interface AuthResponse {
-  success: boolean;
-  message: string;
-  token: string;
-  user: User;
-}
 
 // Interface עבור נתוני התחברות
 export interface LoginData {
@@ -25,13 +20,7 @@ export interface LoginData {
   password: string;
 }
 
-// Interface עבור נתוני הרשמה
-export interface RegisterData {
-  name: string;
-  email: string;
-  phone: string;
-  password: string;
-}
+
 
 // Interface עבור נתוני Google Auth
 export interface GoogleAuthData {
@@ -46,118 +35,74 @@ export const login = async (data: LoginData): Promise<AuthResponse> => {
   try {
     const response = await api.post("/auth/login", data);
     console.log(response);
-     
-    // שמירת רק הטוקן ב-localStorage
-    if (response.data.token) {
-      store.dispatch(setToken(response.data.token));
-      // localStorage.setItem("token", response.data.token);
-    }
-
     return response.data;
-  } catch (error: any) {
+  }
+    
+   catch (error: any) {
     // טיפול בשגיאות
-    if (error.response?.data?.message) {
+     if (error.response?.data?.message) {
       throw new Error(error.response.data.message);
     }
-    if (error.response?.status === 401 || error.response?.status === 404) {
-      throw new Error("אימייל או סיסמה שגויים");
-    }
-    throw new Error("שגיאה בהתחברות. אנא נסה שוב.");
+    throw new Error("שגיאה בהתחברות");
   }
 };
 
 // פונקציית הרשמה
-export const register = async (data: RegisterData,role:string): Promise<AuthResponse> => {
+export const register = async (
+  data: RegisterData & Partial<{ category: string; regions: string; kashrut: string; description: string }>,
+  role: string
+): Promise<AuthResponse> => {
   try {
     console.log("Sending registration data:", data);
-    // if(d)
-    const route=role==='supplier'?'suppliers/register':'auth/register';
-    const response = await api.post(route, data);
+
+    const route = role === "supplier" ? "suppliers/register" : "auth/register";
+
+    // אם ספק – שולחים את כל השדות, כולל שדות המשתמש
+    const payload =
+      role === "supplier"
+        ? { ...data, role: "supplier" } // שולחים את כל השדות במבנה אחד
+        : data; // למשתמש רגיל שולחים רק את השדות הבסיסיים
+
+    const response = await api.post(route, payload);
     console.log("Server response:", response.data);
-
-    // שמירת רק הטוקן ב-localStorage
-    if (response.data.token) {
-      console.log("Saving token to localStorage:", response.data.token);
-      store.dispatch(setToken(response.data.token));
-      // localStorage.setItem("token", response.data.token);
-      console.log("Token saved! Check localStorage now.");
-    } else {
-      console.error("No token in response!", response.data);
-    }
-
     return response.data;
   } catch (error: any) {
-    console.error("Registration error:", error);
-
-    // טיפול בשגיאות מהשרת
     if (error.response?.data?.message) {
       throw new Error(error.response.data.message);
     }
-
-    // טיפול בשגיאות validation
-    if (error.response?.status === 400) {
-      throw new Error(
-        "נתונים לא תקינים. ודא שהטלפון מתחיל ב-05 והסיסמה מכילה אות גדולה, אות קטנה ומספר."
-      );
-    }
-
-    if (error.response?.status === 409) {
-      throw new Error("משתמש עם אימייל זה כבר קיים במערכת");
-    }
-
-    throw new Error("שגיאה בהרשמה. אנא נסה שוב.");
+    throw new Error("שגיאה בהרשמה");
   }
 };
 
+
+
 // פונקציית התנתקות
-export const logout = (): void => {
-  store.dispatch(clearToken());
+export const logout = async() => {
+  await api.post("/auth/logout");
 
 };
 
-export const isAuthenticated = (): boolean => {
 
-  const token = store.getState().auth.token;
-  console.log(token);
-  if (!token) return false;
-  return true;
+
+export const isAuthenticated = async (): Promise<boolean> => {
+  try {
+    await api.get("/users/me"); 
+    return true;   // אם ה-cookie תקף → 200
+  } catch {
+    return false;  // אם לא → 401
+  }
 };
 
 // פונקציה לקבלת תפקיד המשתמש מה-token
-export const getUserRole = (): string | null => {
-  const token = store.getState().auth.token;
-  
-  if (!token) return null;
-
-  try {
-    // פענוח ה-JWT token (בצורה בסיסית - לא מאומת!)
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split('')
-        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-        .join('')
-    );
-
-    const decoded = JSON.parse(jsonPayload);
-    return decoded.role || null;
-  } catch (error) {
-    console.error('Error decoding token:', error);
-    return null;
-  }
+export const getUserRole = async () => {
+  const res = await api.get("/users/me");  
+  return res.data.role;
 };
 
 // פונקציית התחברות עם Google
 export const googleAuth = async (data: GoogleAuthData): Promise<AuthResponse> => {
   try {
     const response = await api.post('/auth/google', data);
-    
-    // שמירת הטוקן ב-localStorage
-    if (response.data.token) {
-      store.dispatch(setToken(response.data.token));
-    }
-    
     return response.data;
   } catch (error: any) {
     if (error.response?.data?.message) {

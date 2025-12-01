@@ -12,7 +12,8 @@ import { PendingSuppliersPage } from "./pages/admin/PendingSuppliersPage";
 import { ActiveSuppliersPage } from "./pages/admin/ActiveSuppliersPage";
 import { SupplierDetailsPage } from "./pages/admin/SupplierDetailsPage";
 import { UsersPage } from "./pages/admin/UsersPage";
-import { getUserRole } from "./api/auth";
+import { getUserRole } from "./services/auth";
+import Requests from "./pages/Request";
 import type { AppRoute } from "./types/AppRouter";
 import SupplierDashboard from "./pages/Supplier/SupplierDashboard";
 import { RequestPage } from "./pages/RequestPage";
@@ -20,20 +21,20 @@ import { Calendar, FileText, LayoutDashboard, Send, Store } from "lucide-react";
 import SupplierRequestPage from "./pages/Supplier/SupplierRequestPage";
 import SupplierContractsPage from "./pages/Supplier/SupplierContractsPage";
 import ContractsPage from "./pages/ContractsPage";
+import { TermsOfService } from "./pages/TermsOfService";
+import { PrivacyPolicy } from "./pages/PrivacyPolicy";
 import NotificationsPage from "./pages/NotificationsPage";
 import DashboardUser from "./pages/DahboardUser";
 import ContractsPaymentsPage from "./pages/ContractsPaymentsPage";
 
 export default function AppRouter() {
 
-
-
   const userRoutes = [
     { title: "לוח בקרה", path: "/dashboard", element: < DashboardUser />, icon: LayoutDashboard },
     { title: "האירועים שלי", path: "/my-events", element: <MyEvents />, icon: Calendar },
     { title: "ספקים", path: "/suppliers", element: <Suppliers />, icon: Store },
     { title: "בקשות", path: "/requests", element: <RequestPage />, icon: Send },
-    {title: "צ'אט", path:"/chat", element: <Chat/>, icon: FileText},
+    { title: "צ'אט", path: "/chat", element: <Chat />, icon: FileText },
     { title: "חוזים ותשלומים", path: "/contracts-payments", element: <ContractsPage />, icon: FileText },
     { title: "התראות", path: "/notifications", element: <NotificationsPage />, icon: FileText },
     {title:'תשלומים',path:'/payments',element:<ContractsPaymentsPage/>,icon:FileText}
@@ -68,13 +69,12 @@ export default function AppRouter() {
   const navigate = useNavigate();
 
   const handleNavigate = (page: "landing" | "login" | "register") => {
-    console.log('handleNavigate', page);
     if (page === "landing") navigate("/");
     else if (page === "login") navigate("/login");
     else if (page === "register") navigate("/register");
   };
 
-  const handleLogin = () => {
+  const handleLoginAndRegister = () => {
     console.log("User logged in");
     const userRole = getUserRole();
     if (userRole === 'admin') {
@@ -87,30 +87,19 @@ export default function AppRouter() {
     }
   };
 
-  const handleRegister = () => {
-    console.log("User registered");
-     const userRole = getUserRole();
-    if (userRole === 'admin') {
-      navigate("/admin/dashboard");
-    } else if (userRole === 'supplier') {
-      navigate("/supplier/dashboard");
-    }
-    else {
-      navigate("/dashboard");
-    }
-  };
   return (
     <Routes>
       <Route path="/" element={<LandingPage onNavigate={handleNavigate} />} />
       <Route
         path="/login"
-        element={<LoginPage onLogin={handleLogin} onNavigate={handleNavigate} />}
+        element={<LoginPage onLogin={handleLoginAndRegister} onNavigate={handleNavigate} />}
       />
       <Route
         path="/register"
-        element={<RegisterPage onRegister={handleRegister} onNavigate={handleNavigate} />}
+        element={<RegisterPage onRegister={handleLoginAndRegister} onNavigate={handleNavigate} />}
       />
-
+      <Route path="/terms-of-service" element={<TermsOfService />} />
+      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       {/* Protected Routes */}
       {renderRoutes(userRoutes)}
       {renderRoutes(supplierRoutes)}

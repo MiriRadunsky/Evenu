@@ -13,18 +13,35 @@ import axios from "axios";
 
 //     return presignedUrl.split("?")[0]; 
 //   };
-export const uploadFileToS3 = async (file: File) => {
-  const res = await api.get('/file/upload-url', {
-    params: { fileName: file.name, contentType: file.type },
-  });
+ export const uploadFileToS3 = async (file: File) => {
+  try {
+    if (!file) throw new Error("No file provided");
 
-  const { url: presignedUrl, key } = res.data;
+    // בקשת כתובת upload מהשרת
+    const res = await api.get('/file/upload-url', {
+      params: { 
+        fileName: file.name, 
+        contentType: file.type 
+      },
+    });
 
-  await axios.put(presignedUrl, file, {
-    headers: { "Content-Type": file.type },
-  });
+    const { url: presignedUrl, key } = res.data;
+    console.log("PRESIGNED:", presignedUrl);
 
-  return key; 
+    if (!presignedUrl || !key) {
+      throw new Error("Invalid presigned response");
+    }
+
+    // העלאה ישירה ל-S3
+    await axios.put(presignedUrl, file, {
+      headers: { "Content-Type": file.type },
+    });
+
+    return key; // מחזיר את המפתח לשמירה במסד
+  } catch (error: any) {
+    console.error("S3 Upload Error:", error);
+    throw new Error(error?.message || "Failed to upload file");
+  }
 };
 
 

@@ -4,7 +4,7 @@ import authRouter from './auth.route.js';
 import supplierRouter from './supplier.route.js';
 import contractRouter from './contract.routes.js';
 import messageRouter from './message.route.js';
-
+import categoriesRouter from './categories.route.js';
 import userRouter from './user.route.js'; 
 import eventRoutes from './event.route.js';
 import requestsRouter from './request.route.js';
@@ -31,6 +31,7 @@ router.use('/notifications', notificationRoutes);
 router.use('/admin', adminRouter);
 router.use('/file', fileRouter);
 router.use('/threads', threadRouter);
+router.use('/categories', categoriesRouter); 
 router.use('/dashboard', dashboardRouter);  
 router.use('/payments', paymentRoutes);
 router.use('/cities', citiesRouter);

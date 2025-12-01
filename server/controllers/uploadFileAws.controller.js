@@ -1,28 +1,45 @@
 import { uploadFileAwsService } from '../services/uploadFileAws.service.js';
+
 export const uploadFileAwsController = {
-  getUploadUrl :async (req, res) => {
-  const { fileName, contentType } = req.query;
-  try {
-    const urlData = await uploadFileAwsService.createPresignedUploadUrl(fileName, contentType);
-res.json(urlData); // { url: "...", key: "contracts/abc.pdf" }
 
-    // const url = await uploadFileAwsService.createPresignedUploadUrl(fileName, contentType);
-    // res.json({ url });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-},
+  // ----------- UPLOAD -----------
+  getUploadUrl: async (req, res) => {
+    try {
+      const { fileName, contentType } = req.query;
 
-  getDownloadUrl : async (req, res) => {
-  const { fileKey } = req.query;
-  console.log("fileKey",fileKey);
-  try {
-    const url = await uploadFileAwsService.createPresignedDownloadUrl(fileKey);
-    console.log(url);
-    
-    res.json({ url });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+      if (!fileName || !contentType) {
+        return res.status(400).json({ error: "Missing fileName or contentType" });
+      }
+
+      const urlData = await uploadFileAwsService.createPresignedUploadUrl(
+        fileName,
+        contentType
+      );
+
+      return res.json(urlData); 
+      // יחזיר: { url: "...", key: "contracts/abc.pdf" }
+    } catch (err) {
+      console.error("AWS Upload URL Error:", err);
+      return res.status(500).json({ error: "Failed to generate upload URL" });
+    }
+  },
+
+  // ----------- DOWNLOAD -----------
+  getDownloadUrl: async (req, res) => {
+    try {
+      const { fileKey } = req.query;
+
+      if (!fileKey) {
+        return res.status(400).json({ error: "Missing fileKey" });
+      }
+
+      const url = await uploadFileAwsService.createPresignedDownloadUrl(fileKey);
+
+      return res.json({ url });
+    } catch (err) {
+      console.error("AWS Download URL Error:", err);
+      return res.status(500).json({ error: "Failed to generate download URL" });
+    }
   }
-}
+
 };

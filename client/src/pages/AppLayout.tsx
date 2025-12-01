@@ -4,7 +4,8 @@ import React, {
   useState,
   useCallback,
 } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+
 import {
   Sidebar,
   SidebarContent,
@@ -19,6 +20,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "../components/ui/sidebar";
+
 import { LogOut, Bell, X } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "../components/ui/popover";
@@ -28,7 +30,6 @@ import { Button } from "../components/ui/button";
 import { ScrollArea } from "../components/ui/scroll-area";
 
 import { initSocket } from "../services/socket";
-import type { AppDispatch, RootState } from "../store";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchNotifications,
@@ -39,6 +40,15 @@ import { fetchUser } from "../store/authSlice";
 
 import type { AppRoute } from "../types/AppRouter";
 import type { Notification } from "../types/type";
+import { fetchNotifications, markNotificationAsRead } from "../store/notificationsSlice";
+import { fetchUser } from "../store/authSlice";
+
+import { logout } from "../services/auth";
+
+import type { AppDispatch, RootState } from "../store";
+import type { AppRoute } from "../types/AppRouter";
+import type { Notification } from "../types/type";
+
 import {
   formatRelativeTime,
   getNotificationColor,
@@ -62,8 +72,15 @@ export default function AppLayout({
   const { notifications } = useSelector(
     (state: RootState) => state.notifications
   );
+  const location = useLocation();
 
-  // --- USER ---
+  const user = useSelector((state: RootState) => state.auth.user);
+  const { notifications } = useSelector((state: RootState) => state.notifications);
+
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [navigetNotification, setNavigetNotification] = useState("");
+
+  /** --- USER LOAD --- */
   useEffect(() => {
     dispatch(fetchUser());
 
@@ -74,14 +91,36 @@ export default function AppLayout({
   }, [dispatch, user?.role]);
 
   // --- SOCKET + INIT NOTIFICATIONS ---
+  }, [dispatch]);
+
+  /** קביעת נתיב בסיס להתראות */
+  useEffect(() => {
+    if (user) {
+      setNavigetNotification(
+        user.role === "supplier"
+          ? "/supplier/notifications"
+          : "/notifications"
+      );
+    }
+  }, [user]);
+
+  /** --- SOCKET + INITIAL NOTIFICATION FETCH --- */
   useEffect(() => {
     if (user?._id) {
       initSocket(user._id, dispatch);
       dispatch(fetchNotifications());
+      return () => socket?.disconnect?.();
     }
-  }, [user, dispatch]);
+  }, [user?._id, dispatch]);
 
   // --- USER INITIALS ---
+  /** LOGOUT */
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
+  /** USER INITIALS */
   const userInitials = useMemo(() => {
     if (!user?.name) return "U";
     const parts = user.name.split(" ");
@@ -92,7 +131,13 @@ export default function AppLayout({
 
   // ----- NOTIFICATIONS -----
   const unreadCount = useMemo(() => notifications?.length || 0, [notifications]);
+  /** UNREAD COUNT */
+  const unreadCount = useMemo(
+    () => notifications?.length || 0,
+    [notifications]
+  );
 
+  /** SORTED FIVE RECENT NOTIFICATIONS */
   const recentNotifications = useMemo(() => {
     if (!notifications) return [];
     return [...notifications]
@@ -104,11 +149,14 @@ export default function AppLayout({
           new Date(a.payload.time).getTime()
         );
       })
+      .sort((a: Notification, b: Notification) =>
+        new Date(b.payload.time).getTime() -
+        new Date(a.payload.time).getTime()
+      )
       .slice(0, 5);
   }, [notifications]);
 
-  const hasNewNotifications = unreadCount > 0;
-
+  /** CLICK ON NOTIFICATION */
   const handleNotificationClick = useCallback(
     (notification: Notification) => {
       dispatch(markNotificationAsRead(notification.id));
@@ -121,6 +169,7 @@ export default function AppLayout({
     logout();
     navigate("/login");
   };
+  /** ============================= JSX ============================= */
 
   return (
     <>
@@ -173,6 +222,9 @@ export default function AppLayout({
                     <p className="text-xs truncate text-muted-foreground">
                       {user?.email}
                     </p>
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium truncate">{user?.name || user?.email}</p>
+                    <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
                   </div>
                 </div>
               </SidebarMenuItem>
@@ -209,6 +261,20 @@ export default function AppLayout({
                       <Badge
                         variant="destructive"
                         className="absolute flex items-center justify-center w-5 h-5 p-0 text-xs rounded-full -top-1 -right-1"
+          {/* טופבר */}
+          <div className="sticky top-0 z-10 bg-background border-b px-4 py-3 flex items-center gap-2">
+            <SidebarTrigger />
+
+            <div className="ml-auto">
+              <Popover open={isNotificationsOpen} onOpenChange={setIsNotificationsOpen}>
+                <PopoverTrigger asChild>
+                  <Button variant="ghost" size="icon" className="relative">
+                    <Bell className="h-5 w-5 text-primary" />
+
+                    {unreadCount > 0 && (
+                      <Badge
+                        variant="destructive"
+                        className="absolute -top-1 -right-1 h-5 w-5 text-xs flex items-center justify-center rounded-full"
                       >
                         {unreadCount}
                       </Badge>
@@ -236,6 +302,7 @@ export default function AppLayout({
                         {recentNotifications.map((notification, index) => {
                           const Icon = getNotificationIcon(notification.type);
                           const iconColor = getNotificationColor(notification.type);
+                          const colorClass = getNotificationColor(notification.type);
 
                           return (
                             <React.Fragment key={notification.id}>
@@ -255,6 +322,17 @@ export default function AppLayout({
                                       <div className="w-2 h-2 rounded-full bg-destructive"></div>
                                     </div>
                                     <p className="mb-1 text-xs text-muted-foreground line-clamp-2">
+                                className="p-3 rounded-lg bg-slate-50 hover:bg-slate-100 cursor-pointer"
+                                onClick={() => handleNotificationClick(notification)}
+                              >
+                                <div className="flex items-start gap-3">
+                                  <div className={`p-2 rounded-full ${colorClass}`}>
+                                    <Icon className="h-4 w-4" />
+                                  </div>
+
+                                  <div className="flex-1 min-w-0">
+                                    <p className="font-medium text-sm truncate">{notification.type}</p>
+                                    <p className="text-xs text-muted-foreground line-clamp-2">
                                       {notification.payload.note}
                                     </p>
                                     <p className="text-xs text-muted-foreground">
