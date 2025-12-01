@@ -1,5 +1,5 @@
 // store/contractsSlice.ts
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/toolkit";
 import api from "../services/axios";
 import type { Contract } from "../types/Contract";
 
@@ -178,7 +178,3 @@ const contractsSlice = createSlice({
 });
 
 export default contractsSlice.reducer;
-
-// // Selector נוח לשימוש בקומפוננטה
-// export const selectSupplierContracts = (state: { contracts: ContractsState }) =>
-//   state.contracts.contracts;

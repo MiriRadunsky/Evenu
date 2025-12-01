@@ -53,6 +53,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
 
   return (
     <div className="min-h-screen">
+      
       <section className="relative flex items-center justify-center h-screen overflow-hidden">
         <div className="absolute inset-0 z-0">
 <ImageWithFallback
@@ -76,18 +77,19 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
         </div>
 
         <div className="relative z-10 max-w-5xl px-4 mx-auto text-center">
-          <div className="inline-flex items-center gap-2 glass-dark px-5 py-2 rounded-full mb-6 border border-[#d4a960]/30 shadow-luxury">
-            <Sparkles className="w-4 h-4 text-[#d4a960] animate-pulse" />
-            <span className="text-sm font-light text-white/95">פתרון מקצועי לניהול אירועים</span>
+          {/* לוגו שלך בלבד במרכז, ללא עיגול */}
+          <div className="flex justify-center mb-0 p-0" style={{marginBottom: 0, paddingBottom: 0}}>
+            <img src="/src/assets/logo.png" alt="Évenu לוגו" className="h-72 w-auto" style={{display:'block'}} />
           </div>
 
-          <h1 className="mb-6 text-3xl font-light leading-tight text-white md:text-4xl lg:text-5xl">
+          <h1 className="text-3xl font-light leading-tight text-white md:text-4xl lg:text-5xl mt-[-4rem]">
             ניהול אירועים חכם ומסודר
             <br />
             <span className="inline-block mt-2 text-gradient-gold">
               לציבור החרדי
             </span>
           </h1>
+          {/* No extra style needed, margin handled by Tailwind */}
 
           <p className="max-w-3xl mx-auto mb-10 text-base font-light leading-relaxed text-white/90 md:text-lg">
             פלטפורמה מקצועית לניהול מלא של אירועים - מבחירת ספקים ועד לתשלום

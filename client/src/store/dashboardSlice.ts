@@ -1,71 +1,116 @@
 import {
   createSlice,
   createAsyncThunk,
-  type ActionReducerMapBuilder,
   type PayloadAction,
 } from "@reduxjs/toolkit";
-import axios from "axios";
-import type { DashboardState, Message, Payment , Request, Event} from "../types/type";
 import api from "../services/axios";
+import type { Event } from "../types/type";
 
-const initialState: DashboardState = {
-  events: [],
-  requests: [],
-  payments: [],
-  messages: [],
+// ----- טיפוס תשובה מהשרת -----
+export interface DashboardSummaryResponse {
+  upcomingEvent: Event[]|null ; 
+  pendingRequestsCount: number;
+  approvedRequestsCount: number;   
+  activeContractsCount: number; 
+  pendingPaymentsCount: number;
+  pendingPaymentsTotal: number;
+  overduePaymentsCount: number;
+}
+
+// ----- סטייט ----- 
+export interface DashboardSummaryState {
+  loading: boolean;
+  error: string | null;
+  upcomingEvent: Event[]|null ;
+  pendingRequestsCount: number;
+  approvedRequestsCount: number;  
+  activeContractsCount: number;    
+  pendingPaymentsCount: number;
+  pendingPaymentsTotal: number;
+  overduePaymentsCount: number;
+}
+
+// ----- initialState -----
+const initialState: DashboardSummaryState = {
   loading: false,
+  error: null,
+  upcomingEvent: null,
+  pendingRequestsCount: 0,
+  approvedRequestsCount: 0,
+  activeContractsCount: 0,
+  pendingPaymentsCount: 0,
+  pendingPaymentsTotal: 0,
+  overduePaymentsCount: 0,
 };
 
-export const fetchDashboardData = createAsyncThunk(
-  "dashboard/fetchData",
-  async (userEmail: string) => {
-    
-    const [events, requests, payments, messages] = await Promise.all([
-      api.get(`/events`),
-      axios.get<Request[]>(`/api/requests?email=${userEmail}`),
-      axios.get<Payment[]>(`/api/payments`),
-      axios.get<Message[]>(`/api/messages`),
-    ]);
-    return {
-      events: events.data.events,
-      requests: requests.data,
-      payments: payments.data,
-      messages: messages.data,
-    };
-  }
-);
-
+// ----- thunk -----
+export const fetchDashboardSummaryUser = createAsyncThunk<
+  DashboardSummaryResponse
+>("dashboard/fetchSummaryUser", async () => {
+  const res = await api.get("/dashboard/summaryUser");
+  return res.data;
+});
+export const fetchDashboardSummarySupplier = createAsyncThunk<
+  DashboardSummaryResponse
+>("dashboard/fetchSummarySupplier", async () => {
+  const res = await api.get("/dashboard/summarySupplier");
+  return res.data;
+});
+// ----- slice -----
 const dashboardSlice = createSlice({
   name: "dashboard",
   initialState,
   reducers: {},
-  extraReducers: (builder: ActionReducerMapBuilder<DashboardState>) => {
+  extraReducers: (builder) => {
     builder
-      .addCase(fetchDashboardData.pending, (state: DashboardState) => {
+      .addCase(fetchDashboardSummaryUser.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(
-        fetchDashboardData.fulfilled,
-        (
-          state,
-          action: PayloadAction<{
-            events: Event[];
-            requests: Request[];
-            payments: Payment[];
-            messages: Message[];
-          }>
-        ) => {
-          state.events = action.payload.events;
-          state.requests = action.payload.requests;
-          state.payments = action.payload.payments;
-          state.messages = action.payload.messages;
+        fetchDashboardSummaryUser.fulfilled,
+        (state, action: PayloadAction<DashboardSummaryResponse>) => {
           state.loading = false;
+          state.error = null;
+          
+          state.upcomingEvent = action.payload.upcomingEvent;
+          state.pendingRequestsCount = action.payload.pendingRequestsCount;
+          state.approvedRequestsCount = action.payload.approvedRequestsCount;   // ✅
+          state.activeContractsCount = action.payload.activeContractsCount;     // ✅
+          state.pendingPaymentsCount = action.payload.pendingPaymentsCount;
+          state.pendingPaymentsTotal = action.payload.pendingPaymentsTotal;
+          state.overduePaymentsCount = action.payload.overduePaymentsCount;
         }
       )
-
-      .addCase(fetchDashboardData.rejected, (state: DashboardState) => {
+      .addCase(fetchDashboardSummaryUser.rejected, (state, action) => {
         state.loading = false;
-      });
+        state.error =
+          action.error.message || "שגיאה בטעינת נתוני הדשבורד";
+      })
+      .addCase(fetchDashboardSummarySupplier.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchDashboardSummarySupplier.fulfilled,
+        (state, action: PayloadAction<DashboardSummaryResponse>) => {
+          state.loading = false;
+          state.error = null;
+          
+          state.upcomingEvent = action.payload.upcomingEvent;
+          state.pendingRequestsCount = action.payload.pendingRequestsCount;
+          state.approvedRequestsCount = action.payload.approvedRequestsCount;   // ✅
+          state.activeContractsCount = action.payload.activeContractsCount;     // ✅
+          state.pendingPaymentsCount = action.payload.pendingPaymentsCount;
+          state.pendingPaymentsTotal = action.payload.pendingPaymentsTotal;
+          state.overduePaymentsCount = action.payload.overduePaymentsCount;
+        }
+      )
+      .addCase(fetchDashboardSummarySupplier.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+        action.error.message || "שגיאה בטעינת נתוני הדשבורד";
+      })
   },
 });
 

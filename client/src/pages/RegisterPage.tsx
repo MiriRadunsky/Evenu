@@ -17,7 +17,16 @@ export function RegisterPage({ onRegister, onNavigate }: RegisterPageProps) {
   }, []);
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-12 relative bg-gradient-to-br from-[#faf8f3] to-white">
-      {/* Background gradients / blur */}
+      {/* Logo */}
+      <div className="absolute top-8 right-8">
+        <img 
+          src="/src/assets/logo.png" 
+          alt="Évenu לוגו" 
+          className="h-14 w-auto drop-shadow-md" 
+        />
+      </div>
+      
+      {/* Decorative background elements */}
       <div className="absolute top-20 left-20 w-64 h-64 bg-[#d4a960]/10 rounded-full blur-3xl"></div>
       <div className="absolute bottom-20 right-20 w-96 h-96 bg-[#2d2d35]/5 rounded-full blur-3xl"></div>
 

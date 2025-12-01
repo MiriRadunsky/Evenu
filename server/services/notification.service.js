@@ -57,6 +57,7 @@ async createNotification({ userId, type, payload, scheduledFor, channel = 'in-ap
   async markAsRead(userId, notificationId) {
     const mapKey = `user:${userId}:notificationMap`;
     await redis.hdel(mapKey, notificationId);
+    return notificationId;
   },
 
   /**

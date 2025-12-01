@@ -106,14 +106,14 @@ export function SupplierDetailsPage() {
         );
       case 'נחסם':
         return (
-          <span className="inline-flex items-center gap-1 sm:gap-2 px-2 py-1 sm:px-4 sm:py-2 rounded-md sm:rounded-lg bg-gradient-to-r from-red-500 to-red-600 text-white font-medium text-xs sm:text-base">
+          <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-white rounded-md sm:gap-2 sm:px-4 sm:py-2 sm:rounded-lg bg-gradient-to-r from-red-500 to-red-600 sm:text-base">
             <Ban className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
             חסום
           </span>
         );
       case 'נפסל':
         return (
-          <span className="inline-flex items-center gap-1 sm:gap-2 px-2 py-1 sm:px-4 sm:py-2 rounded-md sm:rounded-lg bg-gray-500 text-white font-medium text-xs sm:text-base">
+          <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-white bg-gray-500 rounded-md sm:gap-2 sm:px-4 sm:py-2 sm:rounded-lg sm:text-base">
             <AlertCircle className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
             נדחה
           </span>
@@ -129,10 +129,10 @@ export function SupplierDetailsPage() {
     if (error) {
       return (
         <AdminLayout>
-          <div className="text-center py-12">
-            <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">שגיאה</h2>
-            <p className="text-gray-600 mb-6">{error}</p>
+          <div className="py-12 text-center">
+            <AlertCircle className="w-16 h-16 mx-auto mb-4 text-red-500" />
+            <h2 className="mb-2 text-2xl font-bold text-gray-900">שגיאה</h2>
+            <p className="mb-6 text-gray-600">{error}</p>
             <Button onClick={() => navigate('/admin/active-suppliers')}>
               חזרה לרשימת ספקים
             </Button>
@@ -160,7 +160,7 @@ export function SupplierDetailsPage() {
             </Button>
             <div>
               <h1 className="text-3xl font-bold text-gray-900">{supplier.name}</h1>
-              <p className="text-gray-500 mt-1">{supplier.category}</p>
+              <p className="mt-1 text-gray-500">{supplier.category}</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -170,15 +170,15 @@ export function SupplierDetailsPage() {
 
         {/* Error Message */}
         {error && (
-          <div className="bg-red-50 border-r-4 border-red-500 p-4 rounded-lg">
-            <p className="text-red-800 text-right">{error}</p>
+          <div className="p-4 border-r-4 border-red-500 rounded-lg bg-red-50">
+            <p className="text-right text-red-800">{error}</p>
           </div>
         )}
 
         {/* Action Buttons */}
         <Card className="p-6 bg-gradient-to-br from-white to-[#faf8f3]">
-          <h3 className="text-lg font-semibold mb-4 text-gray-900">פעולות</h3>
-          <div className="flex gap-3 flex-wrap">
+          <h3 className="mb-4 text-lg font-semibold text-gray-900">פעולות</h3>
+          <div className="flex flex-wrap gap-3">
             {supplier.status === 'בהמתנה' && (
               <>
                 <Button
@@ -192,7 +192,7 @@ export function SupplierDetailsPage() {
                 <Button
                   onClick={handleReject}
                   disabled={actionLoading}
-                  className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-md hover:shadow-lg"
+                  className="text-white shadow-md bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 hover:shadow-lg"
                 >
                   <AlertCircle className="w-4 h-4 ml-2" />
                   דחה ספק
@@ -216,10 +216,10 @@ export function SupplierDetailsPage() {
         </Card>
 
         {/* Main Info Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* Contact Info */}
           <Card className="p-6 border-2 border-[#d4a960]/20 hover:border-[#d4a960]/40 transition-all">
-            <h3 className="text-xl font-semibold mb-4 text-gray-900">פרטי יצירת קשר</h3>
+            <h3 className="mb-4 text-xl font-semibold text-gray-900">פרטי יצירת קשר</h3>
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-[#faf8f3]">
@@ -244,7 +244,7 @@ export function SupplierDetailsPage() {
 
           {/* Statistics */}
           <Card className="p-6 border-2 border-[#b8935a]/20 hover:border-[#b8935a]/40 transition-all">
-            <h3 className="text-xl font-semibold mb-4 text-gray-900">סטטיסטיקות</h3>
+            <h3 className="mb-4 text-xl font-semibold text-gray-900">סטטיסטיקות</h3>
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-[#f5f3ed]">
@@ -273,7 +273,7 @@ export function SupplierDetailsPage() {
         {/* Profile Image */}
         {supplier.profileImage && (
           <Card className="p-6">
-            <h3 className="text-xl font-semibold mb-4 text-gray-900 flex items-center gap-2">
+            <h3 className="flex items-center gap-2 mb-4 text-xl font-semibold text-gray-900">
               <ImageIcon className="w-5 h-5 text-[#d4a960]" />
               תמונת פרופיל
             </h3>
@@ -281,7 +281,7 @@ export function SupplierDetailsPage() {
               <img
                 src={supplier.profileImage.url}
                 alt={supplier.profileImage.alt || supplier.name}
-                className="w-full h-full object-cover"
+                className="object-cover w-full h-full"
               />
             </div>
           </Card>
@@ -290,7 +290,7 @@ export function SupplierDetailsPage() {
         {/* Description */}
         {supplier.description && (
           <Card className="p-6">
-            <h3 className="text-xl font-semibold mb-4 text-gray-900">תיאור</h3>
+            <h3 className="mb-4 text-xl font-semibold text-gray-900">תיאור</h3>
             <p className="text-gray-700 whitespace-pre-wrap">{supplier.description}</p>
           </Card>
         )}
@@ -298,7 +298,7 @@ export function SupplierDetailsPage() {
         {/* Regions */}
         {supplier.regions && supplier.regions.length > 0 && (
           <Card className="p-6">
-            <h3 className="text-xl font-semibold mb-4 text-gray-900 flex items-center gap-2">
+            <h3 className="flex items-center gap-2 mb-4 text-xl font-semibold text-gray-900">
               <MapPin className="w-5 h-5 text-[#d4a960]" />
               אזורי שירות
             </h3>
@@ -318,7 +318,7 @@ export function SupplierDetailsPage() {
         {/* Kashrut - only if exists */}
         {supplier.kashrut && (
           <Card className="p-6">
-            <h3 className="text-xl font-semibold mb-4 text-gray-900 flex items-center gap-2">
+            <h3 className="flex items-center gap-2 mb-4 text-xl font-semibold text-gray-900">
               <CheckCircle className="w-5 h-5 text-[#d4a960]" />
               כשרות
             </h3>
@@ -329,11 +329,11 @@ export function SupplierDetailsPage() {
         {/* Portfolio */}
         {supplier.portfolio && supplier.portfolio.length > 0 && (
           <Card className="p-6">
-            <h3 className="text-xl font-semibold mb-4 text-gray-900 flex items-center gap-2">
+            <h3 className="flex items-center gap-2 mb-4 text-xl font-semibold text-gray-900">
               <ImageIcon className="w-5 h-5 text-[#d4a960]" />
               גלריה ({supplier.portfolio.length})
             </h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
               {supplier.portfolio.map((item, index) => (
                 <div
                   key={index}
@@ -342,11 +342,11 @@ export function SupplierDetailsPage() {
                   <img
                     src={item.url}
                     alt={item.title || `תמונה ${index + 1}`}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                    className="object-cover w-full h-full transition-transform group-hover:scale-105"
                   />
                   {item.title && (
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3">
-                      <p className="text-white text-sm font-medium">{item.title}</p>
+                    <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/70 to-transparent">
+                      <p className="text-sm font-medium text-white">{item.title}</p>
                     </div>
                   )}
                 </div>

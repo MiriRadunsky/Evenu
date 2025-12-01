@@ -14,32 +14,39 @@ import { SupplierDetailsPage } from "./pages/admin/SupplierDetailsPage";
 import { UsersPage } from "./pages/admin/UsersPage";
 import { getUserRole } from "./services/auth";
 import Requests from "./pages/Request";
+import { getUserRole } from "./api/auth";
 import type { AppRoute } from "./types/AppRouter";
 import SupplierDashboard from "./pages/Supplier/SupplierDashboard";
 import { RequestPage } from "./pages/RequestPage";
 import { Calendar, FileText, LayoutDashboard, Send, Store } from "lucide-react";
-import Dashboard from "./pages/Dashboard";
 import SupplierRequestPage from "./pages/Supplier/SupplierRequestPage";
 import SupplierContractsPage from "./pages/Supplier/SupplierContractsPage";
 import ContractsPage from "./pages/ContractsPage";
 import { TermsOfService } from "./pages/TermsOfService";
 import { PrivacyPolicy } from "./pages/PrivacyPolicy";
+import NotificationsPage from "./pages/NotificationsPage";
+import DashboardUser from "./pages/DahboardUser";
+import ContractsPaymentsPage from "./pages/ContractsPaymentsPage";
 
 export default function AppRouter() {
 
   const userRoutes = [
-    { title: "לוח בקרה", path: "/dashboard", element: < Dashboard />, icon: LayoutDashboard },
+    { title: "לוח בקרה", path: "/dashboard", element: < DashboardUser />, icon: LayoutDashboard },
     { title: "האירועים שלי", path: "/my-events", element: <MyEvents />, icon: Calendar },
     { title: "ספקים", path: "/suppliers", element: <Suppliers />, icon: Store },
     { title: "בקשות", path: "/requests", element: <RequestPage />, icon: Send },
     { title: "צ'אט", path: "/chat", element: <Chat />, icon: FileText },
     { title: "חוזים ותשלומים", path: "/contracts-payments", element: <ContractsPage />, icon: FileText },
+    { title: "התראות", path: "/notifications", element: <NotificationsPage />, icon: FileText },
+    {title:'תשלומים',path:'/payments',element:<ContractsPaymentsPage/>,icon:FileText}
   ];
   const supplierRoutes = [
     { title: "לוח בקרה ספק", path: "/supplier/dashboard", element: <SupplierDashboard />, icon: LayoutDashboard },
     { title: "בקשות", path: "/supplier/requests", element: <SupplierRequestPage />, icon: Send },
     { title: "חוזים ותשלומים", path: "/supplier/contracts", element: <SupplierContractsPage />, icon: FileText },
-    { title: "חוזים ותשלומים", path: "/supplier/chat", element: <Chat />, icon: FileText },
+    { title: "צ'אט", path: "/supplier/chat", element: <Chat/>, icon: FileText },
+    { title: "התראות", path: "/supplier/notifications", element: <NotificationsPage />, icon: FileText },
+    {title:'תשלומים',path:'/supplier/payments',element:<ContractsPaymentsPage/>,icon:FileText}
 
   ];
   //  const adminRoutes = [
@@ -68,8 +75,9 @@ export default function AppRouter() {
     else if (page === "register") navigate("/register");
   };
 
-  const handleLoginAndRegister = async () => {
-    const userRole = await getUserRole();
+  const handleLoginAndRegister = () => {
+    console.log("User logged in");
+    const userRole = getUserRole();
     if (userRole === 'admin') {
       navigate("/admin/dashboard");
     } else if (userRole === 'supplier') {
@@ -96,6 +104,7 @@ export default function AppRouter() {
       {/* Protected Routes */}
       {renderRoutes(userRoutes)}
       {renderRoutes(supplierRoutes)}
+    
       {/* Admin Routes */}
       <Route
         path="/admin/dashboard"
