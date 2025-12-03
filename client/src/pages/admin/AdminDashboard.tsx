@@ -12,10 +12,12 @@ import {
 export function AdminDashboard() {
   const navigate = useNavigate();
   const [stats, setStats] = useState<AdminStats>({
-    pendingSuppliers: 0,
-    activeSuppliers: 0,
     totalUsers: 0,
-    activeEvents: 0
+    totalSuppliers: 0,
+    pendingSuppliers: 0,
+    totalEvents: 0,
+    activeContracts: 0,
+    totalRevenue: 0
   });
   
   const [error, setError] = useState<string | null>(null);
@@ -50,8 +52,8 @@ export function AdminDashboard() {
       link: '/admin/pending-suppliers'
     },
     {
-      title: 'ספקים פעילים',
-      value: stats.activeSuppliers,
+      title: 'סה"כ ספקים',
+      value: stats.totalSuppliers,
       icon: Users,
       color: 'from-[#b8935a] to-[#a67c3d]',
       bgLight: 'bg-[#f5f3ed]',
@@ -66,8 +68,8 @@ export function AdminDashboard() {
       link: '/admin/users'
     },
     {
-      title: 'אירועים פעילים',
-      value: stats.activeEvents,
+      title: 'סה"כ אירועים',
+      value: stats.totalEvents,
       icon: Calendar,
       color: 'from-[#dbb76d] to-[#ca9f52]',
       bgLight: 'bg-[#fcfaf6]',

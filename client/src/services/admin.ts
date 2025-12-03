@@ -2,10 +2,12 @@ import api from './axios';
 
 // Types
 export interface AdminStats {
-  pendingSuppliers: number;
-  activeSuppliers: number;
   totalUsers: number;
-  activeEvents: number;
+  totalSuppliers: number;
+  pendingSuppliers: number;
+  totalEvents: number;
+  activeContracts: number;
+  totalRevenue: number;
 }
 
 export interface PendingSupplier {
@@ -31,8 +33,8 @@ export interface ActiveSupplier {
 
 // API functions
 export const getAdminStats = async (): Promise<AdminStats> => {
-  const response = await api.get('/admin/stats');
-  return response.data.data;
+  const response = await api.get('/dashboard/summaryAdmin');
+  return response.data;
 };
 
 export const getPendingSuppliers = async (): Promise<PendingSupplier[]> => {

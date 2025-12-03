@@ -185,6 +185,35 @@ export const DashboardRepository ={
       contractId: { $in: contractIds },
       status: "שולם",
     });
+  },
+  
+  // Admin dashboard functions
+  async countTotalUsers() {
+    const User = (await import('../models/user.model.js')).default;
+    return User.countDocuments({ role: 'user' });
+  },
+  
+  async countTotalSuppliers() {
+    const Supplier = (await import('../models/supplier.model.js')).default;
+    return Supplier.countDocuments();
+  },
+  
+  async countPendingSuppliers() {
+    const Supplier = (await import('../models/supplier.model.js')).default;
+    return Supplier.countDocuments({ status: 'ממתין' });
+  },
+  
+  async countTotalEvents() {
+    return Event.countDocuments();
+  },
+  
+  async countAllActiveContracts() {
+    return Contract.countDocuments({ status: 'פעיל' });
+  },
+  
+  async getTotalRevenue() {
+    const payments = await Payment.find({ status: 'שולם' }).lean();
+    return payments.reduce((sum, p) => sum + (p.amount || 0), 0);
   }
 }
 
