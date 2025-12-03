@@ -45,6 +45,7 @@ import {
   getNotificationColor,
   getNotificationIcon,
 } from "../Utils/NotificationUtils";
+import { Toaster } from "sonner";
 
 export default function AppLayout({
   navigationItems,
@@ -289,6 +290,7 @@ export default function AppLayout({
           <main className="p-6">{children}</main>
         </SidebarInset>
       </SidebarProvider>
+      <Toaster/>
     </>
   );
 }

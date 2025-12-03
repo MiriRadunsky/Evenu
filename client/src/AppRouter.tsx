@@ -13,7 +13,6 @@ import { ActiveSuppliersPage } from "./pages/admin/ActiveSuppliersPage";
 import { SupplierDetailsPage } from "./pages/admin/SupplierDetailsPage";
 import { UsersPage } from "./pages/admin/UsersPage";
 import { getUserRole } from "./services/auth";
-import Requests from "./pages/Request";
 import type { AppRoute } from "./types/AppRouter";
 import SupplierDashboard from "./pages/Supplier/SupplierDashboard";
 import { RequestPage } from "./pages/RequestPage";
@@ -74,12 +73,11 @@ export default function AppRouter() {
     else if (page === "register") navigate("/register");
   };
 
-  const handleLoginAndRegister = () => {
-    console.log("User logged in");
-    const userRole = getUserRole();
+  const handleLoginAndRegister = async () => {
+    const userRole = await getUserRole();    
     if (userRole === 'admin') {
       navigate("/admin/dashboard");
-    } else if (userRole === 'supplier') {
+    } else if (userRole === 'supplier') {      
       navigate("/supplier/dashboard");
     }
     else {
