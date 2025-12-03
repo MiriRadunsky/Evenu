@@ -17,7 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
 import { Eye, Edit, Trash2, Plus } from "lucide-react";
 import { Button } from "../components/ui/button";
 
-import { formatEventDate, getEventStatusProgress } from "../utils/DataUtils";
+import { formatEventDate, getEventStatusProgress } from "../Utils/DataUtils";
 
 import { EventFormDialog } from "../components/Event/EventFormDialog";
 import { EventDetailsDialog } from "../components/Event/EventsDetailsDialog";
@@ -143,22 +143,6 @@ export default function MyEvents() {
                           <Eye className="ml-2 h-4 w-4" />
                           צפה
                         </Button>
-
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setEditingEvent(event)}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleDeleteEvent(event._id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
                       </div>
                     </CardContent>
                   </Card>
@@ -186,15 +170,6 @@ export default function MyEvents() {
         onSubmit={handleCreateEvent}
       />
 
-      {/* עריכת אירוע */}
-      {editingEvent && (
-        <EventFormDialog
-          open={!!editingEvent}
-          initialData={editingEvent}
-          onOpenChange={(open) => !open && setEditingEvent(null)}
-          onSubmit={handleUpdateEvent}
-        />
-      )}
 
       {/* פירוט אירוע */}
       {viewingEvent && (

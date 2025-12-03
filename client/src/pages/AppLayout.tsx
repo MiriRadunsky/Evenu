@@ -1,9 +1,4 @@
-import React, {
-  useEffect,
-  useMemo,
-  useState,
-  useCallback,
-} from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
 import {
@@ -72,9 +67,7 @@ export default function AppLayout({
   useEffect(() => {
     if (user) {
       setNavigetNotification(
-        user.role === "supplier"
-          ? "/supplier/notifications"
-          : "/notifications"
+        user.role === "supplier" ? "/supplier/notifications" : "/notifications"
       );
     }
   }, [user]);
@@ -98,24 +91,19 @@ export default function AppLayout({
   const userInitials = useMemo(() => {
     if (!user?.name) return "U";
     const parts = user.name.split(" ");
-    return parts.length > 1
-      ? `${parts[0][0]}${parts[1][0]}`
-      : parts[0][0];
+    return parts.length > 1 ? `${parts[0][0]}${parts[1][0]}` : parts[0][0];
   }, [user?.name]);
 
   /** UNREAD COUNT */
-  const unreadCount = useMemo(
-    () => notifications?.length || 0,
-    [notifications]
-  );
+  const unreadCount = useMemo(() => notifications?.length || 0, [notifications]);
 
   /** SORTED FIVE RECENT NOTIFICATIONS */
   const recentNotifications = useMemo(() => {
     if (!notifications) return [];
     return [...notifications]
-      .sort((a: Notification, b: Notification) =>
-        new Date(b.payload.time).getTime() -
-        new Date(a.payload.time).getTime()
+      .sort(
+        (a: Notification, b: Notification) =>
+          new Date(b.payload.time).getTime() - new Date(a.payload.time).getTime()
       )
       .slice(0, 5);
   }, [notifications]);
@@ -130,165 +118,162 @@ export default function AppLayout({
   );
 
   /** ============================= JSX ============================= */
-
   return (
-    <>
-      <SidebarProvider style={{ direction: "rtl" } as React.CSSProperties}>
-        <Sidebar side="right">
-          <SidebarHeader>
-            <div className="px-4 py-6 border-b">
-              <h1 className="text-xl font-bold text-primary">ניהול אירועים</h1>
-            </div>
-          </SidebarHeader>
+    <SidebarProvider style={{ direction: "rtl" } as React.CSSProperties}>
+      <Sidebar side="right" className="bg-background w-64 md:w-72">
+        <SidebarHeader>
+          <div className="px-4 py-6 border-b bg-background">
+            <h1 className="text-xl font-bold text-primary">ניהול אירועים</h1>
+          </div>
+        </SidebarHeader>
 
-          <SidebarContent>
-            <SidebarGroup>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  {navigationItems.map((item) => {
-                    const isActive = location.pathname.startsWith(item.path);
-                    return (
-                      <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton asChild isActive={isActive}>
-                          <Link to={item.path} className="flex items-center gap-2">
-                            <item.icon />
-                            <span>{item.title}</span>
-                          </Link>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    );
-                  })}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
-          </SidebarContent>
+        <SidebarContent className="bg-background">
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {navigationItems.map((item) => {
+                  const isActive = location.pathname.startsWith(item.path);
+                  return (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton asChild isActive={isActive}>
+                        <Link to={item.path} className="flex items-center gap-2">
+                          <item.icon />
+                          <span>{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
 
-          <SidebarFooter>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <div className="flex items-center gap-3 px-4 py-3 border-t">
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage src={""} alt={user?.name || ""} />
-                    <AvatarFallback>{userInitials}</AvatarFallback>
-                  </Avatar>
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium truncate">{user?.name || user?.email}</p>
-                    <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
-                  </div>
+        <SidebarFooter className="bg-background border-t">
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <div className="flex items-center gap-3 px-4 py-3">
+                <Avatar className="h-10 w-10">
+                  <AvatarImage src={""} alt={user?.name || ""} />
+                  <AvatarFallback>{userInitials}</AvatarFallback>
+                </Avatar>
+                <div className="min-w-0">
+                  <p className="text-sm font-medium truncate">
+                    {user?.name || user?.email}
+                  </p>
+                  <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
                 </div>
-              </SidebarMenuItem>
+              </div>
+            </SidebarMenuItem>
 
-              <SidebarMenuItem>
-                <SidebarMenuButton onClick={handleLogout}>
-                  <LogOut className="w-5 h-5" />
-                  <span>התנתק</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarFooter>
-        </Sidebar>
+            <SidebarMenuItem>
+              <SidebarMenuButton onClick={handleLogout}>
+                <LogOut className="w-5 h-5" />
+                <span>התנתק</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarFooter>
+      </Sidebar>
 
-        <SidebarInset>
-          {/* טופבר */}
-          <div className="sticky top-0 z-10 bg-background border-b px-4 py-3 flex items-center gap-2">
-            <SidebarTrigger />
+      <SidebarInset>
+        {/* טופבר */}
+        <div className="sticky top-0 z-10 bg-background border-b px-4 py-3 flex items-center gap-2">
+          <SidebarTrigger />
 
-            <div className="ml-auto">
-              <Popover open={isNotificationsOpen} onOpenChange={setIsNotificationsOpen}>
-                <PopoverTrigger asChild>
-                  <Button variant="ghost" size="icon" className="relative">
-                    <Bell className="h-5 w-5 text-primary" />
+          <div className="ml-auto">
+            <Popover open={isNotificationsOpen} onOpenChange={setIsNotificationsOpen}>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="icon" className="relative">
+                  <Bell className="h-5 w-5 text-primary" />
 
-                    {unreadCount > 0 && (
-                      <Badge
-                        variant="destructive"
-                        className="absolute -top-1 -right-1 h-5 w-5 text-xs flex items-center justify-center rounded-full"
-                      >
-                        {unreadCount}
-                      </Badge>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-
-                <PopoverContent className="w-[360px] p-0" align="end">
-                  <div className="flex items-center justify-between p-3 border-b">
-                    <h3 className="font-bold text-sm">התראות</h3>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-6 w-6"
-                      onClick={() => setIsNotificationsOpen(false)}
+                  {unreadCount > 0 && (
+                    <Badge
+                      variant="destructive"
+                      className="absolute -top-1 -right-1 h-5 w-5 text-xs flex items-center justify-center rounded-full"
                     >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
+                      {unreadCount}
+                    </Badge>
+                  )}
+                </Button>
+              </PopoverTrigger>
 
-                  <ScrollArea className="max-h-[360px]">
-                    {recentNotifications.length > 0 ? (
-                      <div className="p-2 space-y-1">
-                        {recentNotifications.map((notification, index) => {
-                          const Icon = getNotificationIcon(notification.type);
-                          const colorClass = getNotificationColor(notification.type);
+              <PopoverContent className="w-[360px] p-0" align="end">
+                <div className="flex items-center justify-between p-3 border-b">
+                  <h3 className="font-bold text-sm">התראות</h3>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6"
+                    onClick={() => setIsNotificationsOpen(false)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
 
-                          return (
-                            <React.Fragment key={notification.id}>
-                              <div
-                                className="p-3 rounded-lg bg-slate-50 hover:bg-slate-100 cursor-pointer"
-                                onClick={() => handleNotificationClick(notification)}
-                              >
-                                <div className="flex items-start gap-3">
-                                  <div className={`p-2 rounded-full ${colorClass}`}>
-                                    <Icon className="h-4 w-4" />
-                                  </div>
+                <ScrollArea className="max-h-[360px]">
+                  {recentNotifications.length > 0 ? (
+                    <div className="p-2 space-y-1">
+                      {recentNotifications.map((notification, index) => {
+                        const Icon = getNotificationIcon(notification.type);
+                        const colorClass = getNotificationColor(notification.type);
 
-                                  <div className="flex-1 min-w-0">
-                                    <p className="font-medium text-sm truncate">{notification.type}</p>
-                                    <p className="text-xs text-muted-foreground line-clamp-2">
-                                      {notification.payload.note}
-                                    </p>
-                                    <p className="text-xs text-muted-foreground">
-                                      {formatRelativeTime(notification.payload.time)}
-                                    </p>
-                                  </div>
+                        return (
+                          <React.Fragment key={notification.id}>
+                            <div
+                              className="p-3 rounded-lg bg-slate-50 hover:bg-slate-100 cursor-pointer"
+                              onClick={() => handleNotificationClick(notification)}
+                            >
+                              <div className="flex items-start gap-3">
+                                <div className={`p-2 rounded-full ${colorClass}`}>
+                                  <Icon className="h-4 w-4" />
+                                </div>
+
+                                <div className="flex-1 min-w-0">
+                                  <p className="font-medium text-sm truncate">{notification.type}</p>
+                                  <p className="text-xs text-muted-foreground line-clamp-2">
+                                    {notification.payload.note}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {formatRelativeTime(notification.payload.time)}
+                                  </p>
                                 </div>
                               </div>
+                            </div>
 
-                              {index < recentNotifications.length - 1 && (
-                                <Separator className="my-1" />
-                              )}
-                            </React.Fragment>
-                          );
-                        })}
-                      </div>
-                    ) : (
-                      <div className="p-8 text-center text-muted-foreground">
-                        <Bell className="h-10 w-10 mx-auto mb-2 opacity-40" />
-                        <p>אין התראות</p>
-                      </div>
-                    )}
-                  </ScrollArea>
-
-                  {recentNotifications.length > 0 && (
-                    <div className="border-t p-2">
-                      <Link to={navigetNotification}>
-                        <Button
-                          variant="ghost"
-                          className="w-full justify-center text-xs"
-                          onClick={() => setIsNotificationsOpen(false)}
-                        >
-                          צפה בכל ההתראות
-                        </Button>
-                      </Link>
+                            {index < recentNotifications.length - 1 && <Separator className="my-1" />}
+                          </React.Fragment>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="p-8 text-center text-muted-foreground">
+                      <Bell className="h-10 w-10 mx-auto mb-2 opacity-40" />
+                      <p>אין התראות</p>
                     </div>
                   )}
-                </PopoverContent>
-              </Popover>
-            </div>
-          </div>
+                </ScrollArea>
 
-          <main className="p-6">{children}</main>
-        </SidebarInset>
-      </SidebarProvider>
-    </>
+                {recentNotifications.length > 0 && (
+                  <div className="border-t p-2">
+                    <Link to={navigetNotification}>
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-center text-xs"
+                        onClick={() => setIsNotificationsOpen(false)}
+                      >
+                        צפה בכל ההתראות
+                      </Button>
+                    </Link>
+                  </div>
+                )}
+              </PopoverContent>
+            </Popover>
+          </div>
+        </div>
+
+        <main className="p-6">{children}</main>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }
