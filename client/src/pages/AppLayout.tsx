@@ -110,8 +110,14 @@ export default function AppLayout({ navigationItems, children }: { navigationIte
       <Sidebar side="right">
         {/* HEADER */}
         <SidebarHeader>
-          <div className="px-4 py-6 border-b">
-            <h1 className="text-xl font-bold text-primary">ניהול אירועים</h1>
+          <div className="flex flex-col items-center justify-start p-0 m-0">
+            <img
+              src="/src/assets/logo.png"
+              alt="Évenu לוגו"
+              className="h-28 w-auto mb-2 mt-2"
+              style={{ maxWidth: '90%', display: 'block' }}
+            />
+            <div className="w-full border-b border-[#e3e3e6] mt-2"></div>
           </div>
         </SidebarHeader>
 
