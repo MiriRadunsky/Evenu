@@ -12,7 +12,7 @@ import { PendingSuppliersPage } from "./pages/admin/PendingSuppliersPage";
 import { ActiveSuppliersPage } from "./pages/admin/ActiveSuppliersPage";
 import { SupplierDetailsPage } from "./pages/admin/SupplierDetailsPage";
 import { UsersPage } from "./pages/admin/UsersPage";
-import { getUserRoleAsync } from "./services/auth";
+import { getUserRole } from "./services/auth";
 import type { AppRoute } from "./types/AppRouter";
 import SupplierDashboard from "./pages/Supplier/SupplierDashboard";
 import { RequestPage } from "./pages/RequestPage";
@@ -84,11 +84,11 @@ export default function AppRouter() {
     await dispatch(fetchUser());
     
     // מקבל את ה-role מהשרת
-    const userRole = await getUserRoleAsync();
+    const userRole =  getUserRole();
     
     if (userRole === 'admin') {
       navigate("/admin/dashboard");
-    } else if (userRole === 'supplier') {
+    } else if (userRole === 'supplier') {      
       navigate("/supplier/dashboard");
     } else {
       navigate("/dashboard");

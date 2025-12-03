@@ -13,6 +13,8 @@ import { initSocket } from './sockets/message.gateway.js';
 import passport from './config/passport.config.js';
 import { initWebSocket } from './websocket/notification.socket.js';
 import './queues/scheduler.js';
+import './corn/eventStatusCron.js';
+
 const app = express();
 const server = http.createServer(app);
 initWebSocket(server);

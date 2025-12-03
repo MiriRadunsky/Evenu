@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import {
     Dialog,
     DialogContent,
@@ -8,37 +8,16 @@ import {
 } from "../ui/dialog";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue
-} from "../ui/select";
-
-import {
-    Command,
-    CommandEmpty,
-    CommandGroup,
-    CommandInput,
-    CommandItem,
-    CommandList,
-} from "../ui/command";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "../ui/popover";
-
-import { useDispatch, useSelector } from "react-redux";
-import { createEvent, updateEvent } from "../../store/eventsSlice";
-import type { AppDispatch, RootState } from "../../store";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Button } from "../ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Command, CommandInput, CommandList, CommandItem, CommandEmpty, CommandGroup } from "../ui/command";
 import { Check, ChevronsUpDown } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { createEvent, fetchEventTypes } from "../../store/eventsSlice";
+import type { AppDispatch, RootState } from "../../store";
+import { toast } from "sonner";
 import { cn } from "../../lib/utils";
-
-// רשימת ערים
 import { useCitiesList } from "../../hooks/useCitiesList";
 
 const GoldInput = (props: any) => (
@@ -51,20 +30,13 @@ const GoldInput = (props: any) => (
 interface EventFormDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    initialData?: any;
+    initialData?: any; // אם מדובר בעריכה
 }
 
 export const EventFormDialog = ({ open, onOpenChange, initialData }: EventFormDialogProps) => {
     const dispatch = useDispatch<AppDispatch>();
-    const { types: eventTypes, loadingList, loadingOne } = useSelector(
-        (state: RootState) => state.events
-    );
-
-    const cities = useCitiesList(); // ← רשימת ערים ממשרד הפנים
-
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [cityOpen, setCityOpen] = useState(false);
-    const [citySearch, setCitySearch] = useState("");
+    const { types: eventTypes, loadingList, loadingOne } = useSelector((state: RootState) => state.events);
+    const cities = useCitiesList();
 
     const [formData, setFormData] = useState({
         name: "",
@@ -75,15 +47,17 @@ export const EventFormDialog = ({ open, onOpenChange, initialData }: EventFormDi
         estimatedGuests: "",
     });
 
-    // סינון ערים לפי חיפוש
-    const filteredCities = useMemo(() => {
-        if (!citySearch) return cities.slice(0, 50); // מראה רק 50 ערים בהתחלה
-        return cities.filter(city => 
-            city.includes(citySearch)
-        ).slice(0, 50);
-    }, [cities, citySearch]);
+    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [cityOpen, setCityOpen] = useState(false);
+    const [citySearch, setCitySearch] = useState("");
 
-    // מילוי נתונים בעת עריכה
+    // טען סוגי אירועים
+    useEffect(() => {
+        dispatch(fetchEventTypes());
+    }, [dispatch]);
+
+    // מילוי טופס אם מדובר בעריכה
     useEffect(() => {
         if (initialData) {
             setFormData({
@@ -94,24 +68,56 @@ export const EventFormDialog = ({ open, onOpenChange, initialData }: EventFormDi
                 budget: initialData.budget?.toString() || "",
                 estimatedGuests: initialData.estimatedGuests?.toString() || "",
             });
-        } else {
-            setFormData({
-                name: "",
-                type: "",
-                date: "",
-                locationRegion: "",
-                budget: "",
-                estimatedGuests: "",
-            });
         }
-    }, [initialData, open]);
+    }, [initialData]);
+
+    // סינון ערים לפי חיפוש
+    const filteredCities = useMemo(() => {
+        if (!citySearch) return cities.slice(0, 50);
+        return cities.filter(city => city.includes(citySearch)).slice(0, 50);
+    }, [cities, citySearch]);
+
+    // ולידציה
+    const validate = (): boolean => {
+        const newErrors: Record<string, string> = {};
+
+        if (!formData.name.trim()) newErrors.name = "שם האירוע הוא שדה חובה";
+        else if (formData.name.trim().length < 2) newErrors.name = "שם האירוע חייב להכיל לפחות 2 תווים";
+        else if (formData.name.trim().length > 100) newErrors.name = "שם האירוע לא יכול להכיל יותר מ-100 תווים";
+
+        if (!formData.type) newErrors.type = "יש לבחור סוג אירוע";
+        else if (!eventTypes.includes(formData.type)) newErrors.type = `סוג האירוע לא תקין. אפשרויות: ${eventTypes.join(", ")}`;
+
+        if (!formData.date) newErrors.date = "תאריך האירוע הוא חובה";
+        else if (new Date(formData.date) < new Date(new Date().toISOString().split("T")[0]))
+            newErrors.date = "תאריך האירוע חייב להיות בעתיד";
+
+        if (formData.estimatedGuests) {
+            const guests = Number(formData.estimatedGuests);
+            if (!Number.isInteger(guests) || guests < 1 || guests > 10000) newErrors.estimatedGuests = "מספר האורחים חייב להיות מספר שלם בין 1 ל-10,000";
+        } else {
+            newErrors.estimatedGuests = "מספר האורחים הוא חובה";
+        }
+
+        if (formData.budget) {
+            const budget = Number(formData.budget);
+            if (isNaN(budget) || budget < 0) newErrors.budget = "תקציב לא תקין";
+        }
+
+        if (formData.locationRegion && formData.locationRegion.length > 100)
+            newErrors.locationRegion = "אזור המיקום לא יכול להכיל יותר מ-100 תווים";
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!validate()) return;
+
         setIsSubmitting(true);
 
-        // Only send fields required for creation (exclude _id, ownerId, status, createdAt, updatedAt)
-        const createPayload = {
+        const payload = {
             name: formData.name,
             type: formData.type,
             date: formData.date,
@@ -121,15 +127,21 @@ export const EventFormDialog = ({ open, onOpenChange, initialData }: EventFormDi
         };
 
         try {
-            if (initialData?._id) {
-                await dispatch(updateEvent({ id: initialData._id, data: createPayload }));
-            } else {
-                // @ts-expect-error: createEvent expects a full Event, but backend will fill missing fields
-                await dispatch(createEvent(createPayload));
-            }
+
+            await dispatch(createEvent(payload)).unwrap();
+            toast.success(`האירוע  נוצר הצלחה!`);
             onOpenChange(false);
-        } catch (error) {
-            console.error("Error saving event:", error);
+        } catch (err: any) {
+            console.error("Error saving event:", err);
+            const errorText = String(err);
+
+            if (errorText.includes("Error creating event") || errorText.includes("Network") || errorText.includes("ERR_CONNECTION_REFUSED")) {
+                toast.error("השרת אינו זמין כרגע");
+                onOpenChange(false); // סגירת דיאלוג במקרה של קריסה/שגיאה ברשת
+                return;
+            }
+
+            toast.error("אירעה שגיאה בעת שמירת האירוע");
         } finally {
             setIsSubmitting(false);
         }
@@ -145,131 +157,67 @@ export const EventFormDialog = ({ open, onOpenChange, initialData }: EventFormDi
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
-
                     {/* שם האירוע */}
                     <div className="space-y-2">
                         <Label>שם האירוע</Label>
-                        <GoldInput
-                            value={formData.name}
-                            onChange={(e) =>
-                                setFormData({ ...formData, name: e.target.value })
-                            }
-                            required
-                        />
+                        <GoldInput value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
+                        {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
                     </div>
 
                     {/* סוג אירוע */}
                     <div className="space-y-2">
                         <Label>סוג אירוע</Label>
-                        <Select
-                            value={formData.type}
-                            onValueChange={(value) =>
-                                setFormData({ ...formData, type: value })
-                            }
-                            required
-                        >
+                        <Select value={formData.type} onValueChange={(val) => setFormData({ ...formData, type: val })}>
                             <SelectTrigger>
                                 <SelectValue placeholder="בחר סוג אירוע" />
                             </SelectTrigger>
-
                             <SelectContent>
-                                {loadingList ? (
-                                    <SelectItem value="none">טוען...</SelectItem>
-                                ) : (
-                                    eventTypes?.map((type) => (
-                                        <SelectItem key={type} value={type}>
-                                            {type}
-                                        </SelectItem>
-                                    ))
-                                )}
+                                {loadingList ? <SelectItem value="none">טוען...</SelectItem> : eventTypes.map((type) => <SelectItem key={type} value={type}>{type}</SelectItem>)}
                             </SelectContent>
                         </Select>
+                        {errors.type && <p className="text-red-500 text-sm">{errors.type}</p>}
                     </div>
 
                     {/* תאריך */}
                     <div className="space-y-2">
                         <Label>תאריך האירוע</Label>
-                        <GoldInput
-                            type="date"
-                            value={formData.date}
-                            onChange={(e) =>
-                                setFormData({ ...formData, date: e.target.value })
-                            }
-                            required
-                        />
+                        <GoldInput type="date" value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} />
+                        {errors.date && <p className="text-red-500 text-sm">{errors.date}</p>}
                     </div>
 
-                    {/* מספר אורחים + תקציב */}
+                    {/* אורחים ותקציב */}
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label>מספר אורחים</Label>
-                            <GoldInput
-                                type="number"
-                                value={formData.estimatedGuests}
-                                onChange={(e) =>
-                                    setFormData({ ...formData, estimatedGuests: e.target.value })
-                                }
-                            />
+                            <GoldInput type="number" value={formData.estimatedGuests} onChange={(e) => setFormData({ ...formData, estimatedGuests: e.target.value })} />
+                            {errors.estimatedGuests && <p className="text-red-500 text-sm">{errors.estimatedGuests}</p>}
                         </div>
-
                         <div className="space-y-2">
                             <Label>תקציב (₪)</Label>
-                            <GoldInput
-                                type="number"
-                                value={formData.budget}
-                                onChange={(e) =>
-                                    setFormData({ ...formData, budget: e.target.value })
-                                }
-                            />
+                            <GoldInput type="number" value={formData.budget} onChange={(e) => setFormData({ ...formData, budget: e.target.value })} />
+                            {errors.budget && <p className="text-red-500 text-sm">{errors.budget}</p>}
                         </div>
                     </div>
 
-                    {/* ★ מיקום — רשימת ערים של ישראל עם חיפוש */}
+                    {/* מיקום */}
                     <div className="space-y-2">
                         <Label>מיקום (עיר)</Label>
-
                         <Popover open={cityOpen} onOpenChange={setCityOpen}>
                             <PopoverTrigger asChild>
-                                <Button
-                                    variant="outline"
-                                    role="combobox"
-                                    aria-expanded={cityOpen}
-                                    className="w-full justify-between border-gray-300 hover:border-yellow-500"
-                                >
+                                <Button variant="outline" role="combobox" className="w-full justify-between border-gray-300 hover:border-yellow-500">
                                     {formData.locationRegion || "בחר עיר..."}
                                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
                                 <Command shouldFilter={false}>
-                                    <CommandInput 
-                                        placeholder="חפש עיר..." 
-                                        value={citySearch}
-                                        onValueChange={setCitySearch}
-                                        className="h-9"
-                                    />
+                                    <CommandInput placeholder="חפש עיר..." value={citySearch} onValueChange={setCitySearch} className="h-9" />
                                     <CommandList className="max-h-[300px]">
-                                        <CommandEmpty>
-                                            {cities.length === 0 ? "טוען ערים..." : "לא נמצאה עיר"}
-                                        </CommandEmpty>
+                                        <CommandEmpty>{cities.length === 0 ? "טוען ערים..." : "לא נמצאה עיר"}</CommandEmpty>
                                         <CommandGroup>
                                             {filteredCities.map((city) => (
-                                                <CommandItem
-                                                    key={city}
-                                                    value={city}
-                                                    onSelect={(currentValue) => {
-                                                        setFormData({ ...formData, locationRegion: currentValue });
-                                                        setCityOpen(false);
-                                                        setCitySearch("");
-                                                    }}
-                                                    className="cursor-pointer"
-                                                >
-                                                    <Check
-                                                        className={cn(
-                                                            "mr-2 h-4 w-4",
-                                                            formData.locationRegion === city ? "opacity-100" : "opacity-0"
-                                                        )}
-                                                    />
+                                                <CommandItem key={city} value={city} onSelect={(val) => { setFormData({ ...formData, locationRegion: val }); setCityOpen(false); setCitySearch(""); }}>
+                                                    <Check className={cn("mr-2 h-4 w-4", formData.locationRegion === city ? "opacity-100" : "opacity-0")} />
                                                     {city}
                                                 </CommandItem>
                                             ))}
@@ -278,12 +226,12 @@ export const EventFormDialog = ({ open, onOpenChange, initialData }: EventFormDi
                                 </Command>
                             </PopoverContent>
                         </Popover>
+                        {errors.locationRegion && <p className="text-red-500 text-sm">{errors.locationRegion}</p>}
                     </div>
 
-                    {/* כפתור שמירה */}
                     <DialogFooter>
-                        <Button type="submit" disabled={isLoading}>
-                            {isLoading ? "שומר..." : "שמור"}
+                        <Button type="submit" disabled={isSubmitting || loadingList || loadingOne}>
+                            {isSubmitting || loadingOne ? "שומר..." : "שמור"}
                         </Button>
                     </DialogFooter>
                 </form>

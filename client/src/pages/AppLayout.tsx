@@ -1,11 +1,5 @@
-import React, {
-  useEffect,
-  useMemo,
-  useState,
-  useCallback,
-} from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-
 import {
   Sidebar,
   SidebarContent,
@@ -20,7 +14,6 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "../components/ui/sidebar";
-
 import { LogOut, Bell, X } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "../components/ui/popover";
@@ -28,37 +21,18 @@ import { Separator } from "../components/ui/separator";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
 import { ScrollArea } from "../components/ui/scroll-area";
-
 import { initSocket } from "../services/socket";
 import { useDispatch, useSelector } from "react-redux";
-
-import {
-  fetchNotifications,
-  markNotificationAsRead,
-  addNotification,
-} from "../store/notificationsSlice";
-
+import { fetchNotifications, markNotificationAsRead, addNotification } from "../store/notificationsSlice";
 import { logout } from "../services/auth";
 import { fetchUser } from "../store/authSlice";
-
 import type { AppRoute } from "../types/AppRouter";
 import type { Notification } from "../types/type";
 import type { AppDispatch, RootState } from "../store";
+import { formatRelativeTime, getNotificationColor, getNotificationIcon } from "../Utils/NotificationUtils";
+import { Toaster } from "sonner";
 
-import {
-  formatRelativeTime,
-  getNotificationColor,
-  getNotificationIcon,
-} from "../Utils/NotificationUtils";
-
-
-export default function AppLayout({
-  navigationItems,
-  children,
-}: {
-  navigationItems: AppRoute[];
-  children: React.ReactNode;
-}) {
+export default function AppLayout({ navigationItems, children }: { navigationItems: AppRoute[]; children: React.ReactNode }) {
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -77,26 +51,16 @@ export default function AppLayout({
   /** SET NOTIFICATION ROUTE */
   useEffect(() => {
     if (user) {
-      setNavigateNotification(
-        user.role === "supplier"
-          ? "/supplier/notifications"
-          : "/notifications"
-      );
+      setNavigateNotification(user.role === "supplier" ? "/supplier/notifications" : "/notifications");
     }
   }, [user]);
 
   /** SOCKET + LISTENERS */
   useEffect(() => {
     if (!user?._id) return;
-
     const socket = initSocket(user._id, dispatch);
-
-    const handleNotification = (notification: any) => {
-      dispatch(addNotification(notification));
-    };
-
+    const handleNotification = (notification: any) => dispatch(addNotification(notification));
     socket?.on("notification", handleNotification);
-
     return () => {
       socket?.off("notification", handleNotification);
       socket?.disconnect?.();
@@ -105,35 +69,24 @@ export default function AppLayout({
 
   /** FETCH NOTIFICATIONS */
   useEffect(() => {
-    if (user?._id) {
-      dispatch(fetchNotifications());
-    }
+    if (user?._id) dispatch(fetchNotifications());
   }, [user?._id, dispatch]);
 
   /** USER INITIALS */
   const userInitials = useMemo(() => {
     if (!user?.name) return "U";
     const parts = user.name.split(" ");
-    return parts.length > 1
-      ? `${parts[0][0]}${parts[1][0]}`
-      : parts[0][0];
+    return parts.length > 1 ? `${parts[0][0]}${parts[1][0]}` : parts[0][0];
   }, [user?.name]);
 
   /** UNREAD COUNT */
-  const unreadCount = useMemo(
-    () => notifications?.length || 0,
-    [notifications]
-  );
+  const unreadCount = useMemo(() => notifications?.length || 0, [notifications]);
 
   /** SORTED LAST 5 NOTIFICATIONS */
   const recentNotifications = useMemo(() => {
     if (!notifications) return [];
     return [...notifications]
-      .sort(
-        (a: Notification, b: Notification) =>
-          new Date(b.payload.time).getTime() -
-          new Date(a.payload.time).getTime()
-      )
+      .sort((a: Notification, b: Notification) => new Date(b.payload.time).getTime() - new Date(a.payload.time).getTime())
       .slice(0, 5);
   }, [notifications]);
 
@@ -196,12 +149,8 @@ export default function AppLayout({
                   <AvatarFallback>{userInitials}</AvatarFallback>
                 </Avatar>
                 <div className="min-w-0">
-                  <p className="text-sm font-medium truncate">
-                    {user?.name || user?.email}
-                  </p>
-                  <p className="text-xs truncate text-muted-foreground">
-                    {user?.email}
-                  </p>
+                  <p className="text-sm font-medium truncate">{user?.name || user?.email}</p>
+                  <p className="text-xs truncate text-muted-foreground">{user?.email}</p>
                 </div>
               </div>
             </SidebarMenuItem>
@@ -229,7 +178,6 @@ export default function AppLayout({
               <PopoverTrigger asChild>
                 <Button variant="ghost" size="icon" className="relative">
                   <Bell className="w-5 h-5 text-primary" />
-
                   {unreadCount > 0 && (
                     <Badge
                       variant="destructive"
@@ -241,16 +189,10 @@ export default function AppLayout({
                 </Button>
               </PopoverTrigger>
 
-              {/* NOTIFICATION PANEL */}
               <PopoverContent className="w-[360px] p-0" align="end">
                 <div className="flex items-center justify-between p-3 border-b">
                   <h3 className="text-sm font-bold">התראות</h3>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="w-6 h-6"
-                    onClick={() => setIsNotificationsOpen(false)}
-                  >
+                  <Button variant="ghost" size="icon" className="w-6 h-6" onClick={() => setIsNotificationsOpen(false)}>
                     <X className="w-4 h-4" />
                   </Button>
                 </div>
@@ -261,7 +203,6 @@ export default function AppLayout({
                       {recentNotifications.map((notification, index) => {
                         const Icon = getNotificationIcon(notification.type);
                         const colorClass = getNotificationColor(notification.type);
-
                         return (
                           <React.Fragment key={notification.id}>
                             <div
@@ -272,24 +213,14 @@ export default function AppLayout({
                                 <div className={`p-2 rounded-full ${colorClass}`}>
                                   <Icon className="w-4 h-4" />
                                 </div>
-
                                 <div className="flex-1 min-w-0">
-                                  <p className="text-sm font-medium truncate">
-                                    {notification.type}
-                                  </p>
-                                  <p className="text-xs text-muted-foreground line-clamp-2">
-                                    {notification.payload.note}
-                                  </p>
-                                  <p className="text-xs text-muted-foreground">
-                                    {formatRelativeTime(notification.payload.time)}
-                                  </p>
+                                  <p className="text-sm font-medium truncate">{notification.type}</p>
+                                  <p className="text-xs text-muted-foreground line-clamp-2">{notification.payload.note}</p>
+                                  <p className="text-xs text-muted-foreground">{formatRelativeTime(notification.payload.time)}</p>
                                 </div>
                               </div>
                             </div>
-
-                            {index < recentNotifications.length - 1 && (
-                              <Separator className="my-1" />
-                            )}
+                            {index < recentNotifications.length - 1 && <Separator className="my-1" />}
                           </React.Fragment>
                         );
                       })}
@@ -305,11 +236,7 @@ export default function AppLayout({
                 {recentNotifications.length > 0 && (
                   <div className="p-2 border-t">
                     <Link to={navigateNotification}>
-                      <Button
-                        variant="ghost"
-                        className="justify-center w-full text-xs"
-                        onClick={() => setIsNotificationsOpen(false)}
-                      >
+                      <Button variant="ghost" className="justify-center w-full text-xs" onClick={() => setIsNotificationsOpen(false)}>
                         צפה בכל ההתראות
                       </Button>
                     </Link>
@@ -323,6 +250,8 @@ export default function AppLayout({
         {/* PAGE CONTENT */}
         <main className="p-6">{children}</main>
       </SidebarInset>
+
+      <Toaster />
     </SidebarProvider>
   );
 }
