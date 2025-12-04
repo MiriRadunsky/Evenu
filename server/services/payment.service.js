@@ -1,128 +1,50 @@
-// import moment from "moment-timezone";
-// import { PaymentRepository } from "../repositories/payment.repository.js";
-// import { NotificationService } from "./notification.service.js";
-// import {SupplierRepository} from "../repositories/suppliers.repositry.js";
-// import { AppError } from "../middlewares/error.middleware.js";
-// export const PaymentService = {
-
-
-//   async createPayment(contractId, data, session = null, userId) {    
-//     const payment = await PaymentRepository.create(contractId, data, session);
-//     const payloadTime = new Date(); // עכשיו
-//     const dueDate = moment.tz(payment.dueDate, "Asia/Jerusalem").toDate();
-//     const reminderBeforeMinutes = 60; // לדוגמה, התראה שעה לפני
-//     const reminderDate = moment(dueDate)
-//       .subtract(reminderBeforeMinutes, "minutes")
-//       .toDate();
-    
-//     // התראה רגילה בזמן התשלום
-//     await NotificationService.createNotification({
-//       userId,
-//       type: "payment",
-//       payload: {
-//         contractId,
-//         paymentId: payment._id,
-//         amount: payment.amount,
-//         note: payment.note,
-//         time: payloadTime,
-//       },
-//       scheduledFor: dueDate,
-//     });
-
-//     // התראה מוקדמת
-//     // await NotificationService.createNotification({
-//     //   userId,
-//     //   type: "payment_due_reminder",
-//     //   payload: {
-//     //     contractId,
-//     //     paymentId: payment._id,
-//     //     amount: payment.amount,
-//     //     note: payment.note,
-//     //     time: payloadTime,
-//     //   },
-//     //   scheduledFor: reminderDate,
-//     // });
-    
-//     return payment;
-//   },
-//   // עדכון תשלום (למשל שינוי סטטוס)
-//   async updatePayment(paymentId, data) {
-//     return PaymentRepository.update(paymentId, data);
-//   },
-
-//   // שליפת תשלום
-//   async getPaymentById(id) {
-//     return PaymentRepository.getById(id);
-//   },
-
-//   // כל התשלומים לחוזה
-//   async getPaymentsByContract(contractId) {
-//     return PaymentRepository.getByContract(contractId);
-//   },
-//   async getClientPayments(userId) {
-//     const [payments, summary] = await Promise.all([
-//       PaymentRepository.findPaymentsForClient(userId),
-//       PaymentRepository.getSummaryForClient(userId),
-//     ]);
-
-//     return { payments, summary };
-//   }
-// ,
-//   async getSupplierPayments(userId) {
-//   const supplierId = await SupplierRepository.getSupplierIdByUserId(userId);
-//     const [payments, summary] = await Promise.all([
-//       PaymentRepository.findPaymentsForSupplier(supplierId),
-//       PaymentRepository.getSummaryForSupplier(supplierId),
-//     ]);
-
-//     return { payments, summary };
-//   },
-//   // services/payment.service.js
-// async markPaymentAsPaid(paymentId, { method, note, paidAt }) {
-//   const payment = await PaymentRepository.getById(paymentId);  
-//   if (!payment) throw new AppError(404, 'תשלום לא נמצא');
-
-//   payment.status = 'שולם';
-//   payment.method = method || 'other';
-//   payment.paidAt = paidAt || new Date();
-//   if (note) payment.note = note;
-
-//   await payment.save();
-
-//   // אפשר לשלוח פה התראה ללקוח/ספק
-//   // await NotificationService.createNotification(...);
-
-//   return payment;
-// }
-// ,
-//   // מחיקת תשלום
-//   async deletePayment(id) {
-//     return PaymentRepository.delete(id);
-//   },
-// };
-
-// services/payment.service.js
 import moment from "moment-timezone";
 import { PaymentRepository } from "../repositories/payment.repository.js";
 import { NotificationService } from "./notification.service.js";
 import { SupplierRepository } from "../repositories/suppliers.repositry.js";
 import { AppError } from "../middlewares/error.middleware.js";
 
+const ALLOWED_METHODS = ["העברה בנקית", "מזומן", "כרטיס אשראי", "צק", "אחר"];
+
+function validateCreatePaymentData(method) {
+  if (method && !ALLOWED_METHODS.includes(method)) {
+    throw new AppError(400, "אמצעי התשלום שהוזן אינו תקין");
+  }
+}
+function validateClientReport(payment) {
+  if (payment.status === "ממתין לספק") {
+    throw new AppError(400, "תשלום זה כבר סומן כממתין לספק");
+  }
+  if (payment.status === "שולם") {
+    throw new AppError(400, "תשלום זה כבר סומן כשולם");
+  }
+  if (payment.status === "נדחה") {
+    throw new AppError(400, "תשלום נדחה – יש ליצור קשר עם הספק או עם התמיכה");
+  }
+}
+
+function validateSupplierConfirm(payment) {
+  if (payment.status === "שולם") {
+    throw new AppError(400, "תשלום זה כבר סומן כשולם");
+  }
+  if (payment.status === "נדחה") {
+    throw new AppError(400, "לא ניתן לאשר תשלום שנדחה");
+  }
+}
 
 export const PaymentService = {
-  // ---------- יצירה רגילה של תשלום לחוזה ----------
   async createPayment(contractId, data, session = null, userId = null) {
+    validateCreatePaymentData(data.method);
+
     const payment = await PaymentRepository.create(contractId, data, session);
 
     // התראה עתידית על תשלום (אם תרצי)
     if (userId && payment.dueDate) {
-      const dueDate = moment
-        .tz(payment.dueDate, "Asia/Jerusalem")
-        .toDate();
+      const dueDate = moment.tz(payment.dueDate, "Asia/Jerusalem").toDate();
 
       await NotificationService.createNotification({
         userId,
-        type: "payment",
+        type: "תשלום",
         payload: {
           contractId,
           paymentId: payment._id,
@@ -138,6 +60,8 @@ export const PaymentService = {
   },
 
   async updatePayment(paymentId, data) {
+    validateCreatePaymentData(data.method);
+
     const updated = await PaymentRepository.update(paymentId, data);
     if (!updated) {
       throw new AppError(404, "תשלום לא נמצא");
@@ -157,40 +81,57 @@ export const PaymentService = {
     return PaymentRepository.getByContract(contractId);
   },
 
-  // ---------- צד לקוח: "התשלומים שלי" ----------
-  async getClientPayments(userId) {
-    const [payments, summary] = await Promise.all([
-      PaymentRepository.findPaymentsForClient(userId),
+  async getClientPayments(
+    userId,
+    { page = 1, limit = 10, status, eventId ,searchTerm} = {}
+  ) {
+    const [pageData, summary] = await Promise.all([
+      PaymentRepository.findPaymentsForClientPaged({
+        clientUserId: userId,
+        page,
+        limit,
+        status,
+        eventId,
+        search:searchTerm
+      }),
       PaymentRepository.getSummaryForClient(userId),
     ]);
 
-    return { payments, summary };
+    return {
+      ...pageData,
+      summary,
+    };
   },
 
-  // ---------- צד ספק: "התשלומים שלי" ----------
-  async getSupplierPayments(userId) {
- 
-    const supplierId = await SupplierRepository.getSupplierIdByUserId(
-      userId
-    );
+  async getSupplierPayments(
+    userId,
+    { page = 1, limit = 10, status, eventId, searchTerm } = {}
+  ) {
+    const supplierId = await SupplierRepository.getSupplierIdByUserId(userId);
 
     if (!supplierId) {
       throw new AppError(404, "לא נמצא ספק עבור משתמש זה");
     }
 
-    const [payments, summary] = await Promise.all([
-      PaymentRepository.findPaymentsForSupplier(supplierId),
+    const [pageData, summary] = await Promise.all([
+      PaymentRepository.findPaymentsForSupplierPaged({
+        supplierId,
+        page,
+        limit,
+        status,
+        eventId,
+        search:searchTerm
+      }),
       PaymentRepository.getSummaryForSupplier(supplierId),
     ]);
 
-    return { payments, summary };
+    return {
+      ...pageData,
+      summary,
+    };
   },
 
-  // --------------------------------------------------
-  //  לקוח: דיווח "שילמתי"  (status נשאר "ממתין")
-  // --------------------------------------------------
   async clientReportPaid({ paymentId, user, method, note, documentKey }) {
-    
     const payment = await PaymentRepository.getByIdWithContract(paymentId);
     if (!payment) {
       throw new AppError(404, "תשלום לא נמצא");
@@ -201,22 +142,12 @@ export const PaymentService = {
       throw new AppError(400, "לתשלום אין חוזה משויך");
     }
 
-    // ודא שהמשתמש הוא הלקוח של החוזה
-    if (String(contract.clientId?._id || contract.clientId) !== String(user._id)) {
+    if (
+      String(contract.clientId?._id || contract.clientId) !== String(user._id)
+    ) {
       throw new AppError(403, "אין לך הרשאה לדווח על תשלום זה");
     }
-    if(payment.status === "ממתין לספק") {
-        throw new AppError(400, "תשלום זה כבר סומן כממתין לספק");
-    }
-    if (payment.status === "שולם") {
-      throw new AppError(400, "תשלום זה כבר סומן כשולם");
-    }
-    if (payment.status === "נדחה") {
-      throw new AppError(
-        400,
-        "תשלום נדחה – יש ליצור קשר עם הספק / תמיכה"
-      );
-    }
+    validateClientReport(payment);
 
     const updated = await PaymentRepository.update(paymentId, {
       method: method || payment.method,
@@ -227,14 +158,13 @@ export const PaymentService = {
       status: "ממתין לספק",
     });
 
-    // התראה לספק
     const supplierUserId =
       contract.supplierId?.user?._id || contract.supplierId?.user;
 
     if (supplierUserId) {
       await NotificationService.createNotification({
         userId: supplierUserId,
-        type: "payment_reported",
+        type: "תשלום",
         payload: {
           paymentId: updated._id,
           contractId: contract._id,
@@ -250,9 +180,6 @@ export const PaymentService = {
     return updated;
   },
 
-  // --------------------------------------------------
-  //  ספק: מאשר ששולם
-  // --------------------------------------------------
   async supplierConfirmPaid({ paymentId, user, method, note, documentKey }) {
     const payment = await PaymentRepository.getByIdWithContract(paymentId);
     if (!payment) {
@@ -264,20 +191,19 @@ export const PaymentService = {
       throw new AppError(400, "לתשלום אין חוזה משויך");
     }
 
-    const supplierId = await SupplierRepository.getSupplierIdByUserId(
-      user._id
-    );
+    const supplierId = await SupplierRepository.getSupplierIdByUserId(user._id);
     if (!supplierId) {
       throw new AppError(403, "לא נמצא ספק עבור משתמש זה");
     }
 
-    if (String(contract.supplierId?._id || contract.supplierId) !== String(supplierId)) {
+    if (
+      String(contract.supplierId?._id || contract.supplierId) !==
+      String(supplierId)
+    ) {
       throw new AppError(403, "אין לך הרשאה לאשר תשלום זה");
     }
 
-    if (payment.status === "שולם") {
-      throw new AppError(400, "תשלום זה כבר סומן כשולם");
-    }
+    validateSupplierConfirm(payment);
 
     const now = new Date();
 
@@ -297,12 +223,12 @@ export const PaymentService = {
     if (clientUserId) {
       await NotificationService.createNotification({
         userId: clientUserId,
-        type: "payment_approved",
+        type: "תשלום",
         payload: {
           paymentId: updated._id,
           contractId: contract._id,
           amount: updated.amount,
-          note: updated.note,
+          note: note,
           time: new Date(),
         },
         channel: "in-app",
@@ -312,9 +238,6 @@ export const PaymentService = {
     return updated;
   },
 
-  // --------------------------------------------------
-  //  ספק: דוחה תשלום (למשל: "לא התקבלה העברה")
-  // --------------------------------------------------
   async supplierRejectPaid({ paymentId, user, reason }) {
     if (!reason || !reason.trim()) {
       throw new AppError(400, "יש לציין סיבת דחייה");
@@ -330,14 +253,15 @@ export const PaymentService = {
       throw new AppError(400, "לתשלום אין חוזה משויך");
     }
 
-    const supplierId = await SupplierRepository.getSupplierIdByUserId(
-      user._id
-    );
+    const supplierId = await SupplierRepository.getSupplierIdByUserId(user._id);
     if (!supplierId) {
       throw new AppError(403, "לא נמצא ספק עבור משתמש זה");
     }
 
-    if (String(contract.supplierId?._id || contract.supplierId) !== String(supplierId)) {
+    if (
+      String(contract.supplierId?._id || contract.supplierId) !==
+      String(supplierId)
+    ) {
       throw new AppError(403, "אין לך הרשאה לדחות תשלום זה");
     }
 
@@ -353,12 +277,12 @@ export const PaymentService = {
     if (clientUserId) {
       await NotificationService.createNotification({
         userId: clientUserId,
-        type: "payment_rejected",
+        type: "תשלום",
         payload: {
           paymentId: updated._id,
           contractId: contract._id,
           amount: updated.amount,
-          reason,
+          note: reason,
           time: new Date(),
         },
         channel: "in-app",

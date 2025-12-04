@@ -22,7 +22,7 @@ export async function attachThreadId(req, res, next) {
         const supplierExists = await User.exists({ _id: supplierId, role: 'supplier' });
 
         if (!clientExists || !supplierExists) {
-            return res.status(404).json({ message: 'Client or Supplier not found' });
+            return res.status(404).json({ message: 'קך' });
         }
 
         // אם הלקוח שלח ThreadID – השתמש בו

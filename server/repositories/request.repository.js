@@ -1,49 +1,88 @@
-import Event from '../models/event.model.js';
-import Supplier from '../models/supplier.model.js';
-import User from '../models/user.model.js';
-import SupplierRequest from '../models/request.model.js';
+
+import SupplierRequest from "../models/request.model.js";
+function buildRequestSearchFilter(searchTerm) {
+  if (!searchTerm || typeof searchTerm !== "string" || !searchTerm.trim()) {
+    return {};
+  }
+
+  const regex = new RegExp(searchTerm.trim(), "i");
+
+  return {
+    $or: [
+      { notesFromClient: regex },
+      { "basicEventSummary.eventName": regex },
+      { "basicEventSummary.location": regex },
+      { "basicEventSummary.type": regex },
+    ],
+  };
+}
 
 export const RequestRepository = {
-  async getRequestsByUserId(userId) {
-    return SupplierRequest.find({ clientId: userId }).populate('eventId') // מביא את כל פרטי האירוע
-    .populate({
-      path: 'supplierId', 
-      populate: {
-        path: 'user', 
-        select: 'name email' 
-      }
-    });
+
+  async getRequestsByUserId(
+    userId,
+    { page = 1, limit = 10, status, eventId, searchTerm } = {}
+  ) {
+    const baseFilter = { clientId: userId };
+
+    if (status && status !== "הכל") {
+      baseFilter.status = status;
+    }
+
+    if (eventId) {
+      baseFilter.eventId = eventId;
+    }
+
+    const searchFilter = buildRequestSearchFilter(searchTerm);
+
+    const query = {
+      ...baseFilter,
+      ...searchFilter,
+    };
+
+    const pageNumber = Number(page) || 1;
+    const limitNumber = Number(limit) || 10;
+    const skip = (pageNumber - 1) * limitNumber;
+
+    const [items, total] = await Promise.all([
+      SupplierRequest.find(query)
+        .populate("eventId")
+        .populate({
+          path: "supplierId",
+          populate: {
+            path: "user",
+            select: "name email",
+          },
+        })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limitNumber),
+      SupplierRequest.countDocuments(query),
+    ]);
+
+    return {
+      items,
+      total,
+      page: pageNumber,
+      pageSize: limitNumber,
+      totalPages: Math.ceil(total / limitNumber) || 1,
+    };
   },
-  async createRequest({ eventId, supplierId, clientId, notesFromClient }) {
-
-    const event = await Event.findById(eventId);
-    if (!event) throw new Error('Event not found');
-
-    const supplier = await Supplier.findById(supplierId);
-    if (!supplier) throw new Error('Supplier not found');
-
-    const client = await User.findById(clientId);
-    if (!client) throw new Error('Client not found');
-
-    const basicEventSummary = `
-      אירוע : ${event.name || 'N/A'}
-
-      תאריך: ${event.date?.toLocaleDateString() || 'N/A'}
-
-      מיקום: ${event.locationRegion || 'N/A'}
-      
-      סוג: ${event.type || 'N/A'}
-    `;
-
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-
+  async createRequest({
+    eventId,
+    supplierId,
+    clientId,
+    notesFromClient,
+    basicEventSummary,
+    expiresAt,
+  }) {
     const request = new SupplierRequest({
       eventId,
       supplierId,
       clientId,
       notesFromClient,
       basicEventSummary,
-      expiresAt
+      expiresAt,
     });
 
     return request.save();
@@ -51,45 +90,81 @@ export const RequestRepository = {
 
   async updateStatus(id, status) {
     return SupplierRequest.findByIdAndUpdate(id, { status }, { new: true })
-      .populate('eventId')
+      .populate("eventId")
       .populate({
-        path: 'supplierId',
+        path: "supplierId",
         populate: {
-          path: 'user',
-          select: 'name email'
-        }
+          path: "user",
+          select: "name email",
+        },
       })
-      .populate('clientId');
+      .populate("clientId");
   },
 
-  async getBySupplier(supplierId) {
-    return SupplierRequest.find({ supplierId }).populate('clientId', 'name email').populate('eventId', 'name date');
-  },
+   async getBySupplier(
+    supplierId,
+    { page = 1, limit = 10, status, eventId, searchTerm } = {}
+  ) {
+    const baseFilter = { supplierId };
 
-  async getBySupplierUserId(userId) {
-    const supplier = await Supplier.findOne({ user: userId });
-    if (!supplier) return [];
-    return SupplierRequest.find({ supplierId: supplier._id })
-      .populate('eventId')
-      .populate({
-        path: 'supplierId',
-        populate: {
-          path: 'user',
-          select: 'name email'
-        }
-      })
-      .populate('clientId')
-      .sort({ createdAt: -1 });
-  },
+    if (status && status !== "הכל") {
+      baseFilter.status = status;
+    }
 
-  async getByClient(clientId) {
-    return SupplierRequest.find({ clientId }).populate('eventId supplierId');
-  },
+    if (eventId) {
+      baseFilter.eventId = eventId;
+    }
 
+    const searchFilter = buildRequestSearchFilter(searchTerm);
+
+    const query = {
+      ...baseFilter,
+      ...searchFilter,
+    };
+
+    const pageNumber = Number(page) || 1;
+    const limitNumber = Number(limit) || 10;
+    const skip = (pageNumber - 1) * limitNumber;
+
+    const [items, total] = await Promise.all([
+      SupplierRequest.find(query)
+        .populate("clientId", "name email")
+        .populate("eventId", "name date")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limitNumber),
+      SupplierRequest.countDocuments(query),
+    ]);
+
+    return {
+      items,
+      total,
+      page: pageNumber,
+      pageSize: limitNumber,
+      totalPages: Math.ceil(total / limitNumber) || 1,
+    };
+  },
+  async checkIfRequestExists({ eventId, supplierId, clientId }) {
+  return SupplierRequest.findOne({
+    eventId,
+    supplierId,
+    clientId,
+    status: { $in: ["ממתין", "מאושר"] },
+  });
+
+
+  },
+  async getRequestById(_id) {    
+   return await SupplierRequest.findById(_id)
+  },
   async updateRequestTheardId(requestId, threadId) {
-    return SupplierRequest.findByIdAndUpdate( requestId,
-    { threadId },        // עדכון השדה
-    { new: true } );
-  }
-  };
+    return SupplierRequest.findByIdAndUpdate(
+      requestId,
+      { threadId },
+      { new: true }
+    );
+  },
+};
+
+
 

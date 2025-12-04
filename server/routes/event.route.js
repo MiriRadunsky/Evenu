@@ -1,68 +1,53 @@
+// routes/event.routes.js
 import { Router } from 'express';
-import * as ctrl from '../controllers/event.controller.js';
-import asyncHandler from '../middlewares/asyncHandler.middleware.js';
+import { EventController } from '../controllers/event.controller.js';
+import { RequestController } from '../controllers/request.controller.js';
 import { authGuard } from '../middlewares/auth.middleware.js';
 import { roleGuard } from '../middlewares/role.middleware.js';
 import { validateBody } from '../middlewares/validate.middleware.js';
 import validateObjectId from '../middlewares/validateObjectId.middleware.js';
-import { createEventSchema, updateEventSchema } from '../validation/event.validation.js';
-import { RequestController } from '../controllers/request.controller.js';
+import {
+  createEventSchema,
+  updateEventSchema,
+} from '../validation/event.validation.js';
 
 const router = Router();
 
-// --- Public Routes ---
-// סוגי אירועים - נגיש לכולם, אפילו ללא login
-router.get('/types', ctrl.eventTypes);
-
-// --- Authenticated Routes ---
-// כל שאר הפעולות מחייבות authentication
+// כל הראוטים כאן מוגנים ע"י auth + role
 router.use(authGuard);
+router.use(roleGuard(['user']));
 
-// יצירת אירוע - רק למשתמשים שמחוברים (user בלבד)
-router.post(
-    '/',
-    roleGuard(['user']),
-    validateBody(createEventSchema),
-    asyncHandler(ctrl.create)
-);
+// יצירת אירוע
+router.post('/', validateBody(createEventSchema), EventController.create);
 
-// רשימת אירועים של המשתמש המחובר
-router.get(
-    '/',
-    roleGuard(['user']),
-    asyncHandler(ctrl.list)
-);
+// כל האירועים (בלי פגינציה)
+router.get('/', EventController.getAllEvents);
 
-// קבלת אירוע לפי ID - רק לבעל האירוע
-router.get(
-    '/:id',
-    roleGuard(['user']),
-    validateObjectId(),
-    asyncHandler(ctrl.getById)
-);
+// סוגי אירועים
+router.get('/types', EventController.eventTypes);
 
-// עדכון אירוע - רק לבעל האירוע
+// אירועים רלוונטיים בלבד
+router.get('/relevant', EventController.getRelevantEvents);
+
+// גרסה עם פגינציה (אופציונלי)
+router.get('/paged', EventController.getEventsPaged);
+
+// אירוע בודד
+router.get('/:id', validateObjectId(), EventController.getById);
+
+// עדכון
 router.patch(
-    '/:id',
-    roleGuard(['user']),
-    validateObjectId(),
-    validateBody(updateEventSchema),
-    asyncHandler(ctrl.update)
+  '/:id',
+  validateObjectId(),
+  validateBody(updateEventSchema),
+  EventController.update
 );
 
-// מחיקת אירוע - רק לבעל האירוע
-router.delete(
-    '/:id',
-    roleGuard(['user']),
-    validateObjectId(),
-    asyncHandler(ctrl.remove)
-);
+// מחיקה
+router.delete('/:id', validateObjectId(), EventController.remove);
 
-// יצירת בקשה לאירוע - רק למשתמשים מחוברים
-router.post(
-    '/:eventId/requests',
-    roleGuard(['user']),
-    RequestController.createRequest
-);
+// יצירת בקשה לספק עבור אירוע
+router.post('/:eventId/requests', RequestController.createRequest);
+router.put('/:id/budget', EventController.updateEventBudget);
 
 export default router;

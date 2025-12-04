@@ -1,7 +1,7 @@
 
-// import { Queue, Worker } from 'bullmq';
-// import Redis from 'ioredis';
-// import { sendNotification } from '../websocket/notification.socket.js';
+import { Queue, Worker } from 'bullmq';
+import Redis from 'ioredis';
+import { sendNotification } from '../websocket/notification.socket.js';
 
 import Redis from "ioredis";
 
@@ -42,39 +42,38 @@ const connection = new Redis(process.env.REDIS_URL || 'redis://localhost:6379', 
   maxRetriesPerRequest: null
 })
 
-// // תור לניהול התראות
 
 
 
-// // תור לניהול התראות (גם מיידיות וגם עתידיות)
-// export const notificationQueue = new Queue('notifications', { connection });
+// תור לניהול התראות (גם מיידיות וגם עתידיות)
+export const notificationQueue = new Queue('notifications', { connection });
 
-// // Worker שמבצע שליחה בזמן הנכון
-// export const notificationWorker = new Worker(
-//   'notifications',
-//   async (job) => {
-//     const notification = job.data;
+// Worker שמבצע שליחה בזמן הנכון
+export const notificationWorker = new Worker(
+  'notifications',
+  async (job) => {
+    const notification = job.data;
 
-//     // שולח בפועל דרך Socket.IO
-//     await sendNotification(notification);
+    // שולח בפועל דרך Socket.IO
+    await sendNotification(notification);
 
-//     // שומר ב־Redis רק אחרי השליחה (כדי שיופיע ב־client)
-//     const listKey = `user:${notification.userId}:notifications`;
-//     const mapKey = `user:${notification.userId}:notificationMap`;
+    // שומר ב־Redis רק אחרי השליחה (כדי שיופיע ב־client)
+    const listKey = `user:${notification.userId}:notifications`;
+    const mapKey = `user:${notification.userId}:notificationMap`;
 
-//     await connection.rpush(listKey, notification.id);
-//     await connection.hset(mapKey, notification.id, JSON.stringify(notification));
+    await connection.rpush(listKey, notification.id);
+    await connection.hset(mapKey, notification.id, JSON.stringify(notification));
 
-//     console.log(`✅ Notification sent to user ${notification.userId}`);
-//   },
-//   { connection }
-// );
+    console.log(`✅ Notification sent to user ${notification.userId}`);
+  },
+  { connection }
+);
 
-// // אירועי דיבוג
-// notificationWorker.on('completed', (job) => {
-//   console.log(`🎉 Job ${job.id} completed`);
-// });
+// אירועי דיבוג
+notificationWorker.on('completed', (job) => {
+  console.log(`🎉 Job ${job.id} completed`);
+});
 
-// notificationWorker.on('failed', (job, err) => {
-//   console.error(`❌ Job ${job?.id} failed`, err);
-// });
+notificationWorker.on('failed', (job, err) => {
+  console.error(`❌ Job ${job?.id} failed`, err);
+});

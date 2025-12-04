@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 const { Schema, model, Types } = mongoose;
 
-// 🔹 סכמת משנה לתוכנית תשלומים
 const paymentPlanSub = new Schema(
   {
     dueDate: { type: Date, required: true, index: true },
@@ -11,12 +10,11 @@ const paymentPlanSub = new Schema(
   { _id: false }
 );
 
-// 🔹 סכמת חתימת לקוח
 const clientSignatureSub = new Schema(
   {
     clientId: { type: Types.ObjectId, ref: 'User', required: true },
     signatureMeta: Schema.Types.Mixed,
-    signatureS3Key: { type: String }, // S3 Key של תמונת החתימה
+    signatureS3Key: { type: String }, 
     ipAddress: { type: String },
     userAgent: { type: String },
     at: { type: Date, default: Date.now },
@@ -33,7 +31,6 @@ const SupplierSignuterSub = new Schema(
       at: { type: Date, default: Date.now },
     },
     { _id: true })
-// 🔹 סכמת חוזה ראשית
 const contractSchema = new Schema(
   {
     eventId: { type: Types.ObjectId, ref: 'Event', required: true, index: true },
@@ -41,12 +38,10 @@ const contractSchema = new Schema(
     clientId: { type: Types.ObjectId, ref: 'User', required: true, index: true },
 
     s3Key: { type: String, required: true },
-    // חתימת ספק
     supplierSignature: { type: SupplierSignuterSub,default:null },
 
-    // חתימות לקוחות
     clientSignatures: [clientSignatureSub],
-
+   
     status: {
       type: String,
       enum: ['טיוטה', 'ממתין לספק', 'ממתין ללקוח', 'פעיל', 'הושלם', 'מבוטל'],
@@ -55,11 +50,11 @@ const contractSchema = new Schema(
     },
 
     paymentPlan: [paymentPlanSub],
+    totalAmount: { type: Number, required: true, default: 0 },
   },
   { timestamps: true }
 );
 
-// 🔹 middleware לחישוב אוטומטי של סטטוס
 contractSchema.pre('save', function (next) {
   const supplierSigned = !!this.supplierSignature;
   const clientsSigned = this.clientSignatures.length > 0;
@@ -71,11 +66,9 @@ contractSchema.pre('save', function (next) {
 
   next();
 });
-// middleware שמופעל גם ב-findOneAndUpdate
 contractSchema.pre('findOneAndUpdate', function(next) {
   const update = this.getUpdate();
 
-  // בדיקה אם החתימות מעודכנות
   const supplierSigned = update.supplierSignature || false;
   const clientsSigned = update.clientSignatures?.length > 0;
 

@@ -27,31 +27,33 @@ import { connect } from 'mongoose';
 import { uploadFileAwsController } from '../controllers/uploadFileAws.controller.js';
 const router = Router();
 
+router.use(authGuard)
 // 🔹 יצירת חוזה חדש
-router.post('/', authGuard, cnt.createContract);
+router.post('/', cnt.createContract);
 
 // 🔹 לקוח - שליפת החוזים שלו (קליינט)
-router.get('/', authGuard, cnt.getContractsByClient);
+router.get('/', cnt.getContractsByClient);
 
 // 🔹 קבלת תמונת חתימה מ-S3 (צריך להיות לפני /:id)
-router.get('/signature',authGuard, cnt.getSignatureImage);
+router.get('/signature', cnt.getSignatureImage);
 
 // 🔹 ספק - שליפת החוזים שלו
-router.get('/supplier', authGuard, cnt.getContractsBySupplier);
+router.get('/supplier', cnt.getContractsBySupplier);
 
 // 🔹 שליפת חוזה קיים
-router.get('/:id', authGuard, cnt.getContract);
+router.get('/:id', cnt.getContract);
 
 // 🔹 חתימה על חוזה
-router.post('/:id/sign', authGuard, cnt.signContract);
-router.post('/:id/cancel', authGuard, cnt.cancelContract);
+router.post('/:id/sign', cnt.signContract);
+router.post('/:id/cancel', cnt.cancelContract);
 // 🔹 אימות חתימה דיגיטלית
-router.get('/:id/verify-signature', authGuard, cnt.verifyContractSignature);
+router.get('/:id/verify-signature', cnt.verifyContractSignature);
 
-router.get('/upload-url', authGuard, uploadFileAwsController.getUploadUrl);
-router.get('/download-url', authGuard, uploadFileAwsController.getDownloadUrl);
+router.get('/upload-url', uploadFileAwsController.getUploadUrl);
+router.get('/download-url', uploadFileAwsController.getDownloadUrl);
 
 // עדכון חוזה עם S3 Key
-router.put('/:id', authGuard, cnt.updateContract);
+router.put('/:id', cnt.updateContract);
 
 export default router;
+

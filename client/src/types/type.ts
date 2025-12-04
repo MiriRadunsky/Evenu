@@ -45,6 +45,7 @@ export interface Event {
   date: Date;
   locationRegion: string;
   budget?: number;
+  
   estimatedGuests: number;
   status: "פעיל" | "הושלם" | "בוטל";
   createdAt: Date;
@@ -108,18 +109,7 @@ export interface SupplierRequest {
 // ---------------------
 // Payment
 // ---------------------
-export interface Payment {
-  _id: string;
-  contractId: string;
-  amount: number;
-  dueDate: Date;
-  paidAt?: Date;
-  status: "ממתין" | "שולם" | "פג תוקף";
-  method?: "cash" | "bank_transfer" | "check" | "other";
-  documentUrl?: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
+
 
 // ---------------------
 // Message
@@ -142,23 +132,7 @@ export interface Message {
 // ---------------------
 // Notification
 // ---------------------
-export interface Notification {
-  id: string;
-  userId: string;
-  type: "payment" | "contract" | "meeting" | "system"|"event"|"request";
-  payload: {
-    contractId: string;
-    paymentId: string;
-    amount: number;
-    note: string;
-    time: Date;
-  };
-  scheduledFor?: Date;
-  channel: "in-app" | "email";
-  readAt?: Date;
-  createdAt: Date;
-  priority?: "high" | "medium" | "low";
-}
+
 
 // ---------------------
 // EventAudit

@@ -16,7 +16,7 @@ import { getUserRole } from "./services/auth";
 import type { AppRoute } from "./types/AppRouter";
 import SupplierDashboard from "./pages/Supplier/SupplierDashboard";
 import { RequestPage } from "./pages/RequestPage";
-import { Calendar, FileText, LayoutDashboard, Send, Store } from "lucide-react";
+import { Calendar, FileText, LayoutDashboard, Send, Store ,Wallet,BellIcon,MessageSquare} from "lucide-react";
 import SupplierRequestPage from "./pages/Supplier/SupplierRequestPage";
 import SupplierContractsPage from "./pages/Supplier/SupplierContractsPage";
 import ContractsPage from "./pages/ContractsPage";
@@ -25,6 +25,7 @@ import { PrivacyPolicy } from "./pages/PrivacyPolicy";
 import NotificationsPage from "./pages/NotificationsPage";
 import DashboardUser from "./pages/DahboardUser";
 import ContractsPaymentsPage from "./pages/ContractsPaymentsPage";
+import BudgetManagementPage from "./pages/BudgetManagementPage";
 import { useDispatch } from "react-redux";
 import { fetchUser } from "./store/authSlice";
 import type { AppDispatch } from "./store";
@@ -37,18 +38,19 @@ export default function AppRouter() {
     { title: "האירועים שלי", path: "/my-events", element: <MyEvents />, icon: Calendar },
     { title: "ספקים", path: "/suppliers", element: <Suppliers />, icon: Store },
     { title: "בקשות", path: "/requests", element: <RequestPage />, icon: Send },
-    { title: "צ'אט", path: "/chat", element: <Chat />, icon: FileText },
-    { title: "חוזים ותשלומים", path: "/contracts-payments", element: <ContractsPage />, icon: FileText },
-    { title: "התראות", path: "/notifications", element: <NotificationsPage />, icon: FileText },
-    {title:'תשלומים',path:'/payments',element:<ContractsPaymentsPage/>,icon:FileText}
+    {title: "צ'אט", path:"/chat", element: <Chat/>, icon: MessageSquare},
+    { title: "חוזים", path: "/contracts-payments", element: <ContractsPage />, icon: Wallet },
+    { title: "התראות", path: "/notifications", element: <NotificationsPage />, icon: BellIcon },
+    {title:'תשלומים',path:'/payments',element:<ContractsPaymentsPage/>,icon:Wallet},
+    {title:'ניהול תקציב',path:'/budget',element:<BudgetManagementPage/>,icon:Wallet}
   ];
   const supplierRoutes = [
     { title: "לוח בקרה ספק", path: "/supplier/dashboard", element: <SupplierDashboard />, icon: LayoutDashboard },
     { title: "בקשות", path: "/supplier/requests", element: <SupplierRequestPage />, icon: Send },
-    { title: "חוזים ותשלומים", path: "/supplier/contracts", element: <SupplierContractsPage />, icon: FileText },
-    { title: "צ'אט", path: "/supplier/chat", element: <Chat/>, icon: FileText },
-    { title: "התראות", path: "/supplier/notifications", element: <NotificationsPage />, icon: FileText },
-    {title:'תשלומים',path:'/supplier/payments',element:<ContractsPaymentsPage/>,icon:FileText}
+    { title: "חוזים", path: "/supplier/contracts", element: <SupplierContractsPage />, icon: Wallet },
+    { title: "צ'אט", path: "/supplier/chat", element: <Chat/>, icon: MessageSquare },
+    { title: "התראות", path: "/supplier/notifications", element: <NotificationsPage />, icon: BellIcon },
+    {title:'תשלומים',path:'/supplier/payments',element:<ContractsPaymentsPage/>,icon:Wallet},
 
   ];
   //  const adminRoutes = [

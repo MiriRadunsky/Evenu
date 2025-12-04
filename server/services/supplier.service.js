@@ -47,8 +47,8 @@ export const SupplierService = {
  
   async updateSupplierMedia(id,profileImage, media) {
     const supplierId= await SupplierRepository.getSupplierIdByUserId(id);
-    const supplier = await SupplierRepository.updateSupplierMedia(supplierId,profileImage, media);
     if (!supplier) throw new AppError(404, "ספק לא נמצא");
+    const supplier = await SupplierRepository.updateSupplierMedia(supplierId,profileImage, media);
     return supplier;
   },
 };

@@ -1,22 +1,56 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { CheckCircle, AlertCircle, Download, PenTool, Calendar, Mail, User, Clock, MapPin } from "lucide-react";
+import {
+  AlertCircle,
+  ChevronRight,
+  ChevronLeft,
+  Calendar,
+  FileText,
+} from "lucide-react";
+import { toast } from "sonner";
 import type { AppDispatch, RootState } from "../../store";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Badge } from "../ui/badge";
+import { Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
 import type { Contract } from "../../types/Contract";
 import { getImageUrl, uploadFileToS3 } from "../../services/uploadFile";
-import { signContract } from "../../store/contractsSlice";
+import {
+  signContract,
+  fetchContractsBySupplier,
+  fetchContractsByClient,
+} from "../../store/contractsSlice";
 import { SignContractDialog } from "./SignContractDialog";
+import { ContractCard } from "./ContractCard";
+import { fetchEvents } from "../../store/eventsSlice";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "../ui/select";
 
-interface ContactListProps {
+interface ContractListProps {
   type: "client" | "supplier";
 }
 
-export default function ContractList({ type }: ContactListProps) {
+export default function ContractList({ type }: ContractListProps) {
   const user = useSelector((state: RootState) => state.auth.user);
+  const dispatch: AppDispatch = useDispatch();
+
+  const { data, loading, error } = useSelector(
+    (state: RootState) => state.contracts
+  );
+
+  const contracts = data?.items ?? [];
+  const total = data?.total ?? 0;
+  const totalPages = data?.totalPages ?? 1;
+  const serverPage = data?.page ?? 1;
+  const events = useSelector((state: RootState) => state.events.eventsList);
+
+  const [selectedTab, setSelectedTab] = useState("הכל");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedEventId, setSelectedEventId] = useState<string>("all");
 
   const [signingContractId, setSigningContractId] = useState<string | null>(
     null
@@ -28,50 +62,110 @@ export default function ContractList({ type }: ContactListProps) {
   const [signatureUrls, setSignatureUrls] = useState<Record<string, string>>(
     {}
   );
-  const dispatch: AppDispatch = useDispatch();
-  const { contracts, loading, error } = useSelector(
-    (state: RootState) => state.contracts
-  );
-  const [selectedTab, setSelectedTab] = useState("הכל");
-  
-  useEffect(() => {
-    contracts.forEach((contract) => {
-      const supplierKey = contract.supplierSignature?.signatureS3Key;
-      if (supplierKey && !signatureUrls[supplierKey]) {
-        getImageUrl(supplierKey)
-          .then((url) =>
-            setSignatureUrls((prev) => ({ ...prev, [supplierKey]: url }))
-          )
-          .catch(console.error);
-      }
+  const [searchTerm, setSearchTerm] = useState("");
 
-      contract.clientSignatures?.forEach((sig) => {
-        if (sig.signatureS3Key && !signatureUrls[sig.signatureS3Key]) {
-          getImageUrl(sig.signatureS3Key)
-            .then((url) =>
-              setSignatureUrls((prev) => ({
-                ...prev,
-                [sig.signatureS3Key]: url,
-              }))
-            )
-            .catch(console.error);
+  const [expandedSignaturesId, setExpandedSignaturesId] = useState<
+    string | null
+  >(null);
+
+  const toggleSignatures = (contractId: string) => {
+    setExpandedSignaturesId((prev) =>
+      prev === contractId ? null : contractId
+    );
+  };
+
+  useEffect(() => {
+    if (type === "client") {
+      dispatch(fetchEvents());
+    }
+  }, [dispatch, type]);
+
+  // טעינת חוזים לפי סוג, סטטוס, אירוע וחיפוש
+  useEffect(() => {
+    const statusFilter = selectedTab === "הכל" ? undefined : selectedTab;
+    const eventIdFilter =
+      selectedEventId === "all" ? undefined : selectedEventId;
+
+    const query = {
+      page: currentPage,
+      status: statusFilter,
+      searchTerm,
+    };
+
+    if (type === "supplier") {
+      dispatch(fetchContractsBySupplier(query));
+    } else {
+      dispatch(
+        fetchContractsByClient({
+          ...query,
+          eventId: eventIdFilter,
+        })
+      );
+    }
+  }, [dispatch, type, selectedTab, currentPage, selectedEventId, searchTerm]);
+
+  // סנכרון עמוד מהשרת
+  useEffect(() => {
+    if (serverPage && serverPage !== currentPage) {
+      setCurrentPage(serverPage);
+    }
+  }, [serverPage, currentPage]);
+
+  // טעינת תמונות חתימה
+  useEffect(() => {
+    if (!contracts.length) return;
+
+    (async () => {
+      for (const contract of contracts) {
+        const supplierKey = contract.supplierSignature?.signatureS3Key;
+        if (supplierKey && !signatureUrls[supplierKey]) {
+          try {
+            const url = await getImageUrl(supplierKey);
+            setSignatureUrls((prev) =>
+              prev[supplierKey] ? prev : { ...prev, [supplierKey]: url }
+            );
+          } catch (e) {
+            console.error(e);
+          }
         }
-      });
-    });
+
+        if (contract.clientSignatures?.length) {
+          for (const sig of contract.clientSignatures) {
+            if (sig.signatureS3Key && !signatureUrls[sig.signatureS3Key]) {
+              try {
+                const url = await getImageUrl(sig.signatureS3Key);
+                setSignatureUrls((prev) =>
+                  prev[sig.signatureS3Key]
+                    ? prev
+                    : { ...prev, [sig.signatureS3Key]: url }
+                );
+              } catch (e) {
+                console.error(e);
+              }
+            }
+          }
+        }
+      }
+    })();
   }, [contracts, signatureUrls]);
 
-  const filteredContracts = useMemo(() => {
+  const sortedContracts = useMemo(() => {
     if (!contracts) return [];
-    const sorted = [...contracts].sort((a, b) => {
+    return [...contracts].sort((a, b) => {
       if (!a.createdAt) return 1;
       if (!b.createdAt) return -1;
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
+  }, [contracts]);
 
-    if (selectedTab === "הכל") return sorted;
-
-    return sorted.filter((r) => r.status === selectedTab);
-  }, [contracts, selectedTab]);
+  const isClientSignedByCurrentUser = (contract: Contract) => {
+    if (!user?._id) return false;
+    return (
+      contract.clientSignatures?.some(
+        (sig) => String(sig.clientId?._id || sig.clientId) === String(user._id)
+      ) ?? false
+    );
+  };
 
   const convertBase64ToBlob = (signatureData: string) => {
     const base64 = signatureData.replace(/^data:image\/png;base64,/, "");
@@ -89,7 +183,7 @@ export default function ContractList({ type }: ContactListProps) {
     const file = new File([blob], signatureKey, { type: "image/png" });
     return { file, signatureKey };
   };
-  
+
   const handleSignatureSubmit = async (signatureData: string) => {
     if (!currentContractToSign || !user?._id) return;
 
@@ -97,372 +191,250 @@ export default function ContractList({ type }: ContactListProps) {
       setSigningContractId(currentContractToSign);
       const { file, signatureKey } = convertBase64ToBlob(signatureData);
       await uploadFileToS3(file);
-      dispatch(
+
+      await dispatch(
         signContract({
           party: type,
           contractId: currentContractToSign,
           userId: user._id,
-          signatureKey: signatureKey,
+          signatureKey,
         })
-      );
-      alert("החוזה חתום בהצלחה!");
+      ).unwrap();
+
+      toast.success("החוזה נחתם בהצלחה");
       setSignDialogOpen(false);
       setCurrentContractToSign(null);
-    } catch (err: unknown) {
-      const signError = err as { response?: { data?: { message?: string } } };
-      console.error("❌ Error signing contract:", signError);
-      alert(error || "שגיאה בחתימת החוזה");
+    } catch (err: any) {
+      console.error(" Error signing contract:", err);
+      const msg =
+        err?.response?.data?.message || err?.message || "שגיאה בחתימת החוזה";
+      toast.error(msg);
     } finally {
       setSigningContractId(null);
     }
   };
-  
+
   const handleSignContract = (contractId: string) => {
     setSignDialogOpen(true);
     setCurrentContractToSign(contractId);
   };
-  
+
   const handleDownloadContract = async (contractId: string) => {
     try {
       const contract = contracts.find((c) => c._id === contractId);
-      if (!contract?.s3Key) return alert("אין קובץ חוזה");
+      if (!contract?.s3Key) {
+        toast.error("אין קובץ חוזה להורדה");
+        return;
+      }
       const url = await getImageUrl(contract.s3Key);
       window.open(url, "_blank");
-    } catch (err: unknown) {
-      const error = err as { response?: { data?: { message?: string } } };
-      alert(error.response?.data?.message || "שגיאה בהורדת החוזה");
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err);
     }
   };
 
-  const isClientSigned = (contract: Contract) =>
-    contract.clientSignatures != undefined&&contract.clientSignatures!.length > 0;
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "טיוטה":
-        return "bg-gray-100 text-gray-800 border-gray-300";
-      case "ממתין לספק":
-        return "bg-yellow-50 text-yellow-700 border-yellow-300";
-      case "ממתין ללקוח":
-        return "bg-blue-50 text-blue-700 border-blue-300";
-      case "פעיל":
-        return "bg-green-50 text-green-700 border-green-300";
-      case "הושלם":
-        return "bg-purple-50 text-purple-700 border-purple-300";
-      case "מבוטל":
-        return "bg-red-50 text-red-700 border-red-300";
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-300";
-    }
+  const handleChangePage = (nextPage: number) => {
+    if (nextPage < 1 || nextPage > totalPages) return;
+    setCurrentPage(nextPage);
   };
 
   return (
     <div className="space-y-6" style={{ direction: "rtl" }}>
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-          החוזים שלי
-        </h1>
-        <div className="text-sm text-muted-foreground">
-          סך הכל {filteredContracts.length} חוזים
+        <div className="flex items-center gap-2">
+          <FileText className="h-8 w-8 text-primary" />
+          <h1 className="text-3xl font-bold text-black">החוזים שלי</h1>
         </div>
       </div>
 
-      <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-6 h-auto">
-          <TabsTrigger value="הכל">
-            הכל
-          </TabsTrigger>
-          <TabsTrigger value="פעיל">
-            פעיל
-          </TabsTrigger>
-          <TabsTrigger value="ממתין ללקוח">
-            ממתין ללקוח
-          </TabsTrigger>
-          <TabsTrigger value="ממתין לספק">
-            ממתין לספק
-          </TabsTrigger>
-          <TabsTrigger value="טיוטה" >
-            טיוטה
-          </TabsTrigger>
-          <TabsTrigger value="מבוטל" >
-            מבוטל
-          </TabsTrigger>
+      <div className="text-sm text-muted-foreground text-left">
+        סך הכל {total} חוזים
+      </div>
+
+      <Card className="border border-primary/40 rounded-xl bg-white p-4 shadow-sm">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="w-full md:max-w-md">
+            <input
+              type="text"
+              placeholder="חיפוש לפי אירוע / ספק / לקוח / הערה..."
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="w-full border border-primary/40 rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary"
+              style={{ direction: "rtl" }}
+            />
+          </div>
+
+          {/* סינון לפי אירוע – רק ללקוח, רספונסיבי */}
+          {type === "client" && (
+            <div className="w-full md:w-auto flex flex-col gap-3 md:flex-row md:items-center md:justify-end">
+              <div className="space-y-1 text-right md:text-left">
+                <p className="text-sm font-semibold">סינון</p>
+                <p className="text-xs text-muted-foreground">
+                  אפשר לראות חוזים לפי אירוע
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2 w-full md:w-auto">
+                <span className="text-sm text-muted-foreground flex items-center gap-1">
+                  <Calendar className="w-4 h-4" />
+                  אירוע:
+                </span>
+
+                <Select
+                  value={selectedEventId}
+                  onValueChange={(value) => {
+                    setSelectedEventId(value);
+                    setCurrentPage(1);
+                  }}
+                >
+                  <SelectTrigger className="w-full md:w-56 border-primary/40">
+                    <SelectValue placeholder="בחר אירוע" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">כל האירועים</SelectItem>
+                    {events?.map((ev) => (
+                      <SelectItem key={ev._id} value={ev._id}>
+                        {ev.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          )}
+        </div>
+      </Card>
+
+      <Tabs
+        value={selectedTab}
+        onValueChange={(value) => {
+          setSelectedTab(value);
+          setCurrentPage(1);
+        }}
+        className="w-full"
+      >
+        <TabsList className="grid w-full grid-cols-7 h-auto">
+          <TabsTrigger value="הכל">הכל</TabsTrigger>
+          <TabsTrigger value="פעיל">פעיל</TabsTrigger>
+          <TabsTrigger value="ממתין ללקוח">ממתין ללקוח</TabsTrigger>
+          <TabsTrigger value="ממתין לספק">ממתין לספק</TabsTrigger>
+          <TabsTrigger value="טיוטה">טיוטה</TabsTrigger>
+          <TabsTrigger value="הושלם">הושלם</TabsTrigger>
+          <TabsTrigger value="מבוטל">מבוטל</TabsTrigger>
         </TabsList>
 
         <TabsContent value={selectedTab} className="mt-6">
           {error && (
-            <div className="bg-red-50 border border-red-200 p-4 rounded-lg text-red-800 flex items-center gap-3 shadow-sm">
+            <div className="bg-red-50 border border-red-200 p-4 rounded-lg text-red-800 flex items-center gap-3 mb-4">
               <AlertCircle className="w-5 h-5 flex-shrink-0" />
               <span>{error}</span>
             </div>
           )}
-          
-          {loading && (
-            <div className="flex items-center justify-center py-12">
-              <div className="text-center space-y-3">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-                <p className="text-muted-foreground">טוען חוזים...</p>
-              </div>
-            </div>
-          )}
-          
-          {!loading && filteredContracts.length === 0 ? (
+
+          {!loading && sortedContracts.length === 0 ? (
             <Card className="border-dashed">
               <CardContent className="py-12 text-center">
                 <div className="mx-auto w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
                   <AlertCircle className="w-8 h-8 text-muted-foreground" />
                 </div>
-                <p className="text-lg font-medium text-muted-foreground">אין חוזים להצגה</p>
-                <p className="text-sm text-muted-foreground mt-1">החוזים שלך יופיעו כאן</p>
+                <p className="text-lg font-medium text-muted-foreground">
+                  אין חוזים להצגה
+                </p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  החוזים שלך יופיעו כאן כאשר יווצרו
+                </p>
               </CardContent>
             </Card>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {filteredContracts.map((contract) => {
-                const isClientSignedByMe = isClientSigned(contract);
-                const isSupplierSigned = !!contract.supplierSignature;
-                console.log(isClientSignedByMe, isSupplierSigned);
-                
-                const bothSigned = isClientSignedByMe && isSupplierSigned;
+            <>
+              {loading ? (
+                <div className="flex items-center justify-center py-12">
+                  <div className="text-center space-y-3">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto" />
+                    <p className="text-muted-foreground">טוען חוזים...</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-6">
+                  {sortedContracts.map((contract) => {
+                    const isSupplierSigned = !!contract.supplierSignature;
+                    const clientSignedByMe =
+                      isClientSignedByCurrentUser(contract);
+                    const bothSigned = isSupplierSigned && clientSignedByMe;
 
-                return (
-                  <Card
-                    key={contract._id}
+                    const canClientSign =
+                      type === "client" &&
+                      user?._id &&
+                      !clientSignedByMe &&
+                      contract.status !== "מבוטל";
+
+                    const canSupplierSign =
+                      type === "supplier" &&
+                      user?._id &&
+                      !isSupplierSigned &&
+                      contract.status !== "מבוטל";
+
+                    const canSign = canClientSign || canSupplierSign;
+
+                    const clientSignaturesCount =
+                      contract.clientSignatures?.length || 0;
+
+                    return (
+                      <ContractCard
+                        key={contract._id}
+                        contract={contract}
+                        isExpanded={expandedSignaturesId === contract._id}
+                        onToggleSignatures={() =>
+                          toggleSignatures(contract._id)
+                        }
+                        onDownload={() => handleDownloadContract(contract._id)}
+                        onSignClick={() => handleSignContract(contract._id)}
+                        signing={signingContractId === contract._id}
+                        canSign={canSign}
+                        bothSigned={bothSigned}
+                        signaturesSummary={{
+                          supplierSigned: isSupplierSigned,
+                          clientsCount: clientSignaturesCount,
+                        }}
+                        signatureUrls={signatureUrls}
+                      />
+                    );
+                  })}
+                </div>
+              )}
+
+              {totalPages > 1 && (
+                <div className="flex items-center justify-center gap-4 mt-6">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleChangePage(currentPage - 1)}
+                    disabled={currentPage === 1 || loading}
                   >
-                    <CardHeader className="pb-4">
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1 min-w-0">
-                          <CardTitle className="text-xl font-bold truncate">
-                            {contract.eventId.name}
-                          </CardTitle>
-                          <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
-                            <User className="w-4 h-4 flex-shrink-0" />
-                            <span className="truncate">{contract.supplierId?.user.name}</span>
-                          </div>
-                        </div>
-                        <Badge className={`${getStatusColor(contract.status)} border font-medium px-3 py-1 whitespace-nowrap`}>
-                          {contract.status}
-                        </Badge>
-                      </div>
-                    </CardHeader>
-
-                    <CardContent className="space-y-5">
-                      {/* Event Details */}
-                      <div className="bg-gradient-to-br from-muted/50 to-muted p-4 rounded-xl space-y-3 border">
-                        <div className="flex items-center gap-2 text-sm">
-                          <Calendar className="w-4 h-4 text-primary flex-shrink-0" />
-                          <span className="font-semibold">תאריך אירוע:</span>
-                          <span className="text-muted-foreground">
-                            {new Date(contract.eventId.date).toLocaleDateString("he-IL")}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm">
-                          <Mail className="w-4 h-4 text-primary flex-shrink-0" />
-                          <span className="font-semibold">ספק:</span>
-                          <span className="text-muted-foreground truncate">
-                            {contract.supplierId?.user.email}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Signature Status */}
-                      <div className="space-y-3">
-                        <h4 className="font-bold text-sm flex items-center gap-2">
-                          <PenTool className="w-4 h-4" />
-                          סטטוס חתימות
-                        </h4>
-
-                        {/* Supplier Signature */}
-                        <div className={`p-4 rounded-xl border-2 transition-colors ${
-                          isSupplierSigned 
-                            ? "bg-green-50 border-green-200" 
-                            : "bg-yellow-50 border-yellow-200"
-                        }`}>
-                          <div className="flex items-center gap-2 mb-3">
-                            {isSupplierSigned ? (
-                              <>
-                                <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
-                                <span className="text-sm font-semibold text-green-700">
-                                  ספק חתם
-                                </span>
-                              </>
-                            ) : (
-                              <>
-                                <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0" />
-                                <span className="text-sm font-semibold text-yellow-700">
-                                  ממתין לחתימת ספק
-                                </span>
-                              </>
-                            )}
-                          </div>
-                          {isSupplierSigned && contract.supplierSignature && (
-                            <div className="text-xs space-y-2 pr-7 text-green-800">
-                              <div className="flex items-center gap-2">
-                                <User className="w-3 h-3" />
-                                <span>{contract.supplierSignature.supplierId?.user.name}</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <Mail className="w-3 h-3" />
-                                <span className="truncate">{contract.supplierSignature.supplierId?.user.email}</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <Clock className="w-3 h-3" />
-                                <span>{new Date(contract.supplierSignature.at).toLocaleString("he-IL")}</span>
-                              </div>
-                              {contract.supplierSignature.signatureS3Key && (
-                                <div className="mt-3 p-2 bg-white rounded-lg border-2 border-green-200">
-                                  <img
-                                    src={signatureUrls[contract.supplierSignature.signatureS3Key]}
-                                    alt="חתימת ספק"
-                                    className="max-h-16 mx-auto"
-                                  />
-                                </div>
-                              )}
-                              {contract.supplierSignature.ipAddress && (
-                                <div className="flex items-center gap-2 opacity-70">
-                                  <MapPin className="w-3 h-3" />
-                                  <span>IP: {contract.supplierSignature.ipAddress}</span>
-                                </div>
-                              )}
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Client Signatures */}
-                        {contract.clientSignatures?.map((sig, idx) => (
-                          <div
-                            key={idx}
-                            className="bg-blue-50 border-2 border-blue-200 p-4 rounded-xl"
-                          >
-                            <div className="flex items-center gap-2 mb-3">
-                              <CheckCircle className="w-5 h-5 text-blue-600 flex-shrink-0" />
-                              <span className="text-sm font-semibold text-blue-700">
-                                לקוח חתם {contract.clientSignatures!.length > 1 ? `(${idx + 1})` : ""}
-                              </span>
-                            </div>
-                            <div className="text-xs space-y-2 pr-7 text-blue-800">
-                              <div className="flex items-center gap-2">
-                                <User className="w-3 h-3" />
-                                <span>{sig.clientId?.name}</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <Mail className="w-3 h-3" />
-                                <span className="truncate">{sig.clientId?.email}</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <Clock className="w-3 h-3" />
-                                <span>{new Date(sig.at).toLocaleString("he-IL")}</span>
-                              </div>
-                              {sig.signatureS3Key && (
-                                <div className="mt-3 p-2 bg-white rounded-lg border-2 border-blue-200">
-                                  <img
-                                    src={signatureUrls[sig.signatureS3Key]}
-                                    alt="חתימת לקוח"
-                                    className="max-h-16 mx-auto"
-                                  />
-                                </div>
-                              )}
-                              {sig.ipAddress && (
-                                <div className="flex items-center gap-2 opacity-70">
-                                  <MapPin className="w-3 h-3" />
-                                  <span>IP: {sig.ipAddress}</span>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        ))}
-
-                        {!contract.clientSignatures?.length && (
-                          <div className="bg-yellow-50 border-2 border-yellow-200 p-4 rounded-xl">
-                            <div className="flex items-center gap-2">
-                              <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0" />
-                              <span className="text-sm font-semibold text-yellow-700">
-                                ממתין לחתימת לקוח
-                              </span>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Payment Plan */}
-                      {contract.paymentPlan.length > 0 && (
-                        <div className="bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-200 p-4 rounded-xl">
-                          <h4 className="font-bold text-sm mb-3 text-purple-900">תוכנית תשלומים</h4>
-                          <div className="space-y-2">
-                            {contract.paymentPlan.map((payment, idx) => (
-                              <div
-                                key={idx}
-                                className="flex justify-between items-center bg-white p-3 rounded-lg border border-purple-200 text-sm"
-                              >
-                                <span className="flex items-center gap-2 text-muted-foreground">
-                                  <Calendar className="w-3 h-3" />
-                                  {new Date(payment.dueDate).toLocaleDateString("he-IL")}
-                                </span>
-                                <span className="font-bold text-purple-900">
-                                  ₪{payment.amount.toLocaleString()}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {bothSigned && (
-                        <div className="bg-gradient-to-r from-green-500 to-green-600 text-white p-4 rounded-xl text-center font-semibold shadow-lg">
-                          <div className="flex items-center justify-center gap-2">
-                            <CheckCircle className="w-5 h-5" />
-                            <span>החוזה חתום על ידי שני הצדדים</span>
-                          </div>
-                        </div>
-                      )}
-
-                      <div className="flex flex-wrap gap-3 pt-2">
-                        {contract.s3Key && (
-                          <Button
-                            onClick={() => handleDownloadContract(contract._id)}
-                            className="flex-1 min-w-[150px] "
-                          >
-                            <Download className="w-4 h-4 ml-2" />
-                            צפייה בחוזה
-                          </Button>
-                        )}
-
-                        {type === "client" && !contract.clientSignatures?.length && (
-                          <Button
-                            size="sm"
-                            onClick={() => handleSignContract(contract._id)}
-                            disabled={signingContractId === contract._id}
-                            className="flex-1 min-w-[150px] shadow-md"
-                          >
-                            <PenTool className="w-4 h-4 ml-2" />
-                            {signingContractId === contract._id ? "חותם..." : "חתום על החוזה"}
-                          </Button>
-                        )}
-                        
-                        {type === "supplier" && !isSupplierSigned && (
-                          <Button
-                            size="sm"
-                            onClick={() => handleSignContract(contract._id)}
-                            disabled={signingContractId === contract._id}
-                            className="flex-1 min-w-[150px] shadow-md"
-                          >
-                            <PenTool className="w-4 h-4 ml-2" />
-                            {signingContractId === contract._id ? "חותם..." : "חתום על החוזה"}
-                          </Button>
-                        )}
-                      </div>
-
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground pt-2 border-t">
-                        <Clock className="w-3 h-3" />
-                        <span>נוצר: {new Date(contract.createdAt).toLocaleDateString("he-IL")}</span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
+                    <ChevronRight className="w-4 h-4 ml-1" />
+                    הקודם
+                  </Button>
+                  <span className="text-sm text-muted-foreground">
+                    עמוד {currentPage} מתוך {totalPages}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleChangePage(currentPage + 1)}
+                    disabled={currentPage === totalPages || loading}
+                  >
+                    הבא
+                    <ChevronLeft className="w-4 h-4 mr-1" />
+                  </Button>
+                </div>
+              )}
+            </>
           )}
-          
+
           <SignContractDialog
             open={signDialogOpen}
             onOpenChange={setSignDialogOpen}

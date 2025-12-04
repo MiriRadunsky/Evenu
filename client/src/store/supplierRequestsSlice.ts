@@ -1,3 +1,6 @@
+import { toast } from 'sonner';
+
+
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import api from "../services/axios";
@@ -37,6 +40,8 @@ export const createSupplierRequest = createAsyncThunk<Request, { eventId: string
       // data.request + data.threadId
       return { ...data.request, threadId: data.threadId };
     } catch (err: any) {
+      console.log(err);
+      
       return rejectWithValue(err.response?.data?.message || "Failed to create request");
     }
   }
@@ -83,7 +88,10 @@ const requestSlice = createSlice({
       // Create
       .addCase(createSupplierRequest.pending, (state) => { state.loading = true; })
       .addCase(createSupplierRequest.fulfilled, (state, action) => { state.loading = false; state.requests.push(action.payload); })
-      .addCase(createSupplierRequest.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
+      .addCase(createSupplierRequest.rejected, (state, action) => { 
+        state.loading = false; 
+        state.error = action.payload; 
+      })
 
       // Approve
       .addCase(approveRequest.pending, (state) => { state.loading = true; })

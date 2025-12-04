@@ -1,43 +1,103 @@
-import {
-  createEvent,
-  getEventById,
-  getEventTypes,
-  getUserEvents,
-  updateEvent,
-  deleteEvent
-} from "../services/event.service.js";
+import asyncHandler from '../middlewares/asyncHandler.middleware.js';
+import * as eventService from '../services/event.service.js';
 
-export async function create(req, res) {
-  const event = await createEvent(req.user._id, req.body);
-  res.status(201).json({ success: true, data: event });
-}
+export const EventController = {
+  // יצירת אירוע
+  create: asyncHandler(async (req, res) => {
+    const event = await eventService.createEvent(req.user._id, req.body);
+    res.status(201).json({ success: true, data: event });
+  }),
 
-export async function getById(req, res) {
-  const event = await getEventById(req.params.id, req.user._id);
-  res.json({ success: true, data: event });
-}
+  updateEventBudget :asyncHandler(async (req, res) => {
+  const { id } = req.params;                 
+  const userId = req.user._id;               
+  const { newBudget, reason } = req.body;
 
-export function eventTypes(req, res) {
-  const data = getEventTypes();
+  const updatedEvent = await eventService.updateEventBudget(
+    id,
+    userId,
+    newBudget,
+    reason
+  );
 
-  if (!data) {
-    throw new AppError(404, "No event types found");
-  }
+  res.status(200).json({
+    message: "התקציב עודכן בהצלחה",
+    event: updatedEvent,
+  });
+}),
 
-  res.json({ success: true, data });
-}
+  // אירוע בודד לפי ID
+  getById: asyncHandler(async (req, res) => {
+    const event = await eventService.getEventById(
+      req.params.id,
+      req.user._id
+    );
+    res.status(200).json({ success: true, data: event });
+  }),
 
-export async function list(req, res) {
-  const eventsArray = await getUserEvents(req.user._id);
-  res.json({ success: true, events: eventsArray });
-}
+  // סוגי אירועים
+  eventTypes: asyncHandler(async (req, res) => {
+    const types = await eventService.getEventTypes();
+    res.status(200).json({ success: true, data: types });
+  }),
 
-export async function update(req, res) {
-  const event = await updateEvent(req.params.id, req.user._id, req.body);
-  res.json({ success: true, data: event });
-}
+  // 🔹 כל האירועים (בלי פגינציה)
+  getAllEvents: asyncHandler(async (req, res) => {
+    const { events } = await eventService.getUserEvents(
+      req.user._id,
+      req.query
+    );
 
-export async function remove(req, res) {
-  await deleteEvent(req.params.id, req.user._id);
-  res.json({ success: true, message: 'The event deleted successfully' });
-}
+    res.status(200).json({
+      success: true,
+      data: events,
+    });
+  }),
+
+  //תאריך שם ומזהה 🔹 רק אירועים רלוונטיים (תאריכים רלוונטיים)
+  getRelevantEvents: asyncHandler(async (req, res) => {
+    const { events } = await eventService.getUserRelevantEvents(
+      req.user._id,
+      req.query
+    );
+
+    res.status(200).json({
+      success: true,
+      data: events,
+    });
+  }),
+
+  // 🔹 גרסה עם פגינציה (אם תרצי להשתמש בעתיד)
+  getEventsPaged: asyncHandler(async (req, res) => {
+    const result = await eventService.getUserEventsPaged(
+      req.user._id,
+      req.query
+    );
+
+    res.status(200).json({
+      success: true,
+      ...result,
+    });
+  }),
+
+  // עדכון
+  update: asyncHandler(async (req, res) => {
+    const event = await eventService.updateEvent(
+      req.params.id,
+      req.user._id,
+      req.body
+    );
+
+    res.status(200).json({ success: true, data: event });
+  }),
+
+  // מחיקה
+  remove: asyncHandler(async (req, res) => {
+    await eventService.deleteEvent(req.params.id, req.user._id);
+    res.status(200).json({
+      success: true,
+      message: 'The event deleted successfully',
+    });
+  }),
+};
+

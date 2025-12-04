@@ -3,9 +3,11 @@ import { authGuard } from '../middlewares/auth.middleware.js';
 import { RequestController } from '../controllers/request.controller.js';
 const router = Router();
 
-router.get('/supplier/requests', authGuard, RequestController.getSupplierRequests);
-router.get('/', authGuard, RequestController.getAllRequestsByUserId);
-router.post('/:id/approve', authGuard, RequestController.approveRequest);
-router.post('/:id/decline', authGuard, RequestController.declineRequest);
+router.use(authGuard);
+router.get('/supplier', RequestController.getSupplierRequests);
+router.get('/', RequestController.getAllRequestsByUserId);
+router.post('/:id/approve', RequestController.approveRequest);
+router.post('/:id/decline', RequestController.declineRequest);
 
 export default router;
+

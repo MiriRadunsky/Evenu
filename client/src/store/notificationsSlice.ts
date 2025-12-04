@@ -4,9 +4,8 @@ import {
   type PayloadAction,
 } from "@reduxjs/toolkit";
 
-import type { Notification } from "./../types/type";
+import type { Notification } from "./../types/Notification";
 import api from "../services/axios";
-import type { Socket } from "socket.io-client";
 
 interface NotificationsState {
   notifications: Notification[];
@@ -26,6 +25,8 @@ export const fetchNotifications = createAsyncThunk(
   "notifications/fetch",
   async () => {
     const res = await api.get<Notification[]>("/notifications");
+    console.log('notifi',res);
+    
     return res.data;
   }
 );

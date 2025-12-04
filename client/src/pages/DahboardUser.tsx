@@ -16,7 +16,7 @@ export default function DashboardUser() {
   return (
     <>
       <Dashboard />
-      {/* כרטיסי ניווט תחתונים */}
+      <div className="mt-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Link to={"/my-events"}>
           <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
@@ -60,6 +60,9 @@ export default function DashboardUser() {
           </Card>
         </Link>
       </div>
+      </div>
+      
+
     </>
   );
 }

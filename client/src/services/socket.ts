@@ -5,11 +5,13 @@ import { store, type AppDispatch } from "../store";
 let socket: Socket;
 
 export const initSocket = (userId: string, dispatch: AppDispatch) => {
-  
   if (!socket) {
-    socket = io("http://localhost:3000", {
+    const socketUrl =
+      import.meta.env.VITE_SOCKET_URL || "http://localhost:3000";
+
+    socket = io(socketUrl, {
       auth: {
-        token:store.getState().auth.token,
+        token: store.getState().auth.token,
       },
     });
 

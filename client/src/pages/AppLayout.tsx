@@ -23,13 +23,16 @@ import { Button } from "../components/ui/button";
 import { ScrollArea } from "../components/ui/scroll-area";
 import { initSocket } from "../services/socket";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchNotifications, markNotificationAsRead, addNotification } from "../store/notificationsSlice";
+import {
+  fetchNotifications,
+  markNotificationAsRead, 
+} from "../store/notificationsSlice";
 import { logout } from "../services/auth";
 import { fetchUser } from "../store/authSlice";
 import type { AppRoute } from "../types/AppRouter";
-import type { Notification } from "../types/type";
-import type { AppDispatch, RootState } from "../store";
+import type { Notification } from "../types/Notification";
 import { formatRelativeTime, getNotificationColor, getNotificationIcon } from "../Utils/NotificationUtils";
+import { ScrollArea } from "../components/ui/scroll-area";
 import { Toaster } from "sonner";
 
 export default function AppLayout({ navigationItems, children }: { navigationItems: AppRoute[]; children: React.ReactNode }) {
@@ -38,20 +41,27 @@ export default function AppLayout({ navigationItems, children }: { navigationIte
   const location = useLocation();
 
   const user = useSelector((state: RootState) => state.auth.user);
-  const { notifications } = useSelector((state: RootState) => state.notifications);
+  const { notifications } = useSelector(
+    (state: RootState) => state.notifications
+  ); 
 
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [navigateNotification, setNavigateNotification] = useState("");
 
-  /** USER LOAD */
   useEffect(() => {
     dispatch(fetchUser());
   }, [dispatch]);
 
-  /** SET NOTIFICATION ROUTE */
   useEffect(() => {
-    if (user) {
-      setNavigateNotification(user.role === "supplier" ? "/supplier/notifications" : "/notifications");
+    if(user?.role==='supplier')
+      setNavigetNotification("/supplier/notifications")
+    else
+      setNavigetNotification("/notifications")
+  }, [user])
+  useEffect(() => {
+    if (user?._id) {
+      const socket = initSocket(user._id, dispatch);
+      dispatch(fetchNotifications());
     }
   }, [user]);
 
@@ -77,10 +87,13 @@ export default function AppLayout({ navigationItems, children }: { navigationIte
     if (!user?.name) return "U";
     const parts = user.name.split(" ");
     return parts.length > 1 ? `${parts[0][0]}${parts[1][0]}` : parts[0][0];
-  }, [user?.name]);
+  }, [user]);
 
-  /** UNREAD COUNT */
-  const unreadCount = useMemo(() => notifications?.length || 0, [notifications]);
+
+  const unreadCount = useMemo(
+    () => notifications?.length || 0,
+    [notifications]
+  );
 
   /** SORTED LAST 5 NOTIFICATIONS */
   const recentNotifications = useMemo(() => {
@@ -92,18 +105,13 @@ export default function AppLayout({ navigationItems, children }: { navigationIte
 
   /** CLICK NOTIFICATION */
   const handleNotificationClick = useCallback(
-    (notification: Notification) => {
-      dispatch(markNotificationAsRead(notification.id));
+    async (notification: Notification) => {
+        dispatch(markNotificationAsRead(notification.id));
       setIsNotificationsOpen(false);
     },
     [dispatch]
   );
 
-  /** LOGOUT */
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
-  };
 
   return (
     <SidebarProvider style={{ direction: "rtl" } as React.CSSProperties}>
@@ -253,11 +261,12 @@ export default function AppLayout({ navigationItems, children }: { navigationIte
           </div>
         </div>
 
-        {/* PAGE CONTENT */}
-        <main className="p-6">{children}</main>
-      </SidebarInset>
-
+          <main className="p-6">{children}</main>
+        </SidebarInset>
+      </SidebarProvider>
       <Toaster />
-    </SidebarProvider>
+
+      
+    </>
   );
 }

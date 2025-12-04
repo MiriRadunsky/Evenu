@@ -84,6 +84,14 @@ export const SupplierRepository = {
     const supplier = await Supplier.findOne({ user: userId }).lean();
     return supplier?._id || null;
   },
+  async getSupplierByUserId(userId) {
+    const supplier = await Supplier.findOne({ user: userId }).lean();
+    return supplier || null;
+  },
+  async getSupplierById(_id) {
+    const supplier = await Supplier.findOne({_id}).lean();    
+    return supplier || null;
+  },
   async findById(id) {
     return Supplier.findById(id)
       .populate("category", "label")

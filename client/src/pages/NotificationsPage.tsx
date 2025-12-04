@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../store";
 
@@ -18,20 +17,20 @@ import {
   getNotificationIcon,
   getNotificationColor,
 } from '../Utils/NotificationUtils';
-import type { Notification } from "../types/type";
+import type { Notification } from "../types/Notification";
 
 export default function NotificationsPage() {
   const dispatch: AppDispatch = useDispatch();
-  const navigate = useNavigate();
 
   const { notifications, loading, error } = useSelector(
     (state: RootState) => state.notifications
   );
 
-  const [activeTab, setActiveTab] = useState<"all" | "payments" | "events" | "requests" | "contracts">("all");
+  const [activeTab, setActiveTab] = useState<"הכל" | "תשלומים" | "יםאירוע" | "בקשות" | "חוזים">("הכל");
 
   useEffect(() => {
     dispatch(fetchNotifications());
+
   }, [dispatch]);
 
   const sortedNotifications = useMemo(() => {
@@ -44,27 +43,27 @@ export default function NotificationsPage() {
   }, [notifications]);
 
   const filteredNotifications = useMemo(() => {
-    if (activeTab === "all") return sortedNotifications;
-    if (activeTab === "payments") {
+    if (activeTab === "הכל") return sortedNotifications;
+    if (activeTab === "תשלומים") {
       return sortedNotifications.filter(
         (n: Notification) =>
-          n.type === "payment"
+          n.type === "תשלום"
       );
     }
-    if (activeTab === "events") {
+    if (activeTab === "יםאירוע") {
       return sortedNotifications.filter(
-        (n: Notification) => n.type === "event"
+        (n: Notification) => n.type === "אירוע"
       );
     }
-    if (activeTab === "requests") {
+    if (activeTab === "בקשות") {
       return sortedNotifications.filter(
         (n: Notification) =>
-          n.type === "request"
+          n.type === "בקשה"
       );
     }
-    if (activeTab === "contracts") {
+    if (activeTab === "חוזים") {
       return sortedNotifications.filter(
-        (n: Notification) => n.type === "contract"
+        (n: Notification) => n.type === "חוזה"
       );
     }
     return sortedNotifications;
@@ -72,16 +71,10 @@ export default function NotificationsPage() {
 
   const handleNotificationClick = useCallback(
 
-    async (notification: Notification) => {
-    console.log("handle",notification);
-      
+    async (notification: Notification) => {      
     await dispatch(markNotificationAsRead(notification.id));
-      
-    //   if (notification.actionUrl) {
-    //     navigate(notification.actionUrl);
-    //   }
     },
-    [dispatch, navigate]
+    [dispatch]
   );
 
   return (
@@ -97,11 +90,11 @@ export default function NotificationsPage() {
 
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
         <TabsList className="grid w-full grid-cols-6">
-          <TabsTrigger value="all">הכל</TabsTrigger>
-          <TabsTrigger value="payments">תשלומים</TabsTrigger>
-          <TabsTrigger value="events">אירועים</TabsTrigger>
-          <TabsTrigger value="requests">בקשות</TabsTrigger>
-          <TabsTrigger value="messages">הודעות</TabsTrigger>
+          <TabsTrigger value="הכל">הכל</TabsTrigger>
+          <TabsTrigger value="תשלומים">תשלומים</TabsTrigger>
+          <TabsTrigger value="אירועים">אירועים</TabsTrigger>
+          <TabsTrigger value="בקשות">בקשות</TabsTrigger>
+          <TabsTrigger value="חוזים">חוזים</TabsTrigger>
         </TabsList>
 
         <TabsContent value={activeTab} className="mt-6">

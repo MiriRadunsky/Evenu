@@ -1,3 +1,4 @@
+
 import Event from '../models/event.model.js';
 
 const EVENT_PROJECTION = '-__v';
@@ -10,35 +11,17 @@ function buildFilter(ownerId, { status, type } = {}) {
   return filter;
 }
 
-// 🔹 יצירה
 export async function create(data) {
-  return await Event.create(data);
+  return Event.create(data);
 }
 
-// 🔹 מציאת אירוע לפי ID
-export async function findById(id) {
-  return await Event.findById(id)
-    .populate('ownerId', 'firstName lastName email name')
+export async function getEventById(id) {
+  return Event.findById(id)
+    .populate('ownerId', 'name email')
     .select(EVENT_PROJECTION);
 }
-
-// 🔹 עדכון אירוע לפי ID
-export async function updateById(id, ownerId, data) {
-  return await Event.findOneAndUpdate(
-    { _id: id, ownerId },
-    data,
-    { new: true, runValidators: true }
-  ).select(EVENT_PROJECTION);
-}
-
-// 🔹 מחיקה של אירוע
-export async function deleteById(id, ownerId) {
-  return await Event.findOneAndDelete({ _id: id, ownerId });
-}
-
-// 🔹 עדכון תקציב עם הגבלות
 export async function updateBudgetAllocated(eventId, amount, session) {
-  return await Event.findOneAndUpdate(
+  return Event.findOneAndUpdate(
     {
       _id: eventId,
       $expr: {
@@ -55,9 +38,8 @@ export async function updateBudgetAllocated(eventId, amount, session) {
   ).select(EVENT_PROJECTION);
 }
 
-// 🔹 עדכון תקציב והוספת היסטוריה
 export async function updateBudget(eventId, ownerId, newBudget, historyRecord) {
-  return await Event.findOneAndUpdate(
+  return Event.findOneAndUpdate(
     { _id: eventId, ownerId },
     {
       budget: newBudget,
@@ -66,6 +48,36 @@ export async function updateBudget(eventId, ownerId, newBudget, historyRecord) {
     { new: true }
   ).select(EVENT_PROJECTION);
 }
+// 🔹 כל האירועים של המשתמש (בלי פגינציה)
+export async function findAllByOwnerId(ownerId, query = {}) {
+  const filter = buildFilter(ownerId, query);
+
+  return Event.find(filter)
+    .sort(DEFAULT_SORT)
+    .select(EVENT_PROJECTION);
+}
+
+// 🔹 רק אירועים רלוונטיים (ברירת מחדל: מהיום והלאה, עם אפשרות from/to ב-query)
+export async function findRelevantByOwnerId(ownerId, query = {}) {
+  const { status, type, from, to } = query;
+
+  const filter = buildFilter(ownerId, { status, type });
+
+  const now = new Date();
+  filter.date = {};
+
+  if (from) {
+    filter.date.$gte = new Date(from);
+  } else {
+    filter.date.$gte = now; // אם אין from – מהיום והלאה
+  }
+
+  if (to) {
+    filter.date.$lte = new Date(to);
+  }
+
+  return Event.find(filter)
+
 
 // 🔹 כל האירועים של משתמש (בלי פגינציה)
 export async function findAllByOwnerId(ownerId, query = {}) {
@@ -74,6 +86,21 @@ export async function findAllByOwnerId(ownerId, query = {}) {
     .sort(DEFAULT_SORT)
     .select(EVENT_PROJECTION);
 }
+// export async function findRelevantByOwnerId(ownerId, query = {}) {
+//   const { type } = query;
+
+//   // בונים פילטר בסיסי
+//   const filter = buildFilter(ownerId, { type });
+
+//   // מחזירים רק אירועים פעילים
+//   filter.status = "פעיל";
+
+//   return Event.find(filter)
+//     .sort(DEFAULT_SORT)
+//     .select("_id name date"); // רק השדות שרצית
+// }
+
+
 
 // 🔹 אירועים רלוונטיים (פעילים בלבד)
 export async function findUpcomingEventsByOwnerId(ownerId) {
@@ -88,7 +115,6 @@ export async function findUpcomingEventsByOwnerId(ownerId) {
 }
 
 
-// 🔹 אירועים עם פגינציה
 export async function findByOwnerId(ownerId, query = {}) {
   const { page = 1, limit = 10, status, type } = query;
   const pageNumber = Number(page);
@@ -114,7 +140,19 @@ export async function findByOwnerId(ownerId, query = {}) {
   };
 }
 
-// 🔹 מציאת אירוע לפי ID (לצורך populate נוסף אם צריך)
+export async function updateById(id, ownerId, data) {
+  return Event.findOneAndUpdate(
+    { _id: id, ownerId },
+    data,
+    { new: true, runValidators: true }
+  ).select(EVENT_PROJECTION);
+}
+
+export async function deleteById(id, ownerId) {
+  return Event.findOneAndDelete({ _id: id, ownerId });
+}
+
+
 export async function getEventById(id) {
   return await Event.findById(id)
     .populate('ownerId', 'name email')

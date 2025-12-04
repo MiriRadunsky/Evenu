@@ -74,7 +74,7 @@ export function ClientReportPaymentDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">
-          דיווחתי ששילמתי
+          דיווח תשלום
         </Button>
       </DialogTrigger>
       <DialogContent style={{ direction: "rtl" }}>

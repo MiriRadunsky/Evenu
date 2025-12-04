@@ -4,12 +4,7 @@ import {
   type PayloadAction,
 } from "@reduxjs/toolkit";
 import api from "../services/axios";
-import type { Payment } from "../types/type";
-
-// אחרי populate(contractId)
-export interface PaymentWithContract extends Payment {
-  contractId: string; // אם יש טיפוס ל-Contract, תחליפי כאן
-}
+import type { Payment } from "../types/Payment";
 
 export interface PaymentsSummary {
   pendingPaymentsCount: number;
@@ -18,23 +13,164 @@ export interface PaymentsSummary {
   paidPaymentsCount: number;
 }
 
+interface PaymentsPageResult {
+  items: Payment[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  summary: PaymentsSummary | null;
+}
+
 interface PaymentsState {
   role: "user" | "supplier" | null;
-  payments: PaymentWithContract[];
-  summary: PaymentsSummary | null;
+  data: PaymentsPageResult;
   loading: boolean;
   error: string | null;
 }
 
 const initialState: PaymentsState = {
   role: null,
-  payments: [],
-  summary: null,
+  data: {
+    items: [],
+    total: 0,
+    page: 1,
+    pageSize: 10,
+    totalPages: 1,
+    summary: null,
+  },
   loading: false,
   error: null,
 };
 
-// חישוב summary בצד הקליינט (אחרי עדכון בודד)
+type FetchPaymentsParams = {
+  page?: number;
+  limit?: number;
+  status?: string;   
+  eventId?: string;
+};
+
+/* ---------------------------------------------------
+   🔹 FETCH payments for client (עם פגינציה + סינון)
+   GET /payments/client?page=&limit=&status=&eventId=
+--------------------------------------------------- */
+export const fetchClientPayments = createAsyncThunk<
+  PaymentsPageResult,
+  FetchPaymentsParams | void,
+  { rejectValue: string }
+>("payments/fetchClientPayments", async (params, { rejectWithValue }) => {
+  try {
+    const query = params ?? {};
+    const { data } = await api.get("/payments/client", { params: query });
+    // מצופה: { items, total, page, pageSize, totalPages, summary }
+    return data as PaymentsPageResult;
+  } catch (err: any) {
+    return rejectWithValue(
+      err?.response?.data?.message || err?.message || "שגיאה בטעינת התשלומים"
+    );
+  }
+});
+
+/* ---------------------------------------------------
+   🔹 FETCH payments for supplier (עם פגינציה + סינון)
+   GET /payments/supplier?page=&limit=&status=&eventId=
+--------------------------------------------------- */
+export const fetchSupplierPayments = createAsyncThunk<
+  PaymentsPageResult,
+  FetchPaymentsParams | void,
+  { rejectValue: string }
+>("payments/fetchSupplierPayments", async (params, { rejectWithValue }) => {
+  try {
+    const query = params ?? {};
+    const { data } = await api.get("/payments/supplier", { params: query });
+    return data as PaymentsPageResult;
+  } catch (err: any) {
+    return rejectWithValue(
+      err?.response?.data?.message || err?.message || "שגיאה בטעינת התשלומים"
+    );
+  }
+});
+
+/* ---------------------------------------------------
+   🔹 לקוח – מדווח ששילם
+   PATCH /payments/:id/report-paid
+--------------------------------------------------- */
+export const reportPaymentPaid = createAsyncThunk<
+  Payment,
+  { paymentId: string; method: string; note?: string; documentKey?: string },
+  { rejectValue: string }
+>(
+  "payments/reportPaid",
+  async ({ paymentId, method, note, documentKey }, { rejectWithValue }) => {
+    try {
+      const res = await api.patch(`/payments/${paymentId}/report-paid`, {
+        method,
+        note,
+        documentKey,
+      });
+      return res.data as Payment;
+    } catch (err: any) {
+      const message =
+        err?.response?.data?.message ||
+        err?.message ||
+        "שגיאה בדיווח על תשלום";
+      return rejectWithValue(message);
+    }
+  }
+);
+
+/* ---------------------------------------------------
+   🔹 ספק – מאשר תשלום
+   PATCH /payments/:id/confirm-paid
+--------------------------------------------------- */
+export const confirmPaymentPaid = createAsyncThunk<
+  Payment,
+  { paymentId: string; method?: string; note?: string; documentKey?: string },
+  { rejectValue: string }
+>(
+  "payments/confirmPaid",
+  async ({ paymentId, method, note, documentKey }, { rejectWithValue }) => {
+    try {
+      const res = await api.patch(`/payments/${paymentId}/confirm-paid`, {
+        method,
+        note,
+        documentKey,
+      });
+      return res.data as Payment;
+    } catch (err: any) {
+      const message =
+        err?.response?.data?.message ||
+        err?.message ||
+        "שגיאה באישור התשלום";
+      return rejectWithValue(message);
+    }
+  }
+);
+
+/* ---------------------------------------------------
+   🔹 ספק – דוחה תשלום
+   PATCH /payments/:id/reject-paid
+--------------------------------------------------- */
+export const rejectPayment = createAsyncThunk<
+  Payment,
+  { paymentId: string; reason: string },
+  { rejectValue: string }
+>("payments/reject", async ({ paymentId, reason }, { rejectWithValue }) => {
+  try {
+    const res = await api.patch(`/payments/${paymentId}/reject-paid`, {
+      reason,
+    });
+    return res.data as Payment;
+  } catch (err: any) {
+    const message =
+      err?.response?.data?.message ||
+      err?.message ||
+      "שגיאה בדחיית התשלום";
+    return rejectWithValue(message);
+  }
+});
+
+// חישוב summary מקומי (על העמוד הנוכחי בלבד) – אם תרצי לעדכן אחרי פעולה
 function recalcSummary(state: PaymentsState) {
   const now = new Date();
   now.setHours(0, 0, 0, 0);
@@ -44,7 +180,7 @@ function recalcSummary(state: PaymentsState) {
   let overduePaymentsCount = 0;
   let paidPaymentsCount = 0;
 
-  for (const p of state.payments) {
+  for (const p of state.data.items) {
     if (p.status === "שולם") {
       paidPaymentsCount++;
       continue;
@@ -61,7 +197,7 @@ function recalcSummary(state: PaymentsState) {
     }
   }
 
-  state.summary = {
+  state.data.summary = {
     pendingPaymentsCount,
     pendingPaymentsTotal,
     overduePaymentsCount,
@@ -69,135 +205,67 @@ function recalcSummary(state: PaymentsState) {
   };
 }
 
-// 🔹 מביא תשלומים + summary לפי תפקיד מהשרת
-export const fetchMyPayments = createAsyncThunk<
-  {
-    role: "user" | "supplier";
-    payments: PaymentWithContract[];
-    summary: PaymentsSummary;
-  },
-  "user" | "supplier"
->("payments/fetchMy", async (role, { rejectWithValue }) => {
-  try {
-    const url = role === "supplier" ? "/payments/supplier" : "/payments/client";
-    const res = await api.get(url);
-    console.log(res);
-
-    return res.data; // { role, payments, summary }
-  } catch (err: any) {
-    return rejectWithValue(
-      err?.response?.data?.error ||
-      err?.message ||
-      "שגיאה בטעינת התשלומים"
-    );
-  }
-});
-
-
-// 🔹 לקוח – מדווח ששילם (עם קבלה ל-AWS)
-export const reportPaymentPaid = createAsyncThunk<
-  PaymentWithContract,
-  { paymentId: string; method: string; note?: string; documentKey?: string }
->("payments/reportPaid", async ({ paymentId, method, note, documentKey }, { rejectWithValue }) => {
-  try {
-    const res = await api.patch(`/payments/${paymentId}/report-paid`, {
-      method,
-      note,
-      documentKey,
-    });
-    return res.data; // תשלום מעודכן
-  } catch (err: any) {
-    const message =
-      err?.response?.data?.error ||
-      err?.message ||
-      "שגיאה בדיווח על תשלום";
-    return rejectWithValue(message);
-  }
-});
-
-// 🔹 ספק – מאשר תשלום (יכול להוסיף קבלה משלו)
-export const confirmPaymentPaid = createAsyncThunk<
-  PaymentWithContract,
-  { paymentId: string; method?: string; note?: string; documentKey?: string }
->("payments/confirmPaid", async ({ paymentId, method, note, documentKey }, { rejectWithValue }) => {
-  try {
-    const res = await api.patch(`/payments/${paymentId}/confirm-paid`, {
-      method,
-      note,
-      documentKey,
-    });
-    return res.data;
-  } catch (err: any) {
-    const message =
-      err?.response?.data?.error ||
-      err?.message ||
-      "שגיאה באישור התשלום";
-    return rejectWithValue(message);
-  }
-});
-
-// 🔹 ספק – דוחה תשלום
-export const rejectPayment = createAsyncThunk<
-  PaymentWithContract,
-  { paymentId: string; reason: string }
->("payments/reject", async ({ paymentId, reason }, { rejectWithValue }) => {
-  try {
-    const res = await api.patch(`/payments/${paymentId}/reject-paid`, { reason });
-    return res.data;
-  } catch (err: any) {
-    const message =
-      err?.response?.data?.error ||
-      err?.message ||
-      "שגיאה בדחיית התשלום";
-    return rejectWithValue(message);
-  }
-});
-
 const paymentsSlice = createSlice({
   name: "payments",
   initialState,
-  reducers: {},
+  reducers: {
+    resetPaymentsState: () => initialState,
+  },
   extraReducers: (builder) => {
-    const updatePaymentInState = (state: PaymentsState, updated: PaymentWithContract) => {
-      const idx = state.payments.findIndex(
+    const updatePaymentInState = (state: PaymentsState, updated: Payment) => {
+      const idx = state.data.items.findIndex(
         (p) => String(p._id) === String(updated._id)
       );
-      if (idx !== -1) state.payments[idx] = updated;
-      else state.payments.push(updated);
+      if (idx !== -1) {
+        state.data.items[idx] = updated;
+      } else {
+        state.data.items.unshift(updated);
+        state.data.total += 1;
+      }
       recalcSummary(state);
     };
 
-    // fetchMyPayments
+    /* -------- client fetch -------- */
     builder
-      .addCase(fetchMyPayments.pending, (state) => {
+      .addCase(fetchClientPayments.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(
-        fetchMyPayments.fulfilled,
-        (
-          state,
-          action: PayloadAction<{
-            role: "user" | "supplier";
-            payments: PaymentWithContract[];
-            summary: PaymentsSummary;
-          }>
-        ) => {
+        fetchClientPayments.fulfilled,
+        (state, action: PayloadAction<PaymentsPageResult>) => {
           state.loading = false;
-          state.role = action.payload.role;
-          state.payments = action.payload.payments;
-          state.summary = action.payload.summary;
+          state.role = "user";
+          state.data = action.payload;
         }
       )
-      .addCase(fetchMyPayments.rejected, (state, action) => {
+      .addCase(fetchClientPayments.rejected, (state, action) => {
         state.loading = false;
         state.error =
-          (action.payload as string) ||
-          action.error.message ||
-          "שגיאה בטעינת התשלומים";
+          (action.payload as string) || "שגיאה בטעינת התשלומים";
       });
 
-    // reportPaymentPaid
+    /* -------- supplier fetch -------- */
+    builder
+      .addCase(fetchSupplierPayments.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchSupplierPayments.fulfilled,
+        (state, action: PayloadAction<PaymentsPageResult>) => {
+          state.loading = false;
+          state.role = "supplier";
+          state.data = action.payload;
+        }
+      )
+      .addCase(fetchSupplierPayments.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          (action.payload as string) || "שגיאה בטעינת התשלומים";
+      });
+
+    /* -------- reportPaid -------- */
     builder
       .addCase(reportPaymentPaid.fulfilled, (state, action) => {
         updatePaymentInState(state, action.payload);
@@ -209,7 +277,7 @@ const paymentsSlice = createSlice({
           "שגיאה בדיווח על תשלום";
       });
 
-    // confirmPaymentPaid
+    /* -------- confirmPaid -------- */
     builder
       .addCase(confirmPaymentPaid.fulfilled, (state, action) => {
         updatePaymentInState(state, action.payload);
@@ -221,7 +289,7 @@ const paymentsSlice = createSlice({
           "שגיאה באישור התשלום";
       });
 
-    // rejectPayment
+    /* -------- rejectPayment -------- */
     builder
       .addCase(rejectPayment.fulfilled, (state, action) => {
         updatePaymentInState(state, action.payload);
@@ -235,4 +303,5 @@ const paymentsSlice = createSlice({
   },
 });
 
+export const { resetPaymentsState } = paymentsSlice.actions;
 export default paymentsSlice.reducer;

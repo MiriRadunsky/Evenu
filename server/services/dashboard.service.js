@@ -26,6 +26,9 @@ export const DashboardService ={
   },
   async getDashboardSummaryForSupplier(userId) {
     const SupplierId=await SupplierRepository.getSupplierIdByUserId(userId);
+    if (!SupplierId) {
+        throw new AppError(404, "ספק לא נמצא");
+      }
     const upcomingEvents = await DashboardRepository.findUpcomingEventsForSupplier(SupplierId);
     const pendingRequestsCount = await DashboardRepository.countPendingRequestsForSupplier(SupplierId);
     const approvedRequestsCount=await DashboardRepository.countApprovedRequestsForSupplier(SupplierId);     

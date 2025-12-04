@@ -14,6 +14,7 @@ import fileRouter from './file.route.js';
 import threadRouter from './threads.route.js';
 import dashboardRouter from './dashboard.routes.js';
 import paymentRoutes from './payment.route.js';
+import budgetRoutes from './budget.routes.js';
 import citiesRouter from './cities.route.js';
 import kashrutRouter from './kashrut.route.js';
 const router = Router();
@@ -35,6 +36,7 @@ router.use('/threads', threadRouter);
 router.use('/categories', categoriesRouter); 
 router.use('/dashboard', dashboardRouter);  
 router.use('/payments', paymentRoutes);
+router.use('/budget', budgetRoutes);
 router.use('/cities', citiesRouter);
 router.use('/kashrut', kashrutRouter);
 
