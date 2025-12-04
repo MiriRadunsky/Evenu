@@ -1,24 +1,24 @@
 import { io, Socket } from 'socket.io-client';
-import { addNotification } from '../store/notificationsSlice';
-import type { AppDispatch } from '../store';
 
-let socket: Socket;
+// Singleton socket instance for chat and notifications
+let socket: Socket | undefined;
 
-export const initSocket = (userId: string, dispatch: AppDispatch) => {
-  if (!socket) {
-    socket = io('http://localhost:3000');
-
-    socket.on('connect', () => {
-      console.log('🟢 Connected with id:', socket.id);
-      socket.emit('register', userId);
-    });
-
-    socket.on('notification', (notification) => {
-      dispatch(addNotification(notification));
-    });
-
-    socket.on('disconnect', () => console.log('🔴 Disconnected'));
-  }
-
+export function getSocket(token?: string) {
+  if (socket && socket.connected) return socket;
+  const url = ((import.meta as any).env?.VITE_SOCKET_URL as string) || 'http://localhost:3000';
+  socket = io(url, {
+  query: { token },
+  transports: ['websocket'],
+  reconnection: true,
+});
+  socket.on('connect', () => {
+    console.log('[Socket] Connected:', socket?.id, 'to', url);
+  });
+  socket.on('disconnect', (reason) => {
+    console.log('[Socket] Disconnected:', reason);
+  });
+  socket.on('connect_error', (err) => {
+    console.error('[Socket] Connect error:', err);
+  });
   return socket;
-};
+}

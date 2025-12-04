@@ -9,7 +9,14 @@ export async function getThreadByRequestId(requestId) {
 }
 
 export async function getThreadById(threadId) {
+  console.log("Fetching thread with ID:", threadId);
   return await Thread.findById(threadId);
+}
+
+export async function getThreadWithParticipants(threadId) {
+  return Thread.findById(threadId)
+    .populate({ path: 'userId', select: '_id' })
+    .populate({ path: 'supplierId', populate: { path: 'user', select: '_id' } });
 }
 
 async function getThreadsByFilter(filter) {

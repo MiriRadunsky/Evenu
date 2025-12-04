@@ -1,35 +1,70 @@
-// src/sockets/message.gateway.js
-import { Server } from 'socket.io';
-import * as messageService from '../services/message.service.js';
-import jwt from 'jsonwebtoken';
+import * as messageService from "../services/message.service.js";
+import * as threadRepo from "../repositories/thread.repository.js";
 
-export function initSocket(server) {
-  const io = new Server(server, { cors: { origin: '*' } });
+/**
+ * רישום אירועי צ'אט לכל Socket
+ * @param {import("socket.io").Server} io 
+ * @param {import("socket.io").Socket} socket 
+ */
+export function registerChatHandlers(io, socket) {
 
-  io.use((socket, next) => {
+  // הצטרפות לחדר צ'אט (thread)
+  socket.on("join_thread", async (threadId) => {
     try {
-      const token = socket.handshake.auth?.token;
-      if (!token) throw new Error('No token');
-      socket.user = jwt.verify(token, process.env.JWT_SECRET);
-      next();
+      socket.join(threadId);
+
+      const messages = await messageService.getThreadMessages(threadId);
+      socket.emit("thread_messages", { threadId, messages });
+
+      if (socket.user?.id) {
+        await messageService.markMessagesAsRead(threadId, socket.user.id);
+        io.to(threadId).emit("messages_read", { threadId, userId: socket.user.id });
+      }
     } catch (err) {
-      next(new Error('Unauthorized'));
+      console.error("join_thread error:", err);
+      socket.emit("error", { message: "Could not join thread" });
     }
   });
 
-  io.on('connection', socket => {
-    console.log('Socket connected', socket.user.id);
+  // שליחת הודעה חדשה
+  socket.on("send_message", async (payload) => {
+    try {
+      const { threadId, to: maybeTo, body } = payload || {};
+      if (!threadId || !body) {
+        return socket.emit("error", { message: "Invalid message payload" });
+      }
 
-    // הצטרפות לחדר לפי threadId
-    socket.on('join_thread', threadId => {
-      socket.join(threadId);
-    });
+      let to = maybeTo;
 
-    // שליחת הודעה
-    socket.on('send_message', async msg => {
-      const newMsg = await messageService.sendMessage(msg);
-      io.to(msg.threadId).emit('new_message', newMsg);
-    });
-  });   
-  return io;
+      // אם לא סופק to, קובע לפי thread
+      if (!to) {
+        const thread = await threadRepo.getThreadWithParticipants(threadId);
+        if (!thread) return socket.emit("error", { message: "Thread not found" });
+
+        const senderId = String(socket.user.id);
+        const threadUserId = thread.userId ? String(thread.userId._id || thread.userId) : null;
+        const supplierUserId = thread.supplierId?.user ? String(thread.supplierId.user._id || thread.supplierId.user) : null;
+
+        if (threadUserId && senderId === threadUserId) {
+          to = supplierUserId;
+        } else {
+          to = threadUserId;
+        }
+      }
+
+      if (!to) return socket.emit("error", { message: "Could not determine recipient" });
+
+      const newMsg = await messageService.sendMessage({
+        threadId,
+        from: socket.user.id,
+        to,
+        body,
+      });
+
+      io.to(threadId).emit("new_message", newMsg);
+    } catch (err) {
+      console.error("send_message error:", err);
+      socket.emit("error", { message: "Could not send message" });
+    }
+  });
 }

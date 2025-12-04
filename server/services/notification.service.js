@@ -1,5 +1,5 @@
 
-import { io, sendNotification } from '../websocket/notification.socket.js';
+import { sendNotification } from '../sockets/notification.gateway.js';
 import { randomUUID } from 'crypto';
 import Redis from 'ioredis';
 

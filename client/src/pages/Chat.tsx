@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../store";
-import { fetchThreads, fetchMessages, sendMessage, markThreadAsRead } from "../store/chatSlice";
+import { fetchThreads, fetchMessages, sendMessage, joinThread } from "../store/chatSlice";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Textarea } from "../components/ui/textarea";
@@ -11,18 +11,38 @@ import { toast } from "sonner";
 import { Avatar, AvatarFallback } from "../components/ui/avatar";
 import { formatMessageTime } from "../utils/DataUtils";
 import type { Thread } from "../types/Thread";
+import { getSocket } from "../services/socket";
 
 export default function Chat() {
   const dispatch = useDispatch<AppDispatch>();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const user = useSelector((state: RootState) => state.auth.user);
+  const token = useSelector((state: RootState) => state.auth.token);
   const threads = useSelector((state: RootState) => state.chat.threads ?? []);
   const messagesByThread = useSelector((state: RootState) => state.chat.messagesByThread ?? {});
 
   const [selectedThreadId, setSelectedThreadId] = useState<string | null>(null);
   const [messageText, setMessageText] = useState("");
   const [isMobileView, setIsMobileView] = useState(false);
+  const [debugLog, setDebugLog] = useState<string[]>([]);
+  const [socketInstance, setSocketInstance] = useState<ReturnType<typeof getSocket> | null>(null);
+
+  // Initialize socket
+  useEffect(() => {
+    if (!user) return;
+    const s = getSocket(token);
+    setSocketInstance(s);
+
+    const handler = (msg: any) => {
+      dispatch({ type: "chat/appendMessage", payload: msg });
+    };
+    s.on("new_message", handler);
+
+    return () => {
+      s.off("new_message", handler);
+    };
+  }, [user, token, dispatch]);
 
   // Fetch threads on load
   useEffect(() => {
@@ -31,24 +51,25 @@ export default function Chat() {
       id: user._id,
       role: user.role === "supplier" ? "supplier" : "user",
     }));
-  }, [user]);
+  }, [user, dispatch]);
+
+  // Join thread and fetch messages
+  useEffect(() => {
+    if (selectedThreadId) {
+      dispatch(joinThread({ threadId: selectedThreadId }));
+      dispatch(fetchMessages({ threadId: selectedThreadId }));
+    }
+  }, [selectedThreadId, dispatch]);
 
   // Thread opened: mark as read
   const onThreadOpened = (thread: Thread) => {
     if (thread.hasUnread) {
-      dispatch(markThreadAsRead({ threadId: thread._id }));
+      dispatch({ type: "chat/markThreadAsRead", payload: { threadId: thread._id } });
     }
   };
 
   // Ensure _id is string
   const safeThreads = useMemo(() => threads.map(t => ({ ...t, _id: t._id.toString() })), [threads]);
-
-  // Fetch messages when selecting a thread
-  useEffect(() => {
-    if (selectedThreadId) {
-      dispatch(fetchMessages({ threadId: selectedThreadId }));
-    }
-  }, [dispatch, selectedThreadId]);
 
   // Sort threads: unread first, then by updatedAt
   const sortedThreads = useMemo(() => {
@@ -69,9 +90,11 @@ export default function Chat() {
         ...m,
         _id: m._id?.toString() || `msg-${idx}`,
         threadId: m.threadId?.toString() || selectedThreadId,
-        from: m.from?.toString() || "",
-        to: m.to?.toString() || "",
-        createdAt: m.createdAt || new Date().toISOString(),
+        from: (m as any).from || "",
+        to: (m as any).to || "",
+        createdAt: typeof (m as any).createdAt === "string"
+          ? (m as any).createdAt
+          : ((m as any).createdAt ? new Date((m as any).createdAt).toISOString() : new Date().toISOString()),
       }))
       .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
   }, [messagesByThread, selectedThreadId]);
@@ -84,29 +107,42 @@ export default function Chat() {
   // Send message
   const handleSendMessage = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    if (!messageText.trim() || !selectedThreadId || !user) return;
+    if (!messageText.trim() || !selectedThreadId || !user || !socketInstance) return;
 
     const thread = safeThreads.find(t => t._id === selectedThreadId);
     if (!thread) return;
-
-    const from = user._id;
-    const to = user.role === "supplier" ? thread.userId : thread.supplierId;
-    console.log(thread);
-    
-    if (!to) {
-      toast.error("לא ניתן לשלוח הודעה – הנמען לא קיים");
-      return;
-    }
+    const receiverId = user.role === "supplier" ? thread.userId : thread.supplierId;
 
     try {
-      await dispatch(sendMessage({ threadId: selectedThreadId, body: messageText.trim(), from, to })).unwrap();
+      socketInstance.emit("send_message", {
+        threadId: selectedThreadId,
+        to: receiverId,
+        body: messageText.trim(),
+      });
+      setDebugLog((s) => [...s, `sent: ${messageText.trim()}`]);
       setMessageText("");
     } catch {
       toast.error("שגיאה בשליחת ההודעה");
+      setDebugLog((s) => [...s, `send failed: ${messageText.trim()}`]);
     }
   };
 
-  // Helper to get display name based on role
+  // Debug test send
+  const handleTestSend = async () => {
+    if (!selectedThreadId) {
+      setDebugLog((s) => [...s, "no thread selected"]);
+      return;
+    }
+    try {
+      setDebugLog((s) => [...s, "test send -> dispatching sendMessage..."]);
+      await dispatch(sendMessage({ threadId: selectedThreadId, body: "[test] hello" })).unwrap();
+      setDebugLog((s) => [...s, "test send succeeded"]);
+    } catch (err: any) {
+      setDebugLog((s) => [...s, `test send error: ${err?.message || err}`]);
+    }
+  };
+
+  // Helpers
   const getThreadName = (thread: Thread) => user?.role === "supplier" ? thread.clientName : thread.supplierName;
   const getAvatarLetter = (thread: Thread) => (getThreadName(thread)?.[0] || "?").toUpperCase();
 
@@ -123,7 +159,7 @@ export default function Chat() {
                 <div
                   key={thread._id}
                   className={`p-4 border-b cursor-pointer hover:bg-muted transition-colors ${selectedThreadId === thread._id ? "bg-primary/10" : ""}`}
-                  onClick={() => { setSelectedThreadId(thread._id); setIsMobileView(true); onThreadOpened(thread) }}
+                  onClick={() => { setSelectedThreadId(thread._id); setIsMobileView(true); onThreadOpened(thread); }}
                 >
                   <div className="flex items-center gap-3">
                     <Avatar><AvatarFallback>{getAvatarLetter(thread)}</AvatarFallback></Avatar>
@@ -145,6 +181,20 @@ export default function Chat() {
         <Card className={`md:col-span-2 flex flex-col overflow-hidden ${!selectedThreadId || (!isMobileView && window.innerWidth < 768) ? "hidden md:flex" : ""}`}>
           {selectedThreadId ? (
             <>
+              {/* Debug panel */}
+              <div className="p-2 border-b bg-muted/50 text-xs">
+                <div className="flex items-center gap-4">
+                  <div>token: <span className="font-mono break-all">{token ? token.slice(0, 40) + (token.length > 40 ? "..." : "") : "(none)"}</span></div>
+                  <div>socket: <strong>{socketInstance?.connected ? 'connected' : 'disconnected'}</strong></div>
+                  <button onClick={handleTestSend} className="ml-auto bg-primary text-white px-2 py-1 rounded">Test send</button>
+                </div>
+                <div className="mt-2">
+                  <div className="whitespace-pre-wrap text-xs max-h-24 overflow-y-auto">
+                    {debugLog.map((l, i) => <div key={i}>{l}</div>)}
+                  </div>
+                </div>
+              </div>
+
               <CardHeader className="border-b">
                 <div className="flex items-center gap-3">
                   <Button variant="ghost" size="sm" className="md:hidden" onClick={() => { setIsMobileView(false); setSelectedThreadId(null); }}>

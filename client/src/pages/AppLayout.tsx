@@ -18,7 +18,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
-import { initSocket } from "../services/socket";
+import { initChatSocket } from "../store/chatSlice";
 import type { AppDispatch, RootState } from "../store";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchNotifications } from "../store/notificationsSlice";
@@ -27,20 +27,24 @@ import { logout } from "../services/auth";
 import { fetchUser } from "../store/authSlice";
 import type { AppRoute } from "../types/AppRouter";
 
-
 export default function AppLayout({navigationItems, children }: { navigationItems: AppRoute[], children: React.ReactNode }) {
     const dispatch:AppDispatch = useDispatch();
     const user=useSelector((state:RootState)=>state.auth.user);
     
 useEffect(() => {
-   dispatch(fetchUser());
-    const userId = user?._id; 
-    if (userId)
-    {
-       initSocket(userId, dispatch);
-       dispatch(fetchNotifications());
-    }
-  }, [dispatch]);
+  dispatch(fetchUser());
+  const userId = user?._id; 
+  if (userId) {
+    // initialize socket
+    initChatSocket(userId, dispatch);
+    // initialize chat socket (uses JWT from auth slice)
+    const token = (dispatch as any).getState?.()?.auth?.token;
+    initChatSocket(token, () => (dispatch as any).getState(), dispatch);
+
+    dispatch(fetchNotifications());
+  }
+}, [dispatch, user?._id]);
+
 
   const navigate = useNavigate();
 const handleLogout = () => {
