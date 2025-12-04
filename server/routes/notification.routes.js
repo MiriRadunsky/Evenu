@@ -1,10 +1,10 @@
-import { Router } from 'express';
-import { getNotifications, sendTestNotification } from '../controllers/notification.controller';
-import { authenticate } from '../middlewares/auth.middleware';
+import express from 'express';
+import { authGuard } from '../middlewares/auth.middleware.js';
+import { NotificationController } from '../controllers/notification.controller.js';
+const router = express.Router();
 
-const router = Router();
-
-router.get('/notifications', authenticate, getNotifications);
-router.post('/notifications/test', authenticate, sendTestNotification);
+router.get('/', authGuard, NotificationController.getUserNotifications);
+router.post('/', authGuard, NotificationController.create);
+router.post('/markAsRead', authGuard, NotificationController.markAsRead);
 
 export default router;

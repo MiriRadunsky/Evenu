@@ -1,15 +1,15 @@
-import User from './User.js';
-import Event from './Event.js';
-import Category from './Category.js';
-import Supplier from './Supplier.js';
-import SupplierRequest from './SupplierRequest.js';
-import Contract from './Contract.js';
-import Payment from './Payment.js';
-import Message from './Message.js';
-import Notification from './Notification.js';
-import EventAudit from './EventAudit.js';
+import User from './user.model.js';
+import Category from './category.model.js';
+import Supplier from './supplier.model.js';
+import SupplierRequest from './request.model.js';
+import Contract from './contract.model.js';
+import Payment from './payment.model.js';
+import Message from './message.model.js';
+import Notification from './notification.model.js';
+import EventAudit from './eventAudit.model.js';
+import Event from './event.model.js';
 
-const models = {
+export default {
   User,
   Event,
   Category,
@@ -21,5 +21,3 @@ const models = {
   Notification,
   EventAudit
 };
-
-export default models;

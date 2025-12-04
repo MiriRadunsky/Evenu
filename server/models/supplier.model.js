@@ -1,18 +1,30 @@
+
 import mongoose from 'mongoose';
 const { Schema, model, Types } = mongoose;
 
-const portfolioSub = new Schema(
+// תת־סקימה של תמונה (לתיק עבודות/גלריה)
+const imageSub = new Schema(
   {
-    url: { type: String, required: true, trim: true },
-    title: { type: String, trim: true }
+    key: { type: String, required: true, trim: true },
+    alt: { type: String, trim: true }
   },
   { _id: false }
 );
 
+// תמונת פרופיל
 const profileImageSub = new Schema(
   {
-    url: { type: String, required: true, trim: true },
+    key: { type: String, required: true, trim: true },
     alt: { type: String, trim: true }
+  },
+  { _id: false }
+);
+
+// כל המדיה של הספק (גלריה)
+const mediaSub = new Schema(
+  {
+    images: { type: [imageSub], default: [] },
+    videos: { type: [String], default: [] } // לינקים לוידאו (יוטיוב/ווימאו וכו')
   },
   { _id: false }
 );
@@ -20,17 +32,22 @@ const profileImageSub = new Schema(
 const supplierSchema = new Schema(
   {
     user: { type: Types.ObjectId, ref: 'User', required: true, index: true },
+
     category: { type: Types.ObjectId, ref: 'Category', required: true, index: true },
+
     regions: { type: [String], default: [], index: true },
+
     kashrut: { type: String, trim: true },
-    portfolio: { type: [portfolioSub], default: [] },
+
+    media: { type: mediaSub, default: {} },
+
     profileImage: { type: profileImageSub, default: null },
+
     description: { type: String, trim: true },
-    isActive: { type: Boolean, default: true, index: true },
     status: {
       type: String,
-      enum: ['חדש', 'בהמתנה', 'מאושר', 'נפסל', 'נחסם'],
-      default: 'חדש',
+      enum: ['בהמתנה', 'מאושר', 'נפסל', 'נחסם'],
+      default: 'בהמתנה',
       index: true
     }
   },

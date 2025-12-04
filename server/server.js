@@ -2,28 +2,40 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import http from 'http';
 import rateLimit from 'express-rate-limit';
+import cookieParser from "cookie-parser";
 import router from './routes/index.router.js';
 import { connectMongo } from './db/connect.db.js';
 import { mongoHealth } from './db/health.db.js';
 import { errorHandler } from './middlewares/error.middleware.js';
+import { initSocket } from './sockets/message.gateway.js';
+import passport from './config/passport.config.js';
+import { initWebSocket } from './websocket/notification.socket.js';
+import './queues/scheduler.js';
+import './corn/eventStatusCron.js';
 
 const app = express();
+const server = http.createServer(app);
+initWebSocket(server);
+// initSocket(server);
+
 const PORT = process.env.PORT || 3000;
 
-app.use(helmet());
+// app.use(helmet());
 
 app.use(express.json());
 
 app.use(express.static('public'));
 
 const corsOptions = {
-  origin: '*', 
+  origin: ['http://localhost:5173', 'http://localhost:3000', process.env.FRONTEND_URL].filter(Boolean), 
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 };
 app.use(cors(corsOptions));
+app.use(cookieParser());
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, 
@@ -31,10 +43,12 @@ const limiter = rateLimit({
   message: { error: 'Too many requests, please try again later.' },
 });
 app.use(limiter);
-
 app.use('/api',router)
 app.get('/health/mongo', mongoHealth);
 app.use(errorHandler);
+
+app.use(passport.initialize());
 connectMongo().then(() => {
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+  server.listen(PORT, () => console.log(`Server running on port ${PORT}`)
+);
 });

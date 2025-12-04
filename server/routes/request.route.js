@@ -1,13 +1,13 @@
 import { Router } from 'express';
-import { createRequest, approveRequest, declineRequest } from '../controllers/request.controller';
-import { authenticate } from '../middlewares/auth.middleware';
-
+import { authGuard } from '../middlewares/auth.middleware.js';
+import { RequestController } from '../controllers/request.controller.js';
 const router = Router();
 
-// 🔹 שליחת בקשה לספק עבור אירוע
-router.post('/events/:eventId/requests', authenticate, createRequest);
-// 🔹 אישור או סירוב בקשה
-router.post('/requests/:id/approve', authenticate, approveRequest);
-router.post('/requests/:id/decline', authenticate, declineRequest);
+router.use(authGuard);
+router.get('/supplier', RequestController.getSupplierRequests);
+router.get('/', RequestController.getAllRequestsByUserId);
+router.post('/:id/approve', RequestController.approveRequest);
+router.post('/:id/decline', RequestController.declineRequest);
 
 export default router;
+

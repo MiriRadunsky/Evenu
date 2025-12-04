@@ -1,35 +1,37 @@
 
 import validateObjectId from '../middlewares/validateObjectId.middleware.js';
-import * as ctrl from '../controllers/supplier.controller.js';
 import { authGuard } from '../middlewares/auth.middleware.js';
 import { Router } from 'express';
 import { roleGuard } from '../middlewares/role.middleware.js';
+import { validateBody } from '../middlewares/validate.middleware.js';
+import { supplierRegisterSchema } from '../validation/supplier.validation.js';
+import { SupplierController } from '../controllers/supplier.controller.js';
 
 const router = Router();
 
 const allowClientAdmin = [ 'user', 'admin' ];
+const allowAll = [ 'user', 'admin', 'supplier' ];
 
 // GET /api/suppliers?category=&region=&active=&q=&page=&limit=
 router.get(
   '/',
   authGuard,
-  roleGuard(allowClientAdmin),
-  ctrl.getAll
+  // roleGuard(allowClientAdmin),
+  SupplierController.getAll
 );
 
 // GET /api/suppliers/:id
 router.get(
   '/:id',
   authGuard,
-  roleGuard(allowClientAdmin),
+  // roleGuard(allowClientAdmin),
   validateObjectId('id'),
-  ctrl.getOne
+  SupplierController.getOne
 );
 // POST /api/supplier/register
-router.post('/supplier/register', ctrl.supplierRegister);
+router.post('/register', SupplierController.supplierRegister);
 // // POST /api/supplier/login
-router.post('/supplier/login', ctrl.supplierLogin);
 //PATCH /api/suppliers/:id
-router.patch('/:id/status', ctrl.updateSupplierStatus);
-
+router.patch('/add-images', authGuard,SupplierController.updateMediaSupplier)
+router.patch('/:id', SupplierController.updateSupplierStatus);
 export default router;
