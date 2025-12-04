@@ -3,9 +3,9 @@ import React from "react";
 export const PrivacyPolicy: React.FC = () => {
   return (
     <div className="max-w-3xl mx-auto p-8 rtl">
-      <h1 className="text-3xl font-bold mb-6">מדיניות פרטיות – מתאם</h1>
+      <h1 className="text-3xl font-bold mb-6">מדיניות פרטיות – Evenu</h1>
       <p className="mb-4">
-        המידע שתספק במערכת "מתאם" נשמר באופן מאובטח, בהתאם לחוקי הגנת הפרטיות.
+        המידע שתספק במערכת "Evenu" נשמר באופן מאובטח, בהתאם לחוקי הגנת הפרטיות.
       </p>
       <ol className="list-decimal list-inside space-y-2">
         <li>איסוף מידע אישי מוגבל לשם הפעלת המערכת בלבד.</li>

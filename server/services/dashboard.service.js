@@ -47,5 +47,22 @@ export const DashboardService ={
       pendingPaymentsTotal,
       overduePaymentsCount,
     };
+  },
+  async getDashboardSummaryForAdmin() {
+    const totalUsers = await DashboardRepository.countTotalUsers();
+    const totalSuppliers = await DashboardRepository.countTotalSuppliers();
+    const pendingSuppliers = await DashboardRepository.countPendingSuppliers();
+    const totalEvents = await DashboardRepository.countTotalEvents();
+    const activeContracts = await DashboardRepository.countAllActiveContracts();
+    const totalRevenue = await DashboardRepository.getTotalRevenue();
+    
+    return {
+      totalUsers,
+      totalSuppliers,
+      pendingSuppliers,
+      totalEvents,
+      activeContracts,
+      totalRevenue,
+    };
   }
 }

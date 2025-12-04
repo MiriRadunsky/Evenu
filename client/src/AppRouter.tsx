@@ -13,7 +13,6 @@ import { ActiveSuppliersPage } from "./pages/admin/ActiveSuppliersPage";
 import { SupplierDetailsPage } from "./pages/admin/SupplierDetailsPage";
 import { UsersPage } from "./pages/admin/UsersPage";
 import { getUserRole } from "./services/auth";
-import Requests from "./pages/Request";
 import type { AppRoute } from "./types/AppRouter";
 import SupplierDashboard from "./pages/Supplier/SupplierDashboard";
 import { RequestPage } from "./pages/RequestPage";
@@ -26,8 +25,12 @@ import { PrivacyPolicy } from "./pages/PrivacyPolicy";
 import NotificationsPage from "./pages/NotificationsPage";
 import DashboardUser from "./pages/DahboardUser";
 import ContractsPaymentsPage from "./pages/ContractsPaymentsPage";
+import { useDispatch } from "react-redux";
+import { fetchUser } from "./store/authSlice";
+import type { AppDispatch } from "./store";
 
 export default function AppRouter() {
+  const dispatch: AppDispatch = useDispatch();
 
   const userRoutes = [
     { title: "לוח בקרה", path: "/dashboard", element: < DashboardUser />, icon: LayoutDashboard },
@@ -54,13 +57,13 @@ export default function AppRouter() {
   //   { path: "/admin/active-suppliers", element: <ActiveSuppliersPage /> },
   //   { path: "/admin/users", element: <UsersPage /> },
   // ];
-  const renderRoutes = (routes: AppRoute[]) =>
+  const renderRoutes = (routes: AppRoute[], requiredRole?: 'admin' | 'user' | 'supplier') =>
     routes.map((route) => (
       <Route
         key={route.path}
         path={route.path}
         element={
-          <ProtectedRoute>
+          <ProtectedRoute requiredRole={requiredRole}>
             <AppLayout navigationItems={routes}>{route.element}</AppLayout>
           </ProtectedRoute>
         }
@@ -74,15 +77,20 @@ export default function AppRouter() {
     else if (page === "register") navigate("/register");
   };
 
-  const handleLoginAndRegister = () => {
+  const handleLoginAndRegister = async () => {
     console.log("User logged in");
-    const userRole = getUserRole();
+    
+    // טוען את פרטי המשתמש לפני ניווט
+    await dispatch(fetchUser());
+    
+    // מקבל את ה-role מהשרת
+    const userRole =  getUserRole();
+    
     if (userRole === 'admin') {
       navigate("/admin/dashboard");
-    } else if (userRole === 'supplier') {
+    } else if (userRole === 'supplier') {      
       navigate("/supplier/dashboard");
-    }
-    else {
+    } else {
       navigate("/dashboard");
     }
   };
@@ -101,8 +109,8 @@ export default function AppRouter() {
       <Route path="/terms-of-service" element={<TermsOfService />} />
       <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       {/* Protected Routes */}
-      {renderRoutes(userRoutes)}
-      {renderRoutes(supplierRoutes)}
+      {renderRoutes(userRoutes, 'user')}
+      {renderRoutes(supplierRoutes, 'supplier')}
     
       {/* Admin Routes */}
       <Route

@@ -14,9 +14,11 @@ import { Link } from "react-router-dom";
 
 interface Props {
   onRegister: () => void;
+  onRoleChange: (role: "user" | "supplier") => void;
+  currentRole: "user" | "supplier";
 }
 
-export function UserRegisterForm({ onRegister }: Props) {
+export function UserRegisterForm({ onRegister, onRoleChange, currentRole }: Props) {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -111,18 +113,44 @@ export function UserRegisterForm({ onRegister }: Props) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="p-10 border border-gray-100 shadow-xl bg-white/80 backdrop-blur-xl rounded-3xl space-y-5"
+      className="p-4 sm:p-6 md:p-10 border border-gray-100 shadow-xl bg-white/80 backdrop-blur-xl rounded-2xl sm:rounded-3xl space-y-3 sm:space-y-5 w-full"
     >
-      <div className="text-center mb-6">
-        <div className="relative inline-block mb-4">
-          <div className="flex items-center justify-center w-20 h-20 shadow-md gradient-gold rounded-3xl">
-            <User className="w-10 h-10 text-white" />
+      <div className="text-center mb-4 sm:mb-6">
+        <div className="relative inline-block mb-3 sm:mb-4">
+          <div className="flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 shadow-md gradient-gold rounded-3xl">
+            <User className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
           </div>
-          <div className="absolute flex items-center justify-center w-8 h-8 bg-white rounded-full shadow-md -top-1 -left-1">
-            <Sparkles className="w-4 h-4 text-[#d4a960]" />
+          <div className="absolute flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 bg-white rounded-full shadow-md -top-1 -left-1">
+            <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-[#d4a960]" />
           </div>
         </div>
-        <h1 className="text-[#2d2d35] text-3xl font-light">הרשמה למערכת</h1>
+        <h1 className="text-[#2d2d35] text-2xl sm:text-3xl font-light">הרשמה למערכת</h1>
+      </div>
+
+      {/* Role selection - בתוך הטופס */}
+      <div className="flex justify-center gap-2 sm:gap-4 mb-6">
+        <button
+          type="button"
+          onClick={() => onRoleChange("user")}
+          className={`flex-1 sm:flex-none sm:px-6 py-2.5 rounded-xl border text-xs sm:text-sm font-light transition-all ${
+            currentRole === "user"
+              ? "bg-[#d4a960] text-white border-[#d4a960] shadow-sm"
+              : "border-[#d4a960] text-[#2d2d35] hover:bg-[#d4a960]/10"
+          }`}
+        >
+          משתמש רגיל
+        </button>
+        <button
+          type="button"
+          onClick={() => onRoleChange("supplier")}
+          className={`flex-1 sm:flex-none sm:px-6 py-2.5 rounded-xl border text-xs sm:text-sm font-light transition-all ${
+            currentRole === "supplier"
+              ? "bg-[#d4a960] text-white border-[#d4a960] shadow-sm"
+              : "border-[#d4a960] text-[#2d2d35] hover:bg-[#d4a960]/10"
+          }`}
+        >
+          ספק
+        </button>
       </div>
 
       {errors.general && <p className="text-red-500 text-sm mb-2">{errors.general}</p>}
@@ -205,9 +233,13 @@ export function UserRegisterForm({ onRegister }: Props) {
       </div>
       {errors.agreedTerms && <p className="text-xs text-red-500">{errors.agreedTerms}</p>}
 
-      <Button type="submit" disabled={loading} className="w-full h-14 gradient-gold">
+      <button 
+        type="submit" 
+        disabled={loading} 
+        className="w-full h-14 bg-[#d4a960] hover:bg-[#c89645] text-white rounded-2xl font-light text-base transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+      >
         {loading ? "נרשם..." : "הירשם למערכת"}
-      </Button>
+      </button>
 
       <div className="my-6 text-center">או</div>
 

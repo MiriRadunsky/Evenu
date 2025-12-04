@@ -14,9 +14,11 @@ import fileRouter from './file.route.js';
 import threadRouter from './threads.route.js';
 import dashboardRouter from './dashboard.routes.js';
 import paymentRoutes from './payment.route.js';
+import citiesRouter from './cities.route.js';
+import kashrutRouter from './kashrut.route.js';
 const router = Router();
 
-router.get('/', (req, res) => res.send('🏠 This is the Home Page'));
+router.get('/', (req, res) => res.send('This is the Home Page'));
 
 router.use('/auth', authRouter);
 router.use('/suppliers', supplierRouter);
@@ -33,6 +35,8 @@ router.use('/threads', threadRouter);
 router.use('/categories', categoriesRouter); 
 router.use('/dashboard', dashboardRouter);  
 router.use('/payments', paymentRoutes);
+router.use('/cities', citiesRouter);
+router.use('/kashrut', kashrutRouter);
 
 
 router.get('/health', (req, res) => res.json({ up: true }));

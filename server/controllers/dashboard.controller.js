@@ -11,4 +11,8 @@ export const DashboardController = {
     const userId = req.user?._id;
     const summary = await DashboardService.getDashboardSummaryForSupplier(userId);
     return res.status(200).json(summary);
+}),
+  getDashboardSummaryForAdmin : asyncHandler(async (req, res, next) => {
+    const summary = await DashboardService.getDashboardSummaryForAdmin();
+    return res.status(200).json(summary);
 })};

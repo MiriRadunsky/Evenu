@@ -3,9 +3,9 @@ import React from "react";
 export const TermsOfService: React.FC = () => {
   return (
     <div className="max-w-3xl mx-auto p-8 rtl">
-      <h1 className="text-3xl font-bold mb-6">תנאי שימוש – מתאם</h1>
+      <h1 className="text-3xl font-bold mb-6">תנאי שימוש – Evenu</h1>
       <p className="mb-4">
-        ברוכים הבאים למערכת "מתאם". השימוש במערכת מותנה בהסכמתך לתנאי השימוש
+        ברוכים הבאים למערכת "Evenu". השימוש במערכת מותנה בהסכמתך לתנאי השימוש
         הבאים. נא לקרוא בקפידה.
       </p>
       <ol className="list-decimal list-inside space-y-2">

@@ -1,30 +1,43 @@
-import * as eventService from '../services/event.service.js';
+import {
+  createEvent,
+  getEventById,
+  getEventTypes,
+  getUserEvents,
+  updateEvent,
+  deleteEvent
+} from "../services/event.service.js";
 
 export async function create(req, res) {
-  const event = await eventService.createEvent(req.user._id, req.body);
+  const event = await createEvent(req.user._id, req.body);
   res.status(201).json({ success: true, data: event });
 }
 
 export async function getById(req, res) {
-  const event = await eventService.getEventById(req.params.id, req.user._id);
+  const event = await getEventById(req.params.id, req.user._id);
   res.json({ success: true, data: event });
 }
 
-export async function eventTypes(req, res) {
-  res.json({ success: true, data: eventService.getEvevtTypes() });
+export function eventTypes(req, res) {
+  const data = getEventTypes();
+
+  if (!data) {
+    throw new AppError(404, "No event types found");
+  }
+
+  res.json({ success: true, data });
 }
 
 export async function list(req, res) {
-  const result = await eventService.getUserEvents(req.user._id, req.query);
-  res.json({ success: true, ...result });
+  const eventsArray = await getUserEvents(req.user._id);
+  res.json({ success: true, events: eventsArray });
 }
 
 export async function update(req, res) {
-  const event = await eventService.updateEvent(req.params.id, req.user._id, req.body);
+  const event = await updateEvent(req.params.id, req.user._id, req.body);
   res.json({ success: true, data: event });
 }
 
 export async function remove(req, res) {
-  await eventService.deleteEvent(req.params.id, req.user._id);
+  await deleteEvent(req.params.id, req.user._id);
   res.json({ success: true, message: 'The event deleted successfully' });
 }

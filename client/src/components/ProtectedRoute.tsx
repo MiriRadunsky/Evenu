@@ -20,7 +20,14 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
     console.log("User role:", userRole, "Required role:", requiredRole);
     
     if (userRole !== requiredRole) {
-      return <Navigate to="/dashboard" replace />;
+      // Redirect to appropriate dashboard based on user's actual role
+      if (userRole === 'admin') {
+        return <Navigate to="/admin/dashboard" replace />;
+      } else if (userRole === 'supplier') {
+        return <Navigate to="/supplier/dashboard" replace />;
+      } else {
+        return <Navigate to="/dashboard" replace />;
+      }
     }
   }
 

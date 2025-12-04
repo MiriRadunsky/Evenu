@@ -1,6 +1,4 @@
-// import { useToken } from "../hooks/useToken";
 import { store } from "../store";
-import { clearToken, setToken } from "../store/authSlice";
 import type { AuthResponse, RegisterData } from "../types/AuthTypes";
 import api from "./axios";
 
@@ -84,17 +82,30 @@ export const logout = async() => {
 
 
 
-export const isAuthenticated = async (): Promise<boolean> => {
+// בדיקה סינכרונית - בודק אם יש טוקן
+export const isAuthenticated = (): boolean => {
+  const state = store.getState();
+  return !!state.auth.token;
+};
+
+// בדיקה אסינכרונית - אם צריך לוודא מול השרת
+export const isAuthenticatedAsync = async (): Promise<boolean> => {
   try {
     await api.get("/users/me"); 
-    return true;   // אם ה-cookie תקף → 200
+    return true;
   } catch {
-    return false;  // אם לא → 401
+    return false;
   }
 };
 
-// פונקציה לקבלת תפקיד המשתמש מה-token
-export const getUserRole = async () => {
+// פונקציה סינכרונית לקבלת תפקיד המשתמש מה-Redux store
+export const getUserRole = (): string | null => {
+  const state = store.getState();
+  return state.auth.user?.role || null;
+};
+
+// פונקציה אסינכרונית לקבלת תפקיד המשתמש מהשרת
+export const getUserRoleAsync = async () => {
   const res = await api.get("/users/me");  
   return res.data.role;
 };
