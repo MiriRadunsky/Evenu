@@ -1,4 +1,4 @@
-// AppError - שגיאה עסקית מובנית; errorHandler - מטפל שגיאות גלובלי
+// שגיאה לוגית / עסקית מותאמת
 export class AppError extends Error {
   constructor(statusCode, message, details) {
     super(message);
@@ -8,28 +8,37 @@ export class AppError extends Error {
 }
 
 export function errorHandler(err, req, res, _next) {
-  console.error('❌ Error:', err);
+  console.error("❌ שגיאה:", err);
 
-
-  // אם זו שגיאה עסקית שלנו
+  // שגיאה עסקית שלנו
   if (err instanceof AppError) {
-    return res.status(err.statusCode).json({ error: err.message, details: err.details });
+    return res.status(err.statusCode).json({
+      error: err.message,
+      details: err.details,
+    });
   }
 
-  // Duplicate key – Mongo
+  // שגיאת Duplicate Key של MongoDB
   if (err.code === 11000) {
-    return res.status(400).json({ error: 'Duplicate key', fields: err.keyValue });
+    return res.status(400).json({
+      error: "ערך קיים כבר במערכת",
+      fields: err.keyValue,
+    });
   }
 
-  // Validation – Mongoose
-  if (err.name === 'ValidationError') {
-    return res.status(400).json({ error: 'Validation error', details: err.errors });
+  // שגיאות ולידציה של Mongoose
+  if (err.name === "ValidationError") {
+    return res.status(400).json({
+      error: "שגיאת ולידציה",
+      details: err.errors,
+    });
   }
 
-  // ברירת מחדל
+  // ברירת מחדל – שגיאה לא צפויה
   const status = err.statusCode || 500;
   return res.status(status).json({
-    error: 'Internal server error',
-    details: process.env.NODE_ENV === 'development' ? err.message : undefined
+    error: "שגיאה פנימית בשרת",
+    // בסביבת פיתוח אפשר להחזיר פירוט, בייצור – לא
+    details: process.env.NODE_ENV === "development" ? err.message : undefined,
   });
 }
