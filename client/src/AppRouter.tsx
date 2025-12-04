@@ -29,9 +29,18 @@ import BudgetManagementPage from "./pages/BudgetManagementPage";
 import { useDispatch } from "react-redux";
 import { fetchUser } from "./store/authSlice";
 import type { AppDispatch } from "./store";
+import { useEffect } from "react";
 
 export default function AppRouter() {
   const dispatch: AppDispatch = useDispatch();
+
+  // מעדכן את פרטי המשתמש מהשרת אם יש token
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      dispatch(fetchUser());
+    }
+  }, [dispatch]);
 
   const userRoutes = [
     { title: "לוח בקרה", path: "/dashboard", element: < DashboardUser />, icon: LayoutDashboard },

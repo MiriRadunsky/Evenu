@@ -9,9 +9,19 @@ interface AuthState {
   error:string
 }
 
+// פונקציה לטעינת המשתמש מ-localStorage
+const loadUserFromStorage = (): User | null => {
+  try {
+    const userStr = localStorage.getItem('user');
+    return userStr ? JSON.parse(userStr) : null;
+  } catch {
+    return null;
+  }
+};
+
 const initialState: AuthState = {
   token: localStorage.getItem('token') || null,
-  user:null,
+  user: loadUserFromStorage(),
   loading:false,
   error:''
   
@@ -46,7 +56,9 @@ const authSlice = createSlice({
     },
     clearToken: (state) => {
       state.token = null;
+      state.user = null;
       localStorage.removeItem('token');
+      localStorage.removeItem('user');
     },
   },
   extraReducers: (builder) => {
@@ -58,7 +70,8 @@ const authSlice = createSlice({
         state.loading = false;
         state.user = action.payload;
         state.error = '';
-        
+        // שומר את המשתמש ב-localStorage
+        localStorage.setItem('user', JSON.stringify(action.payload));
       })
       .addCase(fetchUser.rejected, (state, action) => {
         state.loading = false;
