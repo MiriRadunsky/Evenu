@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../services/axios";
+import { getErrorMessage } from "@/Utils/error";
 
 // Thunk לטעינת כל הקטגוריות מהשרת
 export const fetchCategories = createAsyncThunk(
@@ -9,11 +10,10 @@ export const fetchCategories = createAsyncThunk(
       const response = await api.get("/categories"); // endpoint בשרת
       console.log("Categories response:", response.data);
       
-      return response.data; // רשימת קטגוריות
-    } catch (err: any) {
-      console.error("Error fetching categories:", err);
-      return rejectWithValue(err.response?.data || "שגיאה בטעינת הקטגוריות");
-    }
+      return response.data;
+    }  catch (err: unknown) {
+        return rejectWithValue(getErrorMessage(err,'שגיאה בטעינת קטגוריות'));
+      }
   }
 );
 

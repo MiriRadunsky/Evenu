@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import type { User } from '../types/type';
+import type { User } from '../types/User';
 import api from '../services/axios';
+import { getErrorMessage } from '@/Utils/error';
 
 interface AuthState {
   token: string | null;
@@ -35,8 +36,8 @@ export const fetchUser = createAsyncThunk<
     const { data } = await api.get("/users/me");
     
     return data;
-  } catch (err: any) {
-    return rejectWithValue(err.response?.data?.message || "Failed to fetch user");
+  } catch (err: unknown) {
+    return rejectWithValue(getErrorMessage(err, "Failed to fetch user"));
   }
 })
 

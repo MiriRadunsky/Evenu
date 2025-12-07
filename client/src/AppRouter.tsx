@@ -17,7 +17,7 @@ import { getUserRole } from "./services/auth";
 import type { AppRoute } from "./types/AppRouter";
 import SupplierDashboard from "./pages/Supplier/SupplierDashboard";
 import { RequestPage } from "./pages/RequestPage";
-import { Calendar, FileText, LayoutDashboard, Send, Store ,Wallet,BellIcon,MessageSquare} from "lucide-react";
+import { Calendar, LayoutDashboard, Send, Store ,Wallet,BellIcon,MessageSquare} from "lucide-react";
 import SupplierRequestPage from "./pages/Supplier/SupplierRequestPage";
 import SupplierContractsPage from "./pages/Supplier/SupplierContractsPage";
 import ContractsPage from "./pages/ContractsPage";

@@ -81,6 +81,9 @@ export async function updateBudgetAllocated(eventId, userId, amount, session) {
   if (!event) {
     throw new AppError(404, "האירוע לא נמצא");
   }
+if(!event.date<new Date()){
+  throw new AppError(400, 'אין להשתמש בתקציב לאחר התחלה של האירוע');
+}
 
   const ownerId =
     event.ownerId?._id?.toString?.() ?? event.ownerId?.toString?.();
@@ -122,7 +125,7 @@ export async function createEvent(ownerId, data) {
   }
 
   const event = await repo.create(eventData);
-    return { ...event.toObject(), autoStatus: event.autoStatus };
+    return { ...event.toObject(), status: event.autoStatus };
 
 }
 
@@ -156,7 +159,7 @@ export async function getEventById(id, ownerId) {
   if (eventOwnerId !== ownerId.toString()) {
     throw new AppError(403, 'אין לך הרשאה לצפות באירוע הזה');
   }
-  return { ...event.toObject(), autoStatus: event.autoStatus };
+  return { ...event.toObject(), status: event.autoStatus };
 }
 
 /**
@@ -187,7 +190,7 @@ export async function getUserEvents(ownerId, query = {}) {
     .sort((a, b) => new Date(a.date) - new Date(b.date))
     .map(e => ({
       ...e.toObject(),
-      autoStatus: e.autoStatus, // אם זה virtual זה כבר בפנים, אבל לא מזיק
+      status: e.autoStatus, 
     }));
 
   return {

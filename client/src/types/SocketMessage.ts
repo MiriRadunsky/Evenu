@@ -5,5 +5,5 @@ export interface SocketMessage  {
   from: string;
   to: string;
   threadId: string;
-  createdAt: string; // מגיע כ־ISO string מהשרת
+  createdAt: string; 
 };

@@ -15,11 +15,12 @@ export const registerSchema = Joi.object({
       'any.required': 'אימייל הוא שדה חובה'
     }),
   phone: Joi.string()
-    .pattern(/^05\d{8}$/)
+    .pattern(/^(05\d{8}|0\d{1,2}\d{7})$/)
     .required()
     .messages({
       'string.empty': 'מספר טלפון הוא שדה חובה',
-      'string.pattern.base': 'מספר טלפון חייב להתחיל ב-05 ולהכיל 10 ספרות',
+      'string.pattern.base':
+        'מספר טלפון חייב להיות תקין (05XXXXXXXX או מספר נייח כגון 03XXXXXXX)',
       'any.required': 'מספר טלפון הוא שדה חובה'
     }),
   password: Joi.string()

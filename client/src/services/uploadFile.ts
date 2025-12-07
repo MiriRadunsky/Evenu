@@ -1,18 +1,7 @@
+import { getErrorMessage } from "@/Utils/error";
 import api from "./axios";
 import axios from "axios";
-// export const uploadFileToS3 = async (file: File) => {
-//     const res = await api.get('/file/upload-url', {
-//       params: { fileName: file.name, contentType: file.type },
-//     });
 
-//     const presignedUrl = res.data.url;
-
-//     await axios.put(presignedUrl, file, {
-//       headers: { "Content-Type": file.type },
-//     });
-
-//     return presignedUrl.split("?")[0]; 
-//   };
  export const uploadFileToS3 = async (file: File) => {
   try {
     if (!file) throw new Error("No file provided");
@@ -38,9 +27,9 @@ import axios from "axios";
     });
 
     return key; // מחזיר את המפתח לשמירה במסד
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("S3 Upload Error:", error);
-    throw new Error(error?.message || "Failed to upload file");
+    throw new Error(getErrorMessage(error, "שגיאה בהעלאת הקובץ"));
   }
 };
 

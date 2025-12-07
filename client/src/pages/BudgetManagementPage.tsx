@@ -1,5 +1,5 @@
 // pages/BudgetManagementPage.tsx
-import { useEffect, useMemo, useState, FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../store";
 import {
@@ -64,7 +64,7 @@ export default function BudgetManagementPage() {
   const usedPercent =
     totalBudget > 0 ? Math.round((totalAllocated / totalBudget) * 100) : 0;
 
-  const handleSubmitBudget = async (e: FormEvent) => {
+  const handleSubmitBudget = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!selectedEvent) {
       toast.error("נא לבחור אירוע לעדכון תקציב");
@@ -93,8 +93,9 @@ export default function BudgetManagementPage() {
       toast.success("התקציב עודכן בהצלחה");
       setNewBudget("");
       setReason("");
-    } catch (err: any) {
-      toast.error(err || "שגיאה בעדכון התקציב");
+    } catch (err:string | unknown) {
+     const errorText = String(err);
+      toast.error(errorText);
     }
   };
 

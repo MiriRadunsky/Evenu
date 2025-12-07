@@ -35,7 +35,7 @@ export const SupplierService = {
 
   async registerSupplier({ userData, supplierData }) {
     const { user,token } = await authServ.register({ ...userData });
-    const category = await categorySrv.getCategoryById(supplierData.category);
+    const category =await categorySrv.getCategoryById(supplierData.category);    
     if(!category) throw new AppError(404, "קטגוריה לא קיימת");
     supplierData.category = category._id;
     const supplier = await SupplierRepository.createSupplier({

@@ -1,4 +1,6 @@
-// types/Event.ts
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import api from "../services/axios";
+import { getErrorMessage } from "@/Utils/error";
 export interface BudgetHistoryItem {
   oldValue: number;
   newValue: number;
@@ -19,9 +21,6 @@ export interface EventWithBudget {
   budgetAllocated?: number;
   budgetHistory?: BudgetHistoryItem[];
 }
-// store/budgetSlice.ts
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import api from "../services/axios";
 
 
 interface BudgetState {
@@ -44,11 +43,10 @@ export const fetchBudgetEvents = createAsyncThunk<
   try {
     const { data } = await api.get("/budget/events");
     return data.events;
-  } catch (err: any) {
-    return rejectWithValue(
-      err.response?.data?.message || "שגיאה בטעינת נתוני התקציב"
-    );
+  } catch (err: unknown) {
+    return rejectWithValue(getErrorMessage(err, "שגיאה בטעינת נתוני התקציב"));
   }
+  
 });
 
 export const updateBudget = createAsyncThunk<
@@ -62,10 +60,9 @@ export const updateBudget = createAsyncThunk<
       reason,
     });
     return data;
-  } catch (err: any) {
-    return rejectWithValue(
-      err.response?.data?.message || "שגיאה בעדכון התקציב"
-    );
+  }
+  catch (err: unknown) {
+    return rejectWithValue(getErrorMessage(err,"שגיאה בעדכון התקציב"));
   }
 });
 

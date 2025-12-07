@@ -20,37 +20,11 @@ export interface Request {
 // ---------------------
 // User
 // ---------------------
-export interface User {
-  _id: string;
-  token: string;
-  name: string;
-  email: string;
-  phone: string;
- role?: "user" | "supplier" | "admin";
-   social?: {
-    googleId?: string;
-  };
-  createdAt: Date;
-  updatedAt: Date;
-}
+
 
 // ---------------------
 // Event
 // ---------------------
-export interface Event {
-  _id: string;
-  ownerId: string;
-  name: string;
-  type: "חתונה" | "ברית" | "בר מצווה" | "בת מצווה" | "שבע ברכות" | "אחר";
-  date: Date;
-  locationRegion: string;
-  budget?: number;
-  
-  estimatedGuests: number;
-  status: "פעיל" | "הושלם" | "בוטל";
-  createdAt: Date;
-  updatedAt: Date;
-}
 
 // ---------------------
 // Category

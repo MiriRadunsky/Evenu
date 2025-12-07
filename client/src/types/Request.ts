@@ -1,5 +1,5 @@
+import type { Event } from "./Event";
 
-import type { Event } from "./type";
 export interface eventSummery{
    eventName: string;
     location: string;

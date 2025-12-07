@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { ImagePlus, UploadCloud, Trash2, Loader2 } from "lucide-react";
 import { uploadFileToS3 } from "../../services/uploadFile";
 import api from "../../services/axios";

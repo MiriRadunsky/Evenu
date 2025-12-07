@@ -19,14 +19,21 @@ import {
 } from '../Utils/NotificationUtils';
 import type { Notification } from "../types/Notification";
 
+type NotificationTab =
+  | "הכל"
+  | "תשלומים"
+  | "אירועים"
+  | "בקשות"
+  | "חוזים";
+
+
 export default function NotificationsPage() {
   const dispatch: AppDispatch = useDispatch();
 
   const { notifications, loading, error } = useSelector(
     (state: RootState) => state.notifications
   );
-
-  const [activeTab, setActiveTab] = useState<"הכל" | "תשלומים" | "יםאירוע" | "בקשות" | "חוזים">("הכל");
+const [activeTab, setActiveTab] = useState<NotificationTab>("הכל");
 
   useEffect(() => {
     dispatch(fetchNotifications());
@@ -50,7 +57,7 @@ export default function NotificationsPage() {
           n.type === "תשלום"
       );
     }
-    if (activeTab === "יםאירוע") {
+    if (activeTab === "אירועים") {
       return sortedNotifications.filter(
         (n: Notification) => n.type === "אירוע"
       );
@@ -88,7 +95,7 @@ export default function NotificationsPage() {
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
+      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as NotificationTab)}>
         <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="הכל">הכל</TabsTrigger>
           <TabsTrigger value="תשלומים">תשלומים</TabsTrigger>

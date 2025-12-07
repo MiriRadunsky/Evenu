@@ -1,7 +1,11 @@
-
-import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
-import type { Event } from '../types/type';
-import api from '../services/axios';
+import {
+  createSlice,
+  createAsyncThunk,
+  type PayloadAction,
+} from "@reduxjs/toolkit";
+import type { Event } from "../types/Event";
+import api from "../services/axios";
+import { getErrorMessage } from "@/Utils/error";
 
 export interface EventState {
   eventsList: Event[];
@@ -23,93 +27,127 @@ const initialState: EventState = {
 
 export type EventType = string;
 
-// --- Thunks ---
-// 🔹 כל האירועים (בלי פגינציה)
-export const fetchEvents = createAsyncThunk<Event[], void>(
-  'events/fetchAll',
-  async () => {
-    const { data } = await api.get<{ success: boolean; data: Event[] }>('/events');
-    console.log('event',data);
-    
-    return data.data;
-  }
-);
-
-// 🔹 רק אירועים רלוונטיים
-export const fetchRelevantEvents = createAsyncThunk<Event[], void>(
-  'events/fetchRelevant',
-  async () => {
+// 🔹 כל האירועים
+export const fetchEvents = createAsyncThunk<
+  Event[],
+  void,
+  { rejectValue: string }
+>("events/fetchAll", async (_, { rejectWithValue }) => {
+  try {
     const { data } = await api.get<{ success: boolean; data: Event[] }>(
-      '/events/relevant'
+      "/events"
+    );
+    console.log("event", data);
+    return data.data;
+  } catch (err: unknown) {
+    return rejectWithValue(getErrorMessage(err, "שגיאה בטעינת אירועים"));
+  }
+});
+
+// 🔹 אירועים רלוונטיים
+export const fetchRelevantEvents = createAsyncThunk<
+  Event[],
+  void,
+  { rejectValue: string }
+>("events/fetchRelevant", async (_, { rejectWithValue }) => {
+  try {
+    const { data } = await api.get<{ success: boolean; data: Event[] }>(
+      "/events/relevant"
     );
     return data.data;
+  } catch (err: unknown) {
+    return rejectWithValue(
+      getErrorMessage(err, "שגיאה בטעינת אירועים רלוונטיים")
+    );
   }
-);
+});
 
 // 🔹 סוגי אירועים
-export const fetchEventTypes = createAsyncThunk<EventType[], void>(
-  'events/fetchTypes',
-  async () => {
+export const fetchEventTypes = createAsyncThunk<
+  EventType[],
+  void,
+  { rejectValue: string }
+>("events/fetchTypes", async (_, { rejectWithValue }) => {
+  try {
     const { data } = await api.get<{ success: boolean; data: EventType[] }>(
-      '/events/types'
+      "/events/types"
     );
     return data.data;
+  } catch (err: unknown) {
+    return rejectWithValue(
+      getErrorMessage(err, "שגיאה בטעינת סוגי אירועים")
+    );
   }
-);
+});
 
 // 🔹 אירוע בודד לפי ID
-export const fetchEventById = createAsyncThunk<Event, string>(
-  'events/fetchById',
-  async (id) => {
-    const { data } = await api.get<{ success: boolean; data: Event }>(`/events/${id}`);
+export const fetchEventById = createAsyncThunk<
+  Event,
+  string,
+  { rejectValue: string }
+>("events/fetchById", async (id, { rejectWithValue }) => {
+  try {
+    const { data } = await api.get<{ success: boolean; data: Event }>(
+      `/events/${id}`
+    );
     return data.data;
+  } catch (err: unknown) {
+    return rejectWithValue(getErrorMessage(err, "שגיאה בטעינת אירוע"));
   }
-);
+});
 
 // 🔹 יצירת אירוע
-export const createEvent = createAsyncThunk<Event, Event>(
-  'events/create',
-  async (event) => {
+export const createEvent = createAsyncThunk<
+  Event,
+  Partial<Event>,
+  { rejectValue: string }
+>("events/create", async (event, { rejectWithValue }) => {
+  try {
     const { data } = await api.post<{ success: boolean; data: Event }>(
-      '/events',
+      "/events",
       event
     );
-    console.log('data', data);
+    console.log("data", data);
     return data.data;
+  } catch (err: unknown) {
+    console.log("err", err);
+    return rejectWithValue(getErrorMessage(err, "שגיאה ביצירת אירוע"));
   }
-);
+});
 
 // 🔹 עדכון אירוע
 export const updateEvent = createAsyncThunk<
   Event,
   { id: string; data: Partial<Event> },
   { rejectValue: string }
->('events/update', async ({ id, data }, { rejectWithValue }) => {
+>("events/update", async ({ id, data }, { rejectWithValue }) => {
   try {
     const res = await api.patch<{ success: boolean; data: Event }>(
       `/events/${id}`,
       data
     );
-
-    console.log('🔍 SERVER RAW RESPONSE:', res.data);
-
     return res.data.data;
-  } catch (err: any) {
-    return rejectWithValue(err.response?.data?.message || 'Error updating');
+  } catch (err: unknown) {
+    return rejectWithValue(getErrorMessage(err, "שגיאה בעדכון אירוע"));
   }
 });
 
 // 🔹 מחיקת אירוע
-export const deleteEvent = createAsyncThunk<string, string>(
-  'events/delete',
-  async (id) => {
+export const deleteEvent = createAsyncThunk<
+  string,
+  string,
+  { rejectValue: string }
+>("events/delete", async (id, { rejectWithValue }) => {
+  try {
     await api.delete(`/events/${id}`);
     return id;
+  } catch (err: unknown) {
+    return rejectWithValue(getErrorMessage(err, "שגיאה במחיקת אירוע"));
   }
-);
+});
 
 const eventsSlice = createSlice({
-  name: 'events',
+  name: "events",
   initialState,
   reducers: {
     clearSelectedEvent: (state) => {
@@ -123,16 +161,20 @@ const eventsSlice = createSlice({
         state.loadingList = true;
         state.error = undefined;
       })
-      .addCase(fetchEvents.fulfilled, (state, action: PayloadAction<Event[]>) => {
-        state.loadingList = false;
-        state.eventsList = action.payload;
-      })
+      .addCase(
+        fetchEvents.fulfilled,
+        (state, action: PayloadAction<Event[]>) => {
+          state.loadingList = false;
+          state.eventsList = action.payload;
+        }
+      )
       .addCase(fetchEvents.rejected, (state, action) => {
         state.loadingList = false;
-        state.error = action.payload || "Network Error";
+        state.error =
+          action.payload
       })
 
-      // ---- רלוונטיים ----
+      // ---- אירועים רלוונטיים ----
       .addCase(fetchRelevantEvents.pending, (state) => {
         state.loadingList = true;
         state.error = undefined;
@@ -146,25 +188,29 @@ const eventsSlice = createSlice({
       )
       .addCase(fetchRelevantEvents.rejected, (state, action) => {
         state.loadingList = false;
-        state.error = action.error.message;
+        state.error =
+          action.payload ;
       })
 
-      // ---- אחד ----
+      // ---- אירוע בודד ----
       .addCase(fetchEventById.pending, (state) => {
         state.loadingOne = true;
         state.error = undefined;
       })
-      .addCase(fetchEventById.fulfilled, (state, action: PayloadAction<Event>) => {
-        state.loadingOne = false;
-        state.selectedEvent = action.payload;
-      })
+      .addCase(
+        fetchEventById.fulfilled,
+        (state, action: PayloadAction<Event>) => {
+          state.loadingOne = false;
+          state.selectedEvent = action.payload;
+        }
+      )
       .addCase(fetchEventById.rejected, (state, action) => {
         state.loadingOne = false;
-        state.error = action.error.message;
+        state.error =
+          action.payload 
       })
 
       // ---- סוגי אירועים ----
-      // Fetch event types (לא משפיע על loadingList)
       .addCase(fetchEventTypes.pending, (state) => {
         state.error = undefined;
       })
@@ -175,19 +221,23 @@ const eventsSlice = createSlice({
           state.types = action.payload;
         }
       )
-    
       .addCase(fetchEventTypes.rejected, (state, action) => {
-        state.error = action.payload || "Network Error";
+        state.error =
+          action.payload || action.error.message || "Network Error";
       })
 
-      // ---- יצירה ----
+      // ---- יצירת אירוע ----
       .addCase(createEvent.fulfilled, (state, action: PayloadAction<Event>) => {
         state.eventsList.push(action.payload);
       })
+      .addCase(createEvent.rejected, (state, action) => {
+        state.error =
+          action.payload ;
+      })
 
-      // ---- עדכון ----
+      // ---- עדכון אירוע ----
       .addCase(updateEvent.fulfilled, (state, action: PayloadAction<Event>) => {
-        console.log('UPDATE FULFILLED PAYLOAD:', action.payload);
+        console.log("UPDATE FULFILLED PAYLOAD:", action.payload);
         const idx = state.eventsList.findIndex(
           (e) => e._id === action.payload._id
         );
@@ -196,20 +246,26 @@ const eventsSlice = createSlice({
           state.selectedEvent = action.payload;
         }
       })
+      .addCase(updateEvent.rejected, (state, action) => {
+        state.error =
+          action.payload || action.error.message || "שגיאה בעדכון אירוע";
+      })
 
-      // ---- מחיקה ----
-      .addCase(deleteEvent.fulfilled, (state, action: PayloadAction<string>) => {
-        state.eventsList = state.eventsList.filter(
-          (e) => e._id !== action.payload
-        );
-        if (state.selectedEvent?._id === action.payload) {
-          state.selectedEvent = null;
+      // ---- מחיקת אירוע ----
+      .addCase(
+        deleteEvent.fulfilled,
+        (state, action: PayloadAction<string>) => {
+          state.eventsList = state.eventsList.filter(
+            (e) => e._id !== action.payload
+          );
+          if (state.selectedEvent?._id === action.payload) {
+            state.selectedEvent = null;
+          }
         }
-        })
-     
-        
-      .addCase(createEvent.rejected, (state, action) => {
-        state.error = action.payload || "Error creating event";
+      )
+      .addCase(deleteEvent.rejected, (state, action) => {
+        state.error =
+          action.payload || action.error.message || "שגיאה במחיקת אירוע";
       });
   },
 });

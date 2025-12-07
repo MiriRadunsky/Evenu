@@ -1,0 +1,14 @@
+export interface Event {
+  _id: string;
+  ownerId: string;
+  name: string;
+  type: "חתונה" | "ברית" | "בר מצווה" | "בת מצווה" | "שבע ברכות" | "אחר";
+  date: string;
+  locationRegion: string;
+  budget?: number;
+  
+  estimatedGuests: number;
+  status: "פעיל" | "הושלם" | "בוטל";
+  createdAt: Date;
+  updatedAt: Date;
+}
