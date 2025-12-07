@@ -15,4 +15,8 @@ export const DashboardController = {
   getDashboardSummaryForAdmin : asyncHandler(async (req, res, next) => {
     const summary = await DashboardService.getDashboardSummaryForAdmin();
     return res.status(200).json(summary);
+}),
+  getAdminStats : asyncHandler(async (req, res, next) => {
+    const stats = await DashboardService.getAdminStats();
+    return res.status(200).json(stats);
 })};

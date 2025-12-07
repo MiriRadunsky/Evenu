@@ -12,6 +12,7 @@ import { PendingSuppliersPage } from "./pages/admin/PendingSuppliersPage";
 import { ActiveSuppliersPage } from "./pages/admin/ActiveSuppliersPage";
 import { SupplierDetailsPage } from "./pages/admin/SupplierDetailsPage";
 import { UsersPage } from "./pages/admin/UsersPage";
+import { EventsPage } from "./pages/admin/EventsPage";
 import { getUserRole } from "./services/auth";
 import type { AppRoute } from "./types/AppRouter";
 import SupplierDashboard from "./pages/Supplier/SupplierDashboard";
@@ -161,6 +162,14 @@ export default function AppRouter() {
         element={
           <ProtectedRoute requiredRole="admin">
             <UsersPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/events"
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <EventsPage />
           </ProtectedRoute>
         }
       />

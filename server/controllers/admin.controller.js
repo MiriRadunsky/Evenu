@@ -108,3 +108,14 @@ export const getAllUsers = asyncHandler(async (req, res) => {
     data: users
   });
 });
+
+// 🔹 קבלת כל האירועים
+export const getAllEvents = asyncHandler(async (req, res) => {
+  const events = await service.getAllEvents();
+  
+  res.json({
+    success: true,
+    count: events.length,
+    data: events
+  });
+});

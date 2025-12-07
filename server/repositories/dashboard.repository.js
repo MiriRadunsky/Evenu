@@ -214,6 +214,118 @@ export const DashboardRepository ={
   async getTotalRevenue() {
     const payments = await Payment.find({ status: 'שולם' }).lean();
     return payments.reduce((sum, p) => sum + (p.amount || 0), 0);
+  },
+  
+  // Admin stats for charts
+  async getMonthlyEventsStats() {
+    const currentYear = new Date().getFullYear();
+    const startOfYear = new Date(currentYear, 0, 1);
+    const endOfYear = new Date(currentYear, 11, 31, 23, 59, 59);
+    
+    const events = await Event.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: startOfYear, $lte: endOfYear }
+        }
+      },
+      {
+        $group: {
+          _id: { $month: '$createdAt' },
+          events: { $sum: 1 }
+        }
+      },
+      {
+        $sort: { _id: 1 }
+      }
+    ]);
+    
+    const months = ['ינואר', 'פברואר', 'מרץ', 'אפריל', 'מאי', 'יוני', 'יולי', 'אוגוסט', 'ספטמבר', 'אוקטובר', 'נובמבר', 'דצמבר'];
+    const eventsByMonth = Array.from({ length: 12 }, (_, i) => ({
+      month: months[i],
+      events: 0
+    }));
+    
+    events.forEach(item => {
+      if (item._id >= 1 && item._id <= 12) {
+        eventsByMonth[item._id - 1].events = item.events;
+      }
+    });
+    
+    return eventsByMonth;
+  },
+  
+  async getSuppliersByCategory() {
+    const Supplier = (await import('../models/supplier.model.js')).default;
+    
+    const result = await Supplier.aggregate([
+      {
+        $match: {
+          status: { $in: ['מאושר', 'בהמתנה'] }
+        }
+      },
+      {
+        $lookup: {
+          from: 'categories',
+          localField: 'category',
+          foreignField: '_id',
+          as: 'categoryInfo'
+        }
+      },
+      {
+        $unwind: {
+          path: '$categoryInfo',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $group: {
+          _id: '$categoryInfo.label',
+          value: { $sum: 1 }
+        }
+      },
+      {
+        $sort: { value: -1 }
+      }
+    ]);
+    
+    return result.map(item => ({
+      category: item._id || 'אחר',
+      value: item.value
+    }));
+  },
+  
+  async getRecentSuppliers(limit = 5) {
+    const Supplier = (await import('../models/supplier.model.js')).default;
+    const User = (await import('../models/user.model.js')).default;
+    const Category = (await import('../models/category.model.js')).default;
+    
+    const suppliers = await Supplier.find({ status: 'מאושר' })
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .populate('user', 'name')
+      .populate('category', 'name')
+      .lean();
+    
+    return suppliers.map(s => ({
+      name: s.user?.name || 'לא ידוע',
+      category: s.category?.name || 'אחר',
+      date: s.createdAt
+    }));
+  },
+  
+  async getRecentEvents(limit = 5) {
+    const User = (await import('../models/user.model.js')).default;
+    
+    const events = await Event.find()
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .populate('ownerId', 'name')
+      .lean();
+    
+    return events.map(e => ({
+      name: e.name || `אירוע - ${e.ownerId?.name || 'לא ידוע'}`,
+      date: e.createdAt
+    }));
   }
 }
 

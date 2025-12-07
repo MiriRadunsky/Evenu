@@ -67,5 +67,18 @@ export const DashboardService ={
       activeContracts,
       totalRevenue,
     };
+  },
+  async getAdminStats() {
+    const monthlyEvents = await DashboardRepository.getMonthlyEventsStats();
+    const categorySuppliers = await DashboardRepository.getSuppliersByCategory();
+    const recentSuppliers = await DashboardRepository.getRecentSuppliers(5);
+    const recentEvents = await DashboardRepository.getRecentEvents(5);
+    
+    return {
+      monthlyEvents,
+      categorySuppliers,
+      recentSuppliers,
+      recentEvents,
+    };
   }
 }

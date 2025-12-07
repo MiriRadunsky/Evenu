@@ -36,4 +36,7 @@ router.put('/suppliers/:id/unblock', controller.unblockSupplier);
 // 🔹 קבלת כל המשתמשים
 router.get('/users', controller.getAllUsers);
 
+// 🔹 קבלת כל האירועים
+router.get('/events', controller.getAllEvents);
+
 export default router;

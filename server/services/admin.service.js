@@ -251,3 +251,8 @@ export async function getSupplierDetails(supplierId) {
 export async function getAllUsers() {
   return await repo.getAllUsers();
 }
+
+// 🔹 קבלת כל האירועים
+export async function getAllEvents() {
+  return await repo.getAllEvents();
+}
