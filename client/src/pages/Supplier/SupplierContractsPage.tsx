@@ -5,7 +5,7 @@ import type { AppDispatch } from "../../store";
 import { Button } from "../../components/ui/button";
 import { fetchRequestsBySupplier } from "../../store/requestSlice";
 import { CreateContractDialog } from "../../components/ContractsAndPayments/CreateContractDialog";
-import ContractList from "../../components/ContractsAndPayments/ContractList";
+import ContractList from "../../components/ContractsAndPayments/ContractList.tsx";
 
 export default function SupplierContractsPage() {
   const dispatch: AppDispatch = useDispatch();

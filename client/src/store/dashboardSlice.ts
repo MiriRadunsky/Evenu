@@ -4,7 +4,8 @@ import {
   type PayloadAction,
 } from "@reduxjs/toolkit";
 import api from "../services/axios";
-import type { Event } from "../types/type";
+import type { Event } from "../types/Event";
+import { getErrorMessage } from "@/Utils/error";
 
 // ----- טיפוס תשובה מהשרת -----
 export interface DashboardSummaryResponse {
@@ -46,17 +47,29 @@ const initialState: DashboardSummaryState = {
 // ----- thunk -----
 export const fetchDashboardSummaryUser = createAsyncThunk<
   DashboardSummaryResponse
->("dashboard/fetchSummaryUser", async () => {
-  const res = await api.get("/dashboard/summaryUser");
+>("dashboard/fetchSummaryUser", async (_, { rejectWithValue }) => {
+  try{
+  const res = await api.get("/dashboard/summaryUser");  
   return res.data;
+  }catch(err:unknown){
+    console.error(err);
+       return rejectWithValue(getErrorMessage(err,'שגיאה בטעינת פרטי המשתמש'));
+
+  }
 });
 export const fetchDashboardSummarySupplier = createAsyncThunk<
   DashboardSummaryResponse
->("dashboard/fetchSummarySupplier", async () => {
+>("dashboard/fetchSummarySupplier", async (_, { rejectWithValue }) => {
+  try{
   const res = await api.get("/dashboard/summarySupplier");
+
   return res.data;
+  }
+  catch(err:unknown){
+    console.error(err);
+    return rejectWithValue(getErrorMessage(err,'שגיאה בטעינת פרטי הספק'));
+  }
 });
-// ----- slice -----
 const dashboardSlice = createSlice({
   name: "dashboard",
   initialState,
@@ -75,8 +88,8 @@ const dashboardSlice = createSlice({
           
           state.upcomingEvent = action.payload.upcomingEvent;
           state.pendingRequestsCount = action.payload.pendingRequestsCount;
-          state.approvedRequestsCount = action.payload.approvedRequestsCount;   // ✅
-          state.activeContractsCount = action.payload.activeContractsCount;     // ✅
+          state.approvedRequestsCount = action.payload.approvedRequestsCount;  
+          state.activeContractsCount = action.payload.activeContractsCount;     
           state.pendingPaymentsCount = action.payload.pendingPaymentsCount;
           state.pendingPaymentsTotal = action.payload.pendingPaymentsTotal;
           state.overduePaymentsCount = action.payload.overduePaymentsCount;
@@ -99,8 +112,8 @@ const dashboardSlice = createSlice({
           
           state.upcomingEvent = action.payload.upcomingEvent;
           state.pendingRequestsCount = action.payload.pendingRequestsCount;
-          state.approvedRequestsCount = action.payload.approvedRequestsCount;   // ✅
-          state.activeContractsCount = action.payload.activeContractsCount;     // ✅
+          state.approvedRequestsCount = action.payload.approvedRequestsCount;  
+          state.activeContractsCount = action.payload.activeContractsCount;     
           state.pendingPaymentsCount = action.payload.pendingPaymentsCount;
           state.pendingPaymentsTotal = action.payload.pendingPaymentsTotal;
           state.overduePaymentsCount = action.payload.overduePaymentsCount;

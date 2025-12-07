@@ -21,7 +21,6 @@ import {
   Calendar,
   BarChart3,
   LogOut,
-  Shield,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
 import { logout } from "../../services/auth";

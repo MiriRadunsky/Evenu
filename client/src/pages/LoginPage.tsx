@@ -3,6 +3,7 @@ import { Mail, Lock, ArrowLeft, Sparkles } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { login } from '../services/auth';
 import { GoogleLoginButton } from '../components/shared/GoogleLoginButton';
+import { getErrorMessage } from '@/Utils/error';
 
 interface LoginPageProps {
   onLogin: () => void;
@@ -23,8 +24,8 @@ export function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
     try {
       await login({ email, password });
       onLogin(); 
-    } catch (err: any) {
-      const errorMessage = err.response?.data?.message || err.message || 'שגיאה בהתחברות. אנא נסה שוב.';
+    } catch (err) {
+      const errorMessage =getErrorMessage(err, 'שגיאה בהתחברות. אנא נסה שוב.')
       setError(errorMessage);
     } finally {
       setLoading(false);

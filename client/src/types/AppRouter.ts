@@ -1,3 +1,5 @@
+import type { JSX } from "react/jsx-runtime";
+
 export type AppRoute = {
   title?: string;
   path: string;

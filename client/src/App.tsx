@@ -13,14 +13,11 @@ export default function App() {
   };
 
   const handleLogin = () => {
-    // TODO: Add login logic here
-    console.log('User logged in');
     setCurrentPage('dashboard');
   };
 
   const handleRegister = () => {
-    // TODO: Add registration logic here
-    console.log('User registered');
+
     setCurrentPage('dashboard');
   };
 

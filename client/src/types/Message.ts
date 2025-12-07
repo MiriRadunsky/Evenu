@@ -5,15 +5,15 @@ export interface Message {
   body: string;
 
   from: {
-    id: string;          // ObjectId של השולח
+    id: string;       
     type: "user" | "supplier";
   };
 
   to: {
-    id: string;          // ObjectId של הנמען
+    id: string;         
     type: "user" | "supplier";
   };
 
   isRead: boolean;
-  createdAt: string;     // ISO string שהשרת מחזיר
+  createdAt: string;    
 }

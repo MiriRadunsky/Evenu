@@ -15,7 +15,7 @@
 // }
 
 // pages/ContractsPage.tsx
-import ContractList from "../components/ContractsAndPayments/ContractList";
+import ContractList from "../components/ContractsAndPayments/ContractList.tsx";
 
 export default function ContractsPage() {
   return (

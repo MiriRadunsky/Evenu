@@ -6,6 +6,7 @@ import {
 } from "@reduxjs/toolkit";
 import api from "../services/axios";
 import type { Contract } from "../types/Contract";
+import { getErrorMessage } from "@/Utils/error";
 
 interface ContractsPageResult {
   items: Contract[];
@@ -57,13 +58,10 @@ export const fetchContractsBySupplier = createAsyncThunk<
       const query = params ?? {};
       const { data } = await api.get("/contracts/supplier", { params: query });
       // מצופה: { items, total, page, pageSize, totalPages }
-      console.log(data);
       
       return data as ContractsPageResult;
-    } catch (err: any) {
-      return rejectWithValue(
-        err.response?.data?.message || "Failed to fetch contracts"
-      );
+    } catch (err: unknown) {
+      return rejectWithValue(getErrorMessage(err,'שגיאה בטעינת הזמנות'));
     }
   }
 );
@@ -83,10 +81,8 @@ export const fetchContractsByClient = createAsyncThunk<
       const query = params ?? {};
       const { data } = await api.get("/contracts", { params: query });
       return data as ContractsPageResult;
-    } catch (err: any) {
-      return rejectWithValue(
-        err.response?.data?.message || "Failed to fetch contracts"
-      );
+    } catch (err: unknown) {
+     return rejectWithValue(getErrorMessage(err,'שגיאה בטעינת הזמנות'));
     }
   }
 );
@@ -109,12 +105,9 @@ export const createContract = createAsyncThunk<
   try {
     const { data } = await api.post("/contracts", payload);
     return data.contract as Contract;
-  } catch (err: any) {
-    console.log(err);
-    
-    return rejectWithValue(
-      err.response?.data?.message || "Failed to create contract"
-    );
+  } catch (err: unknown) {
+    console.error(err);
+   return rejectWithValue(getErrorMessage(err,'שגיאה ביצירת חוזה'));
   }
 });
 
@@ -144,12 +137,9 @@ export const signContract = createAsyncThunk<
       signatureData: signatureKey,
     });
 
-    // השרת מחזיר { message, updatedContract }
     return data as { updatedContract: Contract };
-  } catch (err: any) {
-    return rejectWithValue(
-      err.response?.data?.message || err.message || "Failed to sign contract"
-    );
+  } catch (err: unknown) {
+   return rejectWithValue(getErrorMessage(err,'שגיאה בחתימת חוזה'));
   }
 });
 

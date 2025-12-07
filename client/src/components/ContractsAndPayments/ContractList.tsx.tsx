@@ -42,10 +42,10 @@ export default function ContractList({ type }: ContractListProps) {
     (state: RootState) => state.contracts
   );
 
-  const contracts = data?.items ?? [];
-  const total = data?.total ?? 0;
-  const totalPages = data?.totalPages ?? 1;
-  const serverPage = data?.page ?? 1;
+  const { contracts ,total,totalPages} = useMemo(() => {
+    return {contracts:data?.items ?? [],total: data?.total ?? 0,totalPages: data?.totalPages ?? 1};
+  }, [data]);
+  
   const events = useSelector((state: RootState) => state.events.eventsList);
 
   const [selectedTab, setSelectedTab] = useState("הכל");
@@ -67,6 +67,14 @@ export default function ContractList({ type }: ContractListProps) {
   const [expandedSignaturesId, setExpandedSignaturesId] = useState<
     string | null
   >(null);
+const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+    }, 500);
+    return () => clearTimeout(t);
+  }, [searchTerm]);
 
   const toggleSignatures = (contractId: string) => {
     setExpandedSignaturesId((prev) =>
@@ -80,7 +88,6 @@ export default function ContractList({ type }: ContractListProps) {
     }
   }, [dispatch, type]);
 
-  // טעינת חוזים לפי סוג, סטטוס, אירוע וחיפוש
   useEffect(() => {
     const statusFilter = selectedTab === "הכל" ? undefined : selectedTab;
     const eventIdFilter =
@@ -89,7 +96,7 @@ export default function ContractList({ type }: ContractListProps) {
     const query = {
       page: currentPage,
       status: statusFilter,
-      searchTerm,
+      debouncedSearch,
     };
 
     if (type === "supplier") {
@@ -102,16 +109,10 @@ export default function ContractList({ type }: ContractListProps) {
         })
       );
     }
-  }, [dispatch, type, selectedTab, currentPage, selectedEventId, searchTerm]);
+  }, [dispatch, type, selectedTab, currentPage, selectedEventId, debouncedSearch]);
 
-  // סנכרון עמוד מהשרת
-  useEffect(() => {
-    if (serverPage && serverPage !== currentPage) {
-      setCurrentPage(serverPage);
-    }
-  }, [serverPage, currentPage]);
 
-  // טעינת תמונות חתימה
+
   useEffect(() => {
     if (!contracts.length) return;
 
@@ -149,14 +150,7 @@ export default function ContractList({ type }: ContractListProps) {
     })();
   }, [contracts, signatureUrls]);
 
-  const sortedContracts = useMemo(() => {
-    if (!contracts) return [];
-    return [...contracts].sort((a, b) => {
-      if (!a.createdAt) return 1;
-      if (!b.createdAt) return -1;
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-    });
-  }, [contracts]);
+  
 
   const isClientSignedByCurrentUser = (contract: Contract) => {
     if (!user?._id) return false;
@@ -204,11 +198,10 @@ export default function ContractList({ type }: ContractListProps) {
       toast.success("החוזה נחתם בהצלחה");
       setSignDialogOpen(false);
       setCurrentContractToSign(null);
-    } catch (err: any) {
-      console.error(" Error signing contract:", err);
-      const msg =
-        err?.response?.data?.message || err?.message || "שגיאה בחתימת החוזה";
-      toast.error(msg);
+    } catch (err: unknown) {
+      console.error(err);
+      const errorText = String(err);
+      toast.error(errorText);
     } finally {
       setSigningContractId(null);
     }
@@ -228,9 +221,9 @@ export default function ContractList({ type }: ContractListProps) {
       }
       const url = await getImageUrl(contract.s3Key);
       window.open(url, "_blank");
-    } catch (err: any) {
-      console.error(err);
-      toast.error(err);
+    } catch (err: unknown) {
+      const errorText = String(err);
+      toast.error(errorText);
     }
   };
 
@@ -268,7 +261,6 @@ export default function ContractList({ type }: ContractListProps) {
             />
           </div>
 
-          {/* סינון לפי אירוע – רק ללקוח, רספונסיבי */}
           {type === "client" && (
             <div className="w-full md:w-auto flex flex-col gap-3 md:flex-row md:items-center md:justify-end">
               <div className="space-y-1 text-right md:text-left">
@@ -335,7 +327,7 @@ export default function ContractList({ type }: ContractListProps) {
             </div>
           )}
 
-          {!loading && sortedContracts.length === 0 ? (
+          {!loading && contracts.length === 0 ? (
             <Card className="border-dashed">
               <CardContent className="py-12 text-center">
                 <div className="mx-auto w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
@@ -360,23 +352,25 @@ export default function ContractList({ type }: ContractListProps) {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 gap-6">
-                  {sortedContracts.map((contract) => {
+                  {contracts.map((contract) => {
                     const isSupplierSigned = !!contract.supplierSignature;
                     const clientSignedByMe =
                       isClientSignedByCurrentUser(contract);
                     const bothSigned = isSupplierSigned && clientSignedByMe;
 
-                    const canClientSign =
+                    const canClientSign = !!(
                       type === "client" &&
                       user?._id &&
                       !clientSignedByMe &&
-                      contract.status !== "מבוטל";
+                      contract.status !== "מבוטל"
+                    );
 
-                    const canSupplierSign =
+                    const canSupplierSign = !!(
                       type === "supplier" &&
                       user?._id &&
                       !isSupplierSigned &&
-                      contract.status !== "מבוטל";
+                      contract.status !== "מבוטל"
+                    );
 
                     const canSign = canClientSign || canSupplierSign;
 

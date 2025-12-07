@@ -1,31 +1,31 @@
-import { io, Socket } from "socket.io-client";
-import { addNotification } from "../store/notificationsSlice";
-import { store, type AppDispatch } from "../store";
+import { store, type AppDispatch } from "@/store";
+import { addNotification } from "@/store/notificationsSlice";
+import type { Notification } from "@/types/Notification";
+import ioClient from "socket.io-client"; // default import
 
-let socket: Socket;
+let socketInstance: ReturnType<typeof ioClient> | null = null;
 
 export const initSocket = (userId: string, dispatch: AppDispatch) => {
-  if (!socket) {
-    const socketUrl =
-      import.meta.env.VITE_SOCKET_URL || "http://localhost:3000";
+  if (!socketInstance) {
+    const socketUrl = import.meta.env.VITE_SOCKET_URL || "http://localhost:3000";
 
-    socket = io(socketUrl, {
+    socketInstance = ioClient(socketUrl, {
       auth: {
         token: store.getState().auth.token,
       },
     });
 
-    socket.on("connect", () => {
-      console.log("🟢 Connected with id:", socket.id);
-      socket.emit("register", userId);
+    socketInstance.on("connect", () => {
+      console.log("🟢 Connected with id:", socketInstance?.id);
+      socketInstance?.emit("register", userId);
     });
 
-    socket.on("notification", (notification) => {
+    socketInstance.on("notification", (notification: Notification) => {
       dispatch(addNotification(notification));
     });
 
-    socket.on("disconnect", () => console.log("🔴 Disconnected"));
+    socketInstance.on("disconnect", () => console.log("🔴 Disconnected"));
   }
 
-  return socket;
+  return socketInstance;
 };

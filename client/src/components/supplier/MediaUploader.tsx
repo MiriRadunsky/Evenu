@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { ImagePlus, UploadCloud, Trash2, Loader2 } from "lucide-react";
 import { uploadFileToS3 } from "../../services/uploadFile";
 import api from "../../services/axios";
@@ -44,13 +44,11 @@ export default function MediaUploader({ onRegister }: { onRegister: () => void }
 
       uploadedData.media = { images, videos };
     }
-    console.log("Uploaded data:", uploadedData);
     const res= await api.patch('/suppliers/add-images', {
       profileImage: uploadedData.profileImage,
       media: uploadedData.media,
     });
     onRegister()
-    console.log("Uploaded data:", uploadedData,res);
   } catch (err) {
     console.error("Upload error:", err);
   } finally {

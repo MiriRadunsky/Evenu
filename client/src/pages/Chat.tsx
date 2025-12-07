@@ -111,8 +111,9 @@ export default function Chat() {
       })).unwrap();
 
       setMessageText("");
-    } catch {
-      toast.error("שגיאה בשליחת ההודעה");
+    } catch (err:string | unknown) {
+     const errorText = String(err);
+      toast.error(errorText);
     }
   };
 

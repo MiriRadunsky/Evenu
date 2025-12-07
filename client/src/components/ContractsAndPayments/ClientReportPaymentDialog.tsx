@@ -58,13 +58,11 @@ export function ClientReportPaymentDialog({
       setNote("");
       setFile(null);
       onSuccess?.();
-    } catch (err: any) {
+    } catch (err:string | unknown) {
       console.error(err);
-      toast.error(
-        typeof err === "string"
-          ? err
-          : "שגיאה בדיווח על תשלום / העלאת קבלה"
-      );
+      const errorText = String(err);
+      toast.error(errorText)
+       
     } finally {
       setLoading(false);
     }

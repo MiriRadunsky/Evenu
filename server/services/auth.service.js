@@ -9,7 +9,9 @@ const JWT_SECRET = process.env.JWT_SECRET || 'JWT_SECRETkey';
 
 export async function register({ name, email, phone, password, role }) {
     const existingUser = await repo.findUserByEmail(email);
-    if (existingUser) throw new AppError(409, 'User already exists');
+    console.log(existingUser);
+    
+    if (existingUser) throw new AppError(409, 'משתש כבר קיים');
     console.log("password ",password)
     const hashedPassword = await bcrypt.hash(password, 10);
     const userData = { name, email, phone, password: hashedPassword, role };

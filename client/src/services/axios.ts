@@ -1,11 +1,10 @@
 import axios from 'axios';
-import { store } from '../store';
 import { redirect } from 'react-router-dom';
 
 const url =  import.meta.env.VITE_API_URL;
 
 const api = axios.create({
-  baseURL: url || 'http://localhost:8000',
+  baseURL: url || 'http://localhost:3000',
   withCredentials: true,
   headers: { 'Content-Type': 'application/json' },
 });

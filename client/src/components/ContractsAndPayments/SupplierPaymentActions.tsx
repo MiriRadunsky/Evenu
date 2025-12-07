@@ -81,11 +81,9 @@ function SupplierConfirmDialog({
       setNote("");
       setFile(null);
       onSuccess?.();
-    } catch (err: any) {
-      console.error(err);
-      toast.error(
-        typeof err === "string" ? err : "שגיאה באישור התשלום / העלאת קבלה"
-      );
+    }  catch (err:string | unknown) {
+     const errorText = String(err);
+      toast.error(errorText);
     } finally {
       setLoading(false);
     }
@@ -193,11 +191,9 @@ function SupplierRejectDialog({ paymentId, onSuccess }: SupplierRejectProps) {
       setOpen(false);
       setReason("");
       onSuccess?.();
-    } catch (err: any) {
-      console.error(err);
-      toast.error(
-        typeof err === "string" ? err : "שגיאה בדחיית התשלום"
-      );
+    }  catch (err:string | unknown) {
+     const errorText = String(err);
+      toast.error(errorText);
     } finally {
       setLoading(false);
     }

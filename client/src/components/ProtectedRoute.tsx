@@ -8,7 +8,6 @@ interface ProtectedRouteProps {
 }
 
 export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) {
-  console.log("isAuthenticated:", isAuthenticated());
   
   if (!isAuthenticated()) {
     return <Navigate to="/login" replace />;
@@ -17,7 +16,6 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
   // Check role if required
   if (requiredRole) {
     const userRole = getUserRole();
-    console.log("User role:", userRole, "Required role:", requiredRole);
     
     if (userRole !== requiredRole) {
       // Redirect to appropriate dashboard based on user's actual role

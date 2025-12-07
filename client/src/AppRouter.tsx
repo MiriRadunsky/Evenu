@@ -16,7 +16,7 @@ import { getUserRole } from "./services/auth";
 import type { AppRoute } from "./types/AppRouter";
 import SupplierDashboard from "./pages/Supplier/SupplierDashboard";
 import { RequestPage } from "./pages/RequestPage";
-import { Calendar, FileText, LayoutDashboard, Send, Store ,Wallet,BellIcon,MessageSquare} from "lucide-react";
+import { Calendar, LayoutDashboard, Send, Store ,Wallet,BellIcon,MessageSquare} from "lucide-react";
 import SupplierRequestPage from "./pages/Supplier/SupplierRequestPage";
 import SupplierContractsPage from "./pages/Supplier/SupplierContractsPage";
 import ContractsPage from "./pages/ContractsPage";
@@ -29,9 +29,18 @@ import BudgetManagementPage from "./pages/BudgetManagementPage";
 import { useDispatch } from "react-redux";
 import { fetchUser } from "./store/authSlice";
 import type { AppDispatch } from "./store";
+import { useEffect } from "react";
 
 export default function AppRouter() {
   const dispatch: AppDispatch = useDispatch();
+
+  // מעדכן את פרטי המשתמש מהשרת אם יש token
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      dispatch(fetchUser());
+    }
+  }, [dispatch]);
 
   const userRoutes = [
     { title: "לוח בקרה", path: "/dashboard", element: < DashboardUser />, icon: LayoutDashboard },
@@ -80,7 +89,7 @@ export default function AppRouter() {
   };
 
   const handleLoginAndRegister = async () => {
-    console.log("User logged in");
+
     
     // טוען את פרטי המשתמש לפני ניווט
     await dispatch(fetchUser());

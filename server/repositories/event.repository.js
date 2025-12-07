@@ -106,7 +106,7 @@ export async function findUpcomingEventsByOwnerId(ownerId) {
     .select(EVENT_PROJECTION);
 }
 
-
+ 
 export async function findByOwnerId(ownerId, query = {}) {
   const { page = 1, limit = 10, status, type } = query;
   const pageNumber = Number(page);

@@ -1,3 +1,6 @@
+import type { Supplier } from "./Supplier";
+import type { User } from "./User";
+
 // סוגי נתונים לרישום
 export interface SupplierData {
   category: string;
@@ -17,7 +20,7 @@ export interface RegisterData {
 // תשובת הרשמה
 export interface AuthResponse {
   message: string;
-  user: any;
-  supplier?: any;
+  user: User;
+  supplier?: Supplier;
   token?: string;
 }

@@ -8,6 +8,7 @@ export interface AdminStats {
   totalEvents: number;
   activeContracts: number;
   totalRevenue: number;
+  activeSuppliers: number;
 }
 
 export interface PendingSupplier {

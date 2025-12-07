@@ -3,7 +3,7 @@ import { NotificationService } from '../services/notification.service.js';
 
 export const NotificationController = {
   create: asyncHandler(async (req, res) => {
-      const {_v, ...notification} = await NotificationService.createNotification({ ...req.body, userId: req.user._id });
+      const {notification} = await NotificationService.createNotification({ ...req.body, userId: req.user._id });
       res.status(201).json(notification);
   }),
 

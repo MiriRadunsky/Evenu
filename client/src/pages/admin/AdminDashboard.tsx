@@ -17,7 +17,8 @@ export function AdminDashboard() {
     pendingSuppliers: 0,
     totalEvents: 0,
     activeContracts: 0,
-    totalRevenue: 0
+    totalRevenue: 0,
+    activeSuppliers: 0
   });
   
   const [error, setError] = useState<string | null>(null);

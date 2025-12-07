@@ -1,4 +1,11 @@
-import React, { useState, useEffect,type FormEvent, type Dispatch, type SetStateAction } from "react";
+import {
+  useState,
+  useEffect,
+  type FormEvent,
+  type Dispatch,
+  type SetStateAction,
+  useMemo,
+} from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -21,6 +28,7 @@ import {
 import { createContract } from "../../store/contractsSlice";
 import { uploadFileToS3 } from "../../services/uploadFile";
 import PaymentsContract from "./PaymentsContract";
+import type { Request } from "@/types/Request";
 
 interface CreateContractDialogProps {
   open: boolean;
@@ -49,12 +57,13 @@ export const CreateContractDialog = ({
   const [payments, setPayments] = useState<
     { amount: string; dueDate: string; note: string }[]
   >([]);
-
-  const approvedRequests = requests?.filter((r) => r.status === "מאושר") ?? [];
+  const approvedRequests = useMemo(() => {
+    return requests?.filter((r) => r.status === "מאושר") ?? [];
+  }, [requests]);
 
   // נאתר את הבקשה לפי ה-ID שבקומפוננטה
   const selectedRequest =
-    approvedRequests.find((r) => r._id === selectedRequestId) ||
+    approvedRequests.find((r:Request) => r._id === selectedRequestId) ||
     selectedRequestFromStore ||
     null;
 
@@ -110,7 +119,7 @@ export const CreateContractDialog = ({
       toast.error("נא למלא תיאור שירות");
       return;
     }
- const today = new Date();
+    const today = new Date();
     today.setHours(0, 0, 0, 0); // תחילת היום
 
     for (let i = 0; i < payments.length; i++) {
@@ -181,9 +190,9 @@ export const CreateContractDialog = ({
       toast.success("החוזה נוצר בהצלחה");
       resetForm();
       onOpenChange(false);
-    } catch (error: any) {      
-      console.log(error);
-      toast.error(error);
+    } catch (err:string | unknown) {
+     const errorText = String(err);
+      toast.error(errorText);
     } finally {
       setIsCreating(false);
       setIsUploading(false);
@@ -321,9 +330,7 @@ export const CreateContractDialog = ({
                 id="file"
                 type="file"
                 accept=".pdf,.doc,.docx"
-                onChange={(e) =>
-                  setContractFile(e.target.files?.[0] || null)
-                }
+                onChange={(e) => setContractFile(e.target.files?.[0] || null)}
               />
               {contractFile && (
                 <span className="text-xs text-muted-foreground truncate max-w-[180px]">

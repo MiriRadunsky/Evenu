@@ -1,3 +1,4 @@
+import { getErrorMessage } from "@/Utils/error";
 import { store } from "../store";
 import type { AuthResponse, RegisterData } from "../types/AuthTypes";
 import api from "./axios";
@@ -32,16 +33,13 @@ export interface GoogleAuthData {
 export const login = async (data: LoginData): Promise<AuthResponse> => {
   try {
     const response = await api.post("/auth/login", data);
-    console.log(response);
     return response.data;
   }
     
-   catch (error: any) {
+   catch (error: unknown) {
     // טיפול בשגיאות
-     if (error.response?.data?.message) {
-      throw new Error(error.response.data.message);
-    }
-    throw new Error("שגיאה בהתחברות");
+   
+    throw new Error(getErrorMessage(error,"שגיאה בהתחברות"));
   }
 };
 
@@ -51,7 +49,6 @@ export const register = async (
   role: string
 ): Promise<AuthResponse> => {
   try {
-    console.log("Sending registration data:", data);
 
     const route = role === "supplier" ? "suppliers/register" : "auth/register";
 
@@ -62,13 +59,9 @@ export const register = async (
         : data; // למשתמש רגיל שולחים רק את השדות הבסיסיים
 
     const response = await api.post(route, payload);
-    console.log("Server response:", response.data);
     return response.data;
-  } catch (error: any) {
-    if (error.response?.data?.message) {
-      throw new Error(error.response.data.message);
-    }
-    throw new Error("שגיאה בהרשמה");
+  } catch (error: unknown) {
+    throw new Error(getErrorMessage(error, "שגיאה בהרשמה"));
   }
 };
 
@@ -115,10 +108,7 @@ export const googleAuth = async (data: GoogleAuthData): Promise<AuthResponse> =>
   try {
     const response = await api.post('/auth/google', data);
     return response.data;
-  } catch (error: any) {
-    if (error.response?.data?.message) {
-      throw new Error(error.response.data.message);
-    }
-    throw new Error('שגיאה בהתחברות עם Google. אנא נסה שוב.');
+  } catch (error: unknown) {
+    throw new Error(getErrorMessage(error,'שגיאה בהתחברות עם Google. אנא נסה שוב.'))
   }
 };

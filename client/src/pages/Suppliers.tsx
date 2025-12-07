@@ -56,18 +56,13 @@ export default function Suppliers() {
     if (selectedCategory !== "הכל") filters.category = selectedCategory;
     if (regionFilter) filters.region = regionFilter;
     if (debouncedSearch) filters.q = debouncedSearch;
-    console.log("🔍 Fetching suppliers with filters:", filters);
     dispatch(fetchSuppliers(filters));
   }, [dispatch, selectedCategory, regionFilter, debouncedSearch]);
 
   useEffect(() => {
     const loadUrls = async () => {
       if (!suppliersList) return;
-      console.log(
-        "📦 Suppliers from Redux:",
-        suppliersList.length,
-        "suppliers"
-      );
+   
       const updated = await Promise.all(
         suppliersList.map(async (s) => {
           if (s.profileImage?.key) {
@@ -78,7 +73,6 @@ export default function Suppliers() {
         })
       );
       setSuppliersWithUrls(updated);
-      console.log("✅ Suppliers with URLs ready:", updated.length);
     };
     loadUrls();
   }, [suppliersList]);
@@ -98,9 +92,9 @@ export default function Suppliers() {
   }) => {
     try {
       setIsSending(true);
-      dispatch(clearSelectedSupplier());
       setIsSending(false);
       setSendRequest(false);
+      dispatch(clearSelectedSupplier());
       await dispatch(
         createSupplierRequest({
           eventId,
@@ -109,8 +103,9 @@ export default function Suppliers() {
         })
       ).unwrap();
       toast.success("הבקשה נשלחה בהצלחה");
-     } catch (err:any) {
-       toast.error(err);
+     } catch (err:string | unknown) {
+          const errorText = String(err);
+           toast.error(errorText);
      }
   };
 

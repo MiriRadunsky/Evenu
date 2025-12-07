@@ -41,11 +41,11 @@ export const cancelContract = asyncHandler(async (req, res) => {
     .json({ message: "Contract canceled successfully", updatedContract });
 });
 export const getContractsBySupplier = asyncHandler(async (req, res) => {
-  const { page = 1, limit = 10, status, searchTerm } = req.query;
+  const { page = 1, limit = 4 ,status, searchTerm } = req.query;
 
   const result = await srv.getContractsBySupplier(req.user._id, {
     page: Number(page) || 1,
-    limit: Number(limit) || 10,
+    limit: Number(limit) || 4,
     status: status || undefined,
     searchTerm: searchTerm || undefined,
   });
@@ -54,11 +54,11 @@ export const getContractsBySupplier = asyncHandler(async (req, res) => {
 });
 
 export const getContractsByClient = asyncHandler(async (req, res) => {
-  const { page = 1, limit = 10, status, eventId, searchTerm } = req.query;
+  const { page = 1, limit = 4, status, eventId, searchTerm } = req.query;
 
   const result = await srv.getContractsByClient(req.user._id, {
     page: Number(page) || 1,
-    limit: Number(limit) || 10,
+    limit: Number(limit) || 4,
     status: status || undefined,
     eventId: eventId || undefined,
     searchTerm: searchTerm || undefined,

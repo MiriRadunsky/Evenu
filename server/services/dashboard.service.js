@@ -4,6 +4,10 @@ import { SupplierRepository } from "../repositories/suppliers.repositry.js";
 export const DashboardService ={
   async getDashboardSummaryForUser(userId) {
     const upcomingEvents = await DashboardRepository.findUpcomingEventsForUser(userId);
+    const upcomingEventsWithStatus = upcomingEvents.map(e => ({
+      ...e.toObject(),
+      status: e.autoStatus, 
+    }));
     const pendingRequestsCount = await DashboardRepository.countPendingRequestsForUser(userId);
     const approvedRequestsCount=await DashboardRepository.countApprovedRequestsForUser(userId);     
     const activeContractsCount=await DashboardRepository.countActiveContractsForUser(userId);
@@ -15,7 +19,7 @@ export const DashboardService ={
     );
     const overduePaymentsCount = await DashboardRepository.countOverduePaymentsForUser(userId);
     return {
-      upcomingEvent: upcomingEvents, 
+      upcomingEvent: upcomingEventsWithStatus, 
       approvedRequestsCount,
       activeContractsCount,
       pendingRequestsCount,
@@ -30,6 +34,10 @@ export const DashboardService ={
         throw new AppError(404, "ספק לא נמצא");
       }
     const upcomingEvents = await DashboardRepository.findUpcomingEventsForSupplier(SupplierId);
+    const upcomingEventsWithStatus = upcomingEvents.map(e => ({
+      ...e.toObject(),
+      status: e.autoStatus, 
+    }));
     const pendingRequestsCount = await DashboardRepository.countPendingRequestsForSupplier(SupplierId);
     const approvedRequestsCount=await DashboardRepository.countApprovedRequestsForSupplier(SupplierId);     
     const activeContractsCount=await DashboardRepository.countActiveContractsForSupplier(SupplierId);
@@ -42,7 +50,7 @@ export const DashboardService ={
     const overduePaymentsCount = await DashboardRepository.countOverduePaymentsForSupplier(SupplierId);
 
     return {
-      upcomingEvent: upcomingEvents, 
+      upcomingEvent: upcomingEventsWithStatus, 
       approvedRequestsCount,
       activeContractsCount,
       pendingRequestsCount,

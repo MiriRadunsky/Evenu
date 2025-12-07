@@ -38,7 +38,9 @@ export default function RequestList({ type }: RequestListProps) {
 
   const events = useSelector((state: RootState) => state.events.eventsList);
 
-  const requests = data?.items ?? [];
+  const requests = useMemo(() => {
+    return data?.items ?? [];
+  }, [data]);
   const totalPages = data?.totalPages ?? 1;
   const total = data?.total ?? 0;
   const pageSize = data?.pageSize ?? 10;
@@ -53,16 +55,24 @@ export default function RequestList({ type }: RequestListProps) {
 
   const resolvedMode: "user" | "supplier" = type;
   const actionLoading = loading;
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
   useEffect(() => {
-    if (resolvedMode === "user") {
+    const t = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+    }, 500);
+    return () => clearTimeout(t);
+  }, [searchTerm]);
+
+  useEffect(() => {
+    if (resolvedMode === "user" && events.length === 0) {
       dispatch(fetchEvents());
     }
-  }, [dispatch, resolvedMode]);
+  }, [resolvedMode, events.length, dispatch]);
 
   const handleTabChange = (value: string) => {
     setSelectedTab(value);
-    setPage(1);
+    setPage(() => 1);
   };
 
   const handleEventChange = (value: string) => {
@@ -74,7 +84,7 @@ export default function RequestList({ type }: RequestListProps) {
     const status = selectedTab === "הכל" ? undefined : selectedTab;
     const eventId = selectedEventId === "all" ? undefined : selectedEventId;
 
-    const query = { page, limit: pageSize, status, eventId, searchTerm };
+    const query = { page, limit: pageSize, status, eventId, debouncedSearch };
 
     if (resolvedMode === "supplier") {
       dispatch(fetchRequestsBySupplier(query));
@@ -88,17 +98,8 @@ export default function RequestList({ type }: RequestListProps) {
     selectedTab,
     selectedEventId,
     pageSize,
-    searchTerm,
+    debouncedSearch,
   ]);
-
-  const sortedRequests = useMemo(() => {
-    if (!requests) return [];
-    return [...requests].sort((a, b) => {
-      if (!a.createdAt) return 1;
-      if (!b.createdAt) return -1;
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-    });
-  }, [requests]);
 
   const handleAttachContract = (requestId: string) => {
     dispatch(SetSelectedSupplierRequest({ id: requestId }));
@@ -161,7 +162,10 @@ export default function RequestList({ type }: RequestListProps) {
                   אירוע:
                 </span>
 
-                <Select value={selectedEventId} onValueChange={handleEventChange}>
+                <Select
+                  value={selectedEventId}
+                  onValueChange={handleEventChange}
+                >
                   <SelectTrigger className="w-56 border-primary">
                     <SelectValue placeholder="בחר אירוע" />
                   </SelectTrigger>
@@ -204,10 +208,10 @@ export default function RequestList({ type }: RequestListProps) {
                 <p className="text-muted-foreground">טוען בקשות...</p>
               </div>
             </div>
-          ) : sortedRequests.length > 0 ? (
+          ) : requests.length > 0 ? (
             <>
               <div className="space-y-3">
-                {sortedRequests.map((request) => (
+                {requests.map((request) => (
                   <RequestCard
                     key={request._id}
                     request={request}
