@@ -1,7 +1,7 @@
 export interface Thread {
   _id: string;
-  userId: string;          // מזהה הלקוח
-  supplierId?: string;     // מזהה הספק
+  userId: string;         
+  supplierId?: string;    
   eventId?: string;
   createdAt?: string;
   updatedAt?: string;

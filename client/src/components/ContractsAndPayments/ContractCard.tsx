@@ -79,6 +79,7 @@ export function ContractCard({
             </div>
           </div>
           <Badge
+            variant="outline"
             className={`${getStatusColor(
               contract.status
             )} border font-medium px-3 py-1 whitespace-nowrap`}

@@ -17,6 +17,10 @@ interface SignContractDialogProps {
   isLoading?: boolean;
   contractName?: string;
 }
+interface SignaturePadRef {
+  getSignatureDataUrl: () => string | null;
+  clear: () => void;
+}
 
 export function SignContractDialog({
   open,
@@ -25,7 +29,7 @@ export function SignContractDialog({
   isLoading = false,
   contractName = "החוזה",
 }: SignContractDialogProps) {
-  const signaturePadRef = useRef<any>(null);
+  const signaturePadRef = useRef<SignaturePadRef| null>(null);
   const [hasSignature, setHasSignature] = useState(false);
 
   const handleSignatureChange = (dataUrl: string | null) => {

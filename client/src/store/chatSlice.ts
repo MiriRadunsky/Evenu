@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/tool
 import api from "../services/axios";
 import type { Thread } from "../types/Thread";
 import type { Message } from "../types/type";
+import { getErrorMessage } from "@/Utils/error";
 
 // ==========================
 //     STATE
@@ -41,11 +42,9 @@ export const fetchThreads = createAsyncThunk<
       const res = await api.get(url);
 
       return res.data?.data ?? res.data;
-    } catch (err: any) {
-      return rejectWithValue(
-        err.response?.data?.message || "Error fetching threads"
-      );
-    }
+    }  catch (err: unknown) {
+        return rejectWithValue(getErrorMessage(err,'שגיאה בטעינת משתמשים'));
+      }
   }
 );
 
@@ -64,9 +63,9 @@ export const fetchMessages = createAsyncThunk<
       console.log("[Thunk] fetchMessages response:", res.data);
       const messages = res.data?.data ?? res.data;
       return { threadId, messages };
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("[Thunk] fetchMessages error:", err);
-      return rejectWithValue(err.response?.data?.message || "Error fetching messages");
+      return rejectWithValue(getErrorMessage(err,'שגיאה בטעינת הודעות'))
     }
   }
 );
@@ -85,10 +84,11 @@ export const sendMessage = createAsyncThunk<
       const res = await api.post("/messages", data);
       console.log("[Thunk] sendMessage response:", res.data);
       return res.data?.data ?? res.data;
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("[Thunk] sendMessage error:", err);
-      return rejectWithValue(err.response?.data?.message || "Error sending message");
-    }
+    return rejectWithValue(getErrorMessage(err,'שגיאה בשליחת הודעה'))
+  }
+    
   }
 );
 
@@ -105,9 +105,9 @@ export const updateMessage = createAsyncThunk<
       const res = await api.patch(`/messages/${id}`, data);
       console.log("[Thunk] updateMessage response:", res.data);
       return res.data?.data ?? res.data;
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("[Thunk] updateMessage error:", err);
-      return rejectWithValue(err.response?.data?.message || "Error updating message");
+      return rejectWithValue(getErrorMessage(err,"שגיאה בעדכון הודעה"));
     }
   }
 );

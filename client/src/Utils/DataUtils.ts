@@ -4,8 +4,8 @@ export const formatEventDate = (dateString?: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("he-IL", {
       year: "numeric",
-      month: "long",
-      day: "numeric",
+      month: "2-digit",
+      day: "2-digit",
     });
   } catch {
     return "תאריך לא תקין";

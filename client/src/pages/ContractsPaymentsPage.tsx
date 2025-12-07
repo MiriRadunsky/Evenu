@@ -47,7 +47,7 @@ import { ClientReportPaymentDialog } from "../components/ContractsAndPayments/Cl
 import { getImageUrl } from "../services/uploadFile";
 import { toast } from "sonner";
 import { getStatusBadgeClass } from "../Utils/PaymentUtils";
-import { formatEventDate } from "../utils/DataUtils";
+import { formatEventDate } from "../Utils/DataUtils";
 import type { Payment } from "../types/Payment";
 
 type StatusTab = "הכל" | "ממתין" | "ממתין לספק" | "שולם" | "נדחה" | "באיחור";
@@ -134,9 +134,9 @@ export default function ContractsPaymentsPage() {
     try {
       const url = await getImageUrl(key);
       window.open(url, "_blank", "noopener,noreferrer");
-    } catch (err) {
-      console.error(err);
-      toast.error("שגיאה בפתיחת הקבלה");
+    } catch (err:string | unknown) {
+     const errorText = String(err);
+      toast.error(errorText);
     }
   };
 
@@ -145,7 +145,7 @@ export default function ContractsPaymentsPage() {
     if (selectedTab !== "באיחור") return payments;
 
     const now = new Date();
-    return payments.filter((p: any) => {
+    return payments.filter((p: Payment) => {
       if (p.status !== "ממתין" || !p.dueDate) return false;
       return new Date(p.dueDate) < now;
     });

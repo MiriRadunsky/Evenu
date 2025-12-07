@@ -1,3 +1,4 @@
+import { getErrorMessage } from "@/Utils/error";
 import { store } from "../store";
 import type { AuthResponse, RegisterData } from "../types/AuthTypes";
 import api from "./axios";
@@ -36,12 +37,10 @@ export const login = async (data: LoginData): Promise<AuthResponse> => {
     return response.data;
   }
     
-   catch (error: any) {
+   catch (error: unknown) {
     // טיפול בשגיאות
-     if (error.response?.data?.message) {
-      throw new Error(error.response.data.message);
-    }
-    throw new Error("שגיאה בהתחברות");
+   
+    throw new Error(getErrorMessage(error,"שגיאה בהתחברות"));
   }
 };
 
@@ -64,11 +63,8 @@ export const register = async (
     const response = await api.post(route, payload);
     console.log("Server response:", response.data);
     return response.data;
-  } catch (error: any) {
-    if (error.response?.data?.message) {
-      throw new Error(error.response.data.message);
-    }
-    throw new Error("שגיאה בהרשמה");
+  } catch (error: unknown) {
+    throw new Error(getErrorMessage(error, "שגיאה בהרשמה"));
   }
 };
 
@@ -115,10 +111,7 @@ export const googleAuth = async (data: GoogleAuthData): Promise<AuthResponse> =>
   try {
     const response = await api.post('/auth/google', data);
     return response.data;
-  } catch (error: any) {
-    if (error.response?.data?.message) {
-      throw new Error(error.response.data.message);
-    }
-    throw new Error('שגיאה בהתחברות עם Google. אנא נסה שוב.');
+  } catch (error: unknown) {
+    throw new Error(getErrorMessage(error,'שגיאה בהתחברות עם Google. אנא נסה שוב.'))
   }
 };

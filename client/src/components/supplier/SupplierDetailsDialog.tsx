@@ -42,9 +42,9 @@ export const SupplierDetailsDialog = ({
           supplier.media.images.map(async (img) => {
             if (img.key) {
               const key = await getImageUrl(img.key);
-              return { key, alt: img.alt };
+              return { key, alt: img.title };
             }
-            return { key: '', alt: img.alt };
+            return { key: '', alt: img.title };
           })
         );
         setMediaUrls(urls);

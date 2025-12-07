@@ -18,15 +18,15 @@ import {
 } from "../../components/ui/select";
 import { useDispatch, useSelector } from "react-redux";
 import type { Supplier } from "../../types/Supplier";
-import type { Event } from "../../types/type";
+import type { Event } from "../../types/Event";
 import type { AppDispatch, RootState } from "../../store";
-import { fetchEvents, fetchRelevantEvents } from "../../store/eventsSlice";
+import { fetchRelevantEvents } from "../../store/eventsSlice";
 
 interface SendRequestDialogProps {
   supplier: Supplier;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: { eventId: string;  requestMessage: string ;supplierId: string;}) => Promise<any>;
+  onSubmit: (data: { eventId: string; requestMessage: string; supplierId: string }) => Promise<void>;
   isLoading: boolean;
   isSending:boolean
 }
@@ -51,7 +51,7 @@ export const SendRequestDialog = ({
 
   useEffect(() => {
     dispatch(fetchRelevantEvents());    
-  }, []);
+  }, [dispatch]);
 
   // בחירת אירוע ראשון אוטומטית
   useEffect(() => {

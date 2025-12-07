@@ -85,14 +85,14 @@ export async function checkIfContractExists({
 
 export async function getContractsBySupplier(
   supplierId,
-  { page = 1, limit = 10, status, eventId, searchTerm } = {}
+  { page = 1, limit = 4, status, eventId, searchTerm } = {}
 ) {
   const filter = { supplierId };
   if (status) filter.status = status;
   if (eventId) filter.eventId = eventId;
 
   const pageNumber = Number(page) || 1;
-  const limitNumber = Number(limit) || 10;
+  const limitNumber = Number(limit) || 4;
   const skip = (pageNumber - 1) * limitNumber;
 
   const docs = await populateContractQuery(
@@ -116,14 +116,14 @@ export async function getContractsBySupplier(
 }
 export async function getContractsByClient(
   userId,
-  { page = 1, limit = 10, status, eventId, searchTerm } = {}
+  { page = 1, limit = 4, status, eventId, searchTerm } = {}
 ) {
   const filter = { clientId: userId };
   if (status) filter.status = status;
   if (eventId) filter.eventId = eventId;
 
   const pageNumber = Number(page) || 1;
-  const limitNumber = Number(limit) || 10;
+  const limitNumber = Number(limit) || 4;
   const skip = (pageNumber - 1) * limitNumber;
 
   const docs = await populateContractQuery(

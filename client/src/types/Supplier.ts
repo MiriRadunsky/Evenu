@@ -1,13 +1,13 @@
-import type { User } from "./type";
+import type { User } from "./User";
 
 export interface PortfolioItem {
-  images:{
+  images: [{
     key: string;
-  title?: string;
-  }
-  videos: {
+    title?: string;
+  }];
+  videos: [{
     key: string;
-  }
+  }];
 }
 
 export interface ProfileImage {
@@ -17,17 +17,18 @@ export interface ProfileImage {
 
 export interface Supplier {
   _id: string;
-  user: User; 
+  user: User;
   category: {
     _id: string;
     label: string;
   };
   regions: string[];
   kashrut?: string;
-  media: PortfolioItem[];
-profileImage?: ProfileImage | null;  description?: string;
+  media: PortfolioItem;
+  profileImage?: ProfileImage | null;
+  description?: string;
   isActive: boolean;
-  status: 'בהמתנה' | 'מאושר' | 'נפסל' | 'נחסם';
+  status: "בהמתנה" | "מאושר" | "נפסל" | "נחסם";
   createdAt: string;
   updatedAt: string;
 }

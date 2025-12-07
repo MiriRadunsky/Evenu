@@ -18,7 +18,8 @@ import { updateBudgetAllocated } from "./event.service.js";
 
 function validateCreatePaymentData(data) {
   const { amount, dueDate, note } = data || {};
-
+  console.log(data,amount, dueDate, note, isNaN(amount));
+  
   // סכום
   if (amount == null || isNaN(amount)) {
     throw new AppError(400, "יש להזין סכום לתשלום");
@@ -60,7 +61,7 @@ export async function createContract(data, userId) {
     throw new AppError(404, "האירוע לא נמצא");
   }
 
-  if (event.status === "הושלם") {
+  if (event.date < new Date()) {
     throw new AppError(400, "לא ניתן ליצור חוזה לאירוע שכבר עבר");
   }
 
@@ -83,14 +84,9 @@ export async function createContract(data, userId) {
   });
 
   if (existing) {
-    throw new AppError(400, "כבר קיימת בקשה ממתינה לספק זה עבור האירוע");
+    throw new AppError(400, "כבר קיים חוזה עבור האירוע");
   }
-  validateCreatePaymentData({
-    amount: data.paymentPlan.amount,
-    dueDate: data.paymentPlan.dueDate,
-    note: data.paymentPlan.note,
-  });
-
+  data.paymentPlan&&data.paymentPlan.map((item) => validateCreatePaymentData(item));
   const paymentPlan = Array.isArray(data.paymentPlan) ? data.paymentPlan : [];
   const totalAmount = paymentPlan.reduce(
     (acc, item) => acc + (item.amount || 0),
@@ -206,6 +202,10 @@ export async function signContractService(
 
     const contract = await repo.getContractById(contractId);
     if (!contract) throw new AppError(404, "חוזה לא נמצא");
+
+  if (contract.eventId.date < new Date()) {
+    throw new AppError(400, "לא ניתן ליצור חוזה לאירוע שכבר עבר");
+  }
 
     const ipAddress = req?.ip || req?.connection?.remoteAddress || "unknown";
     const userAgent = req?.headers?.["user-agent"] || "unknown";
@@ -367,7 +367,7 @@ export async function signContractService(
 
 export async function getContractsBySupplier(
   userId,
-  { page = 1, limit = 10, status , searchTerm} = {}
+  { page = 1, limit = 4, status , searchTerm} = {}
 ) {
   const supplierId = await SupplierRepository.getSupplierIdByUserId(userId);
   if (!supplierId) {
@@ -382,7 +382,7 @@ export async function getContractsBySupplier(
 }
 export async function getContractsByClient(
   userId,
-  { page = 1, limit = 10, status, eventId,searchTerm   } = {}
+  { page = 1, limit = 4, status, eventId,searchTerm   } = {}
 ) {
   return await repo.getContractsByClient(userId, {
     page,

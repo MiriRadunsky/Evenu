@@ -28,7 +28,6 @@ import {
   markNotificationAsRead, 
 } from "../store/notificationsSlice";
 import { logout } from "../services/auth";
-import { fetchUser } from "../store/authSlice";
 import type { AppRoute } from "../types/AppRouter";
 import type { Notification } from "../types/Notification";
 import { formatRelativeTime, getNotificationColor, getNotificationIcon } from "../Utils/NotificationUtils";
@@ -53,39 +52,74 @@ export default function AppLayout({ navigationItems, children }: { navigationIte
     logout();
     navigate("/login");
   }
-  useEffect(() => {
-    dispatch(fetchUser());
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(fetchUser());
+  // }, [dispatch]);
 
-  useEffect(() => {
-    if(user?.role==='supplier')
-      setNavigateNotification("/supplier/notifications")
-    else
-      setNavigateNotification("/notifications")
-  }, [user])
-  useEffect(() => {
-    if (user?._id) {
-      const socket = initSocket(user._id, dispatch);
-      dispatch(fetchNotifications());
-    }
-  }, [user]);
+  // useEffect(() => {
+  //   if(user?.role==='supplier')
+  //     setNavigateNotification("/supplier/notifications")
+  //   else
+  //     setNavigateNotification("/notifications")
+  // }, [user])
+  // useEffect(() => {
+  //   if (user?._id) {
+  //     // const socket = 
+  //     initSocket(user._id, dispatch);
+  //     dispatch(fetchNotifications());
+  //   }
+  // }, [user,dispatch]);
 
-  /** SOCKET + LISTENERS */
-  useEffect(() => {
-    if (!user?._id) return;
-    const socket = initSocket(user._id, dispatch);
-    const handleNotification = (notification: Notification) => dispatch(addNotification(notification));
-    socket?.on("notification", handleNotification);
-    return () => {
-      socket?.off("notification", handleNotification);
-      socket?.disconnect?.();
-    };
-  }, [user?._id, dispatch]);
+  // /** SOCKET + LISTENERS */
+  // useEffect(() => {
+  //   if (!user?._id) return;
+  //   const socket = initSocket(user._id, dispatch);
+  //   const handleNotification = (notification: Notification) => dispatch(addNotification(notification));
+  //   socket?.on("notification", handleNotification);
+  //   return () => {
+  //     socket?.off("notification", handleNotification);
+  //     socket?.disconnect?.();
+  //   };
+  // }, [user?._id, dispatch]);
 
-  /** FETCH NOTIFICATIONS */
-  useEffect(() => {
-    if (user?._id) dispatch(fetchNotifications());
-  }, [user?._id, dispatch]);
+  // /** FETCH NOTIFICATIONS */
+  // useEffect(() => {
+  //   if (user?._id) dispatch(fetchNotifications());
+  // }, [user?._id, dispatch]);
+// 1. להביא את המשתמש פעם אחת
+// useEffect(() => {
+//   dispatch(fetchUser());
+// }, [dispatch]);
+
+// 2. לקבוע לאן כפתור "צפה בכל ההתראות" מפנה
+useEffect(() => {
+  if (user?.role === "supplier") {
+    setNavigateNotification("/supplier/notifications");
+  } else {
+    setNavigateNotification("/notifications");
+  }
+}, [user?.role]); // מספיק role, לא כל user
+
+// 3. initSocket + fetchNotifications פעם אחת כשיש user._id
+useEffect(() => {
+  if (!user?._id) return;
+
+  const socket = initSocket(user._id, dispatch);
+
+  // פעם אחת כשנכנסים – להביא התראות מהשרת
+  dispatch(fetchNotifications());
+
+  const handleNotification = (notification: Notification) => {
+    dispatch(addNotification(notification));
+  };
+
+  socket?.on("notification", handleNotification);
+
+  return () => {
+    socket?.off("notification", handleNotification);
+    socket?.disconnect?.();
+  };
+}, [user?._id, dispatch]);
 
   /** USER INITIALS */
   const userInitials = useMemo(() => {
@@ -103,6 +137,7 @@ export default function AppLayout({ navigationItems, children }: { navigationIte
   /** SORTED LAST 5 NOTIFICATIONS */
   const recentNotifications = useMemo(() => {
     if (!notifications) return [];
+    
     return [...notifications]
       .sort((a: Notification, b: Notification) => new Date(b.payload.time).getTime() - new Date(a.payload.time).getTime())
       .slice(0, 5);

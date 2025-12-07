@@ -5,6 +5,7 @@ import {
 } from "@reduxjs/toolkit";
 import api from "../services/axios";
 import type { Payment } from "../types/Payment";
+import { getErrorMessage } from "@/Utils/error";
 
 export interface PaymentsSummary {
   pendingPaymentsCount: number;
@@ -64,17 +65,13 @@ export const fetchClientPayments = createAsyncThunk<
     const { data } = await api.get("/payments/client", { params: query });
     // מצופה: { items, total, page, pageSize, totalPages, summary }
     return data as PaymentsPageResult;
-  } catch (err: any) {
-    return rejectWithValue(
-      err?.response?.data?.message || err?.message || "שגיאה בטעינת התשלומים"
-    );
+  } catch (err: unknown) {
+      return rejectWithValue(getErrorMessage(err,'שגיאה בטעינת התשלומים'));
+
   }
 });
 
-/* ---------------------------------------------------
-   🔹 FETCH payments for supplier (עם פגינציה + סינון)
-   GET /payments/supplier?page=&limit=&status=&eventId=
---------------------------------------------------- */
+
 export const fetchSupplierPayments = createAsyncThunk<
   PaymentsPageResult,
   FetchPaymentsParams | void,
@@ -84,17 +81,12 @@ export const fetchSupplierPayments = createAsyncThunk<
     const query = params ?? {};
     const { data } = await api.get("/payments/supplier", { params: query });
     return data as PaymentsPageResult;
-  } catch (err: any) {
-    return rejectWithValue(
-      err?.response?.data?.message || err?.message || "שגיאה בטעינת התשלומים"
-    );
+  } catch (err: unknown) {
+      return rejectWithValue(getErrorMessage(err,'שגיאה בטעינת התשלומים'));
+
   }
 });
 
-/* ---------------------------------------------------
-   🔹 לקוח – מדווח ששילם
-   PATCH /payments/:id/report-paid
---------------------------------------------------- */
 export const reportPaymentPaid = createAsyncThunk<
   Payment,
   { paymentId: string; method: string; note?: string; documentKey?: string },
@@ -109,20 +101,14 @@ export const reportPaymentPaid = createAsyncThunk<
         documentKey,
       });
       return res.data as Payment;
-    } catch (err: any) {
-      const message =
-        err?.response?.data?.message ||
-        err?.message ||
-        "שגיאה בדיווח על תשלום";
-      return rejectWithValue(message);
+    } catch (err: unknown) {
+        return rejectWithValue(getErrorMessage(err,'שגיאה בדחיית התשלום'));
+
     }
   }
 );
 
-/* ---------------------------------------------------
-   🔹 ספק – מאשר תשלום
-   PATCH /payments/:id/confirm-paid
---------------------------------------------------- */
+
 export const confirmPaymentPaid = createAsyncThunk<
   Payment,
   { paymentId: string; method?: string; note?: string; documentKey?: string },
@@ -137,20 +123,14 @@ export const confirmPaymentPaid = createAsyncThunk<
         documentKey,
       });
       return res.data as Payment;
-    } catch (err: any) {
-      const message =
-        err?.response?.data?.message ||
-        err?.message ||
-        "שגיאה באישור התשלום";
-      return rejectWithValue(message);
+    } catch (err: unknown) {
+            return rejectWithValue(getErrorMessage(err,'שגיאה באישור  התשלום'));
+
     }
   }
 );
 
-/* ---------------------------------------------------
-   🔹 ספק – דוחה תשלום
-   PATCH /payments/:id/reject-paid
---------------------------------------------------- */
+
 export const rejectPayment = createAsyncThunk<
   Payment,
   { paymentId: string; reason: string },
@@ -161,16 +141,13 @@ export const rejectPayment = createAsyncThunk<
       reason,
     });
     return res.data as Payment;
-  } catch (err: any) {
-    const message =
-      err?.response?.data?.message ||
-      err?.message ||
-      "שגיאה בדחיית התשלום";
-    return rejectWithValue(message);
+  } catch (err: unknown) {
+          return rejectWithValue(getErrorMessage(err,'שגיאה בדחיית התשלום'));
+
   }
 });
 
-// חישוב summary מקומי (על העמוד הנוכחי בלבד) – אם תרצי לעדכן אחרי פעולה
+
 function recalcSummary(state: PaymentsState) {
   const now = new Date();
   now.setHours(0, 0, 0, 0);

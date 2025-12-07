@@ -169,7 +169,7 @@ export function RequestCard({
                 צפה בצ'אט
               </Button>
 
-              {onAttachContract && request.status === "מאושר" && (
+              {onAttachContract && request.status === "מאושר" &&(
                 <Button
                   variant="link"
                   className="flex-1"

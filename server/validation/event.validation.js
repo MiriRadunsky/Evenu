@@ -1,66 +1,108 @@
 import Joi from 'joi';
 import { EVENT_TYPES } from '../shared/eventTypes.shared.js';
 
+
+const dateTodayOrFuture = (value, helpers) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // תחילת היום
+
+  const d = new Date(value);
+  d.setHours(0, 0, 0, 0); // גם את ערך המשתמש נוריד לשעה 00:00
+
+  if (d < today) {
+    // נשתמש בקוד שגיאה של date.min כדי שנוכל לשים לו הודעה יפה
+    return helpers.error('date.min');
+  }
+
+  return value;
+};
+
+
 export const createEventSchema = Joi.object({
   name: Joi.string().required().min(2).max(100).messages({
     'string.empty': 'שם האירוע הוא שדה חובה',
     'string.min': 'שם האירוע חייב להכיל לפחות 2 תווים',
     'string.max': 'שם האירוע לא יכול להכיל יותר מ-100 תווים'
   }),
+
   type: Joi.string()
     .required()
     .valid(...EVENT_TYPES)
     .messages({
       'any.required': 'סוג האירוע הוא שדה חובה',
-      'any.only': `סוג האירוע לא תקין. אפשרויות: ${EVENT_TYPES.join(
-        ', '
-      )}`
+      'any.only': `סוג האירוע לא תקין. אפשרויות: ${EVENT_TYPES.join(', ')}`
     }),
-  date: Joi.date().required().min('now').messages({
-    'date.base': 'תאריך האירוע לא תקין',
-    'date.min': 'תאריך האירוע חייב להיות בעתיד'
-  }),
-  estimatedGuests: Joi.number().required().integer().min(1).max(10000).messages({
-    'number.base': 'מספר האורחים חייב להיות מספר',
-    'number.integer': 'מספר האורחים חייב להיות מספר שלם',
-    'number.min': 'מספר האורחים חייב להיות לפחות 1',
-    'number.max': 'מספר האורחים לא יכול לעבור 10,000'
-  }),
+
+  date: Joi.date()
+    .required()
+    .custom(dateTodayOrFuture, 'date must be today or future')
+    .messages({
+      'date.base': 'תאריך האירוע לא תקין',
+      'date.min': 'תאריך האירוע חייב להיות היום או בעתיד'
+    }),
+
+  estimatedGuests: Joi.number()
+    .required()
+    .integer()
+    .min(1)
+    .max(10000)
+    .messages({
+      'number.base': 'מספר האורחים חייב להיות מספר',
+      'number.integer': 'מספר האורחים חייב להיות מספר שלם',
+      'number.min': 'מספר האורחים חייב להיות לפחות 1',
+      'number.max': 'מספר האורחים לא יכול לעבור 10,000'
+    }),
+
   locationRegion: Joi.string().optional().trim().max(100).messages({
     'string.max': 'אזור המיקום לא יכול להכיל יותר מ-100 תווים'
   }),
+
   budget: Joi.number().optional().min(0).messages({
     'number.base': 'התקציב חייב להיות מספר',
     'number.min': 'התקציב לא יכול להיות שלילי'
   })
 });
 
+
 export const updateEventSchema = Joi.object({
   name: Joi.string().optional().min(2).max(100).messages({
     'string.min': 'שם האירוע חייב להכיל לפחות 2 תווים',
     'string.max': 'שם האירוע לא יכול להכיל יותר מ-100 תווים'
   }),
+
   type: Joi.string().optional().valid(...EVENT_TYPES).messages({
     'any.only': `סוג האירוע לא תקין. אפשרויות: ${EVENT_TYPES.join(', ')}`
   }),
-  date: Joi.date().optional().min('now').messages({
-    'date.base': 'תאריך האירוע לא תקין',
-    'date.min': 'תאריך האירוע חייב להיות בעתיד'
-  }),
-  
-  estimatedGuests: Joi.number().optional().integer().min(1).max(10000).messages({
-    'number.base': 'מספר האורחים חייב להיות מספר',
-    'number.integer': 'מספר האורחים חייב להיות מספר שלם',
-    'number.min': 'מספר האורחים חייב להיות לפחות 1',
-    'number.max': 'מספר האורחים לא יכול לעבור 10,000'
-  }),
+
+  date: Joi.date()
+    .optional()
+    .custom(dateTodayOrFuture, 'date must be today or future')
+    .messages({
+      'date.base': 'תאריך האירוע לא תקין',
+      'date.min': 'תאריך האירוע חייב להיות היום או בעתיד'
+    }),
+
+  estimatedGuests: Joi.number()
+    .optional()
+    .integer()
+    .min(1)
+    .max(10000)
+    .messages({
+      'number.base': 'מספר האורחים חייב להיות מספר',
+      'number.integer': 'מספר האורחים חייב להיות מספר שלם',
+      'number.min': 'מספר האורחים חייב להיות לפחות 1',
+      'number.max': 'מספר האורחים לא יכול לעבור 10,000'
+    }),
+
   locationRegion: Joi.string().optional().trim().max(100).messages({
     'string.max': 'אזור המיקום לא יכול להכיל יותר מ-100 תווים'
   }),
+
   budget: Joi.number().optional().min(0).messages({
     'number.base': 'התקציב חייב להיות מספר',
     'number.min': 'התקציב לא יכול להיות שלילי'
   }),
+
   status: Joi.string()
     .optional()
     .valid('פעיל', 'בפעולה', 'הושלם', 'נדחה', 'בוטל')
@@ -70,3 +112,4 @@ export const updateEventSchema = Joi.object({
 }).min(1).messages({
   'object.min': 'חייב לספק לפחות שדה אחד לעדכון'
 });
+

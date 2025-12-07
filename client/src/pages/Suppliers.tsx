@@ -98,9 +98,9 @@ export default function Suppliers() {
   }) => {
     try {
       setIsSending(true);
-      dispatch(clearSelectedSupplier());
       setIsSending(false);
       setSendRequest(false);
+      dispatch(clearSelectedSupplier());
       await dispatch(
         createSupplierRequest({
           eventId,
@@ -109,8 +109,9 @@ export default function Suppliers() {
         })
       ).unwrap();
       toast.success("הבקשה נשלחה בהצלחה");
-     } catch (err:any) {
-       toast.error(err);
+     } catch (err:string | unknown) {
+          const errorText = String(err);
+           toast.error(errorText);
      }
   };
 
