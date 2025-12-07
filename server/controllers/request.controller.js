@@ -51,6 +51,7 @@ getAllRequestsByUserId: asyncHandler(async (req, res) => {
     res.status(200).json({
       message: "הבקשה נשלחה בהצלחה",
       request,
+      threadId,
     });
   }),
 

@@ -160,7 +160,8 @@ export function SupplierRegisterForm({ onRegister, onRoleChange, currentRole }: 
 
     try {
       // הכנה של הנתונים לפי מבנה שהשרת מצפה לו
-  
+      // המרת regions ממחרוזת למערך (מפריד לפי פסיק)
+      const regionsArray = regions ? regions.split(',').map(r => r.trim()).filter(r => r) : [];
 
 await register(
   {
@@ -169,7 +170,7 @@ await register(
     phone,
     password,   // חובה כאן
     category,
-    regions,
+    regions: regionsArray,
     kashrut,
     description
   },
@@ -327,7 +328,7 @@ await register(
             <SelectContent className="max-h-[200px] sm:max-h-[300px]">
               {categories.map((cat) => (
                 <SelectItem key={cat._id} value={cat._id} className="text-sm sm:text-base">
-                  {cat.name}
+                  {cat.label}
                 </SelectItem>
               ))}
             </SelectContent>

@@ -7,17 +7,18 @@ export const fetchCategories = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await api.get("/categories"); // endpoint בשרת
-      console.log("rrrrrrr ", response.data);
+      console.log("Categories response:", response.data);
       
       return response.data; // רשימת קטגוריות
     } catch (err: any) {
+      console.error("Error fetching categories:", err);
       return rejectWithValue(err.response?.data || "שגיאה בטעינת הקטגוריות");
     }
   }
 );
 
 interface CategoryState {
-  list: { _id: string; name: string }[];
+  list: { _id: string; label: string; isActive: boolean }[];
   loading: boolean;
   error: string | null;
 }

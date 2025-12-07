@@ -7,6 +7,10 @@ const categorySchema = new Schema(
       enum: ['צלם', 'להקה', 'אולם', 'קייטרינג', 'עיצוב', 'אחר'],
       required: true
     },
+    name: {
+      type: String,
+      required: true
+    },
     isActive: { type: Boolean, default: true }
   },
   { timestamps: true }

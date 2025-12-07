@@ -136,6 +136,7 @@ export async function createEvent(ownerId, data) {
 // 🔹 רק אירועים רלוונטיים (לפי date + פילטרים ב-query)
 export async function getUserRelevantEvents(ownerId, query) {
   const events = await repo.findRelevantByOwnerId(ownerId, query);
+  console.log('📋 Relevant events for user:', events.length, 'events');
   return { events };
 }
 

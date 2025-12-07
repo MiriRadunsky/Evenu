@@ -35,7 +35,7 @@ export const SupplierService = {
 
   async registerSupplier({ userData, supplierData }) {
     const { user,token } = await authServ.register({ ...userData });
-    const category = categorySrv.getCategoryById(supplierData.category);
+    const category = await categorySrv.getCategoryById(supplierData.category);
     if(!category) throw new AppError(404, "קטגוריה לא קיימת");
     supplierData.category = category._id;
     const supplier = await SupplierRepository.createSupplier({
@@ -47,7 +47,7 @@ export const SupplierService = {
  
   async updateSupplierMedia(id,profileImage, media) {
     const supplierId= await SupplierRepository.getSupplierIdByUserId(id);
-    if (!supplier) throw new AppError(404, "ספק לא נמצא");
+    if (!supplierId) throw new AppError(404, "ספק לא נמצא");
     const supplier = await SupplierRepository.updateSupplierMedia(supplierId,profileImage, media);
     return supplier;
   },

@@ -45,7 +45,6 @@ export function ActiveSuppliersPage() {
         await blockSupplier(id);
       }
 
-      // Refresh the list
       await fetchSuppliers();
     } catch (error) {
       console.error('Error blocking/unblocking supplier:', error);
@@ -57,7 +56,6 @@ export function ActiveSuppliersPage() {
     navigate(`/admin/suppliers/${id}`);
   };
 
-  // Don't render until we have data from server
   if (!hasLoaded) {
     return <AdminLayout><div /></AdminLayout>;
   }
@@ -65,8 +63,7 @@ export function ActiveSuppliersPage() {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        {/* Page Header */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-4">
           <Button
             variant="outline"
             onClick={() => navigate('/admin/dashboard')}
@@ -76,19 +73,17 @@ export function ActiveSuppliersPage() {
             חזרה
           </Button>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">ספקים פעילים</h1>
-            <p className="text-sm sm:text-base text-gray-500 mt-1">נהל את הספקים הפעילים במערכת</p>
+            <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">ספקים פעילים</h1>
+            <p className="mt-1 text-sm text-gray-500 sm:text-base">נהל את הספקים הפעילים במערכת</p>
           </div>
         </div>
 
-        {/* Error Message */}
         {error && (
-          <div className="bg-red-50 border-r-4 border-red-500 p-4 rounded-lg">
-            <p className="text-red-800 text-right">{error}</p>
+          <div className="p-4 border-r-4 border-red-500 rounded-lg bg-red-50">
+            <p className="text-right text-red-800">{error}</p>
           </div>
         )}
 
-        {/* Suppliers Table */}
         <ActiveSuppliersTable
           suppliers={suppliers}
           onBlock={handleBlock}

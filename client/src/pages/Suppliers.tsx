@@ -98,19 +98,27 @@ export default function Suppliers() {
   }) => {
     try {
       setIsSending(true);
-      dispatch(clearSelectedSupplier());
-      setIsSending(false);
-      setSendRequest(false);
-      await dispatch(
+      
+      console.log('🚀 Sending request with:', { eventId, requestMessage, supplierId });
+      
+      const result = await dispatch(
         createSupplierRequest({
           eventId,
           notesFromClient: requestMessage,
           supplierId: supplierId,
         })
       ).unwrap();
+      
+      console.log('✅ Request sent successfully:', result);
+      
       toast.success("הבקשה נשלחה בהצלחה");
+      dispatch(clearSelectedSupplier());
+      setSendRequest(false);
      } catch (err:any) {
-       toast.error(err);
+       console.error("❌ Error sending request:", err);
+       toast.error(typeof err === 'string' ? err : err.message || "שגיאה בשליחת הבקשה");
+     } finally {
+       setIsSending(false);
      }
   };
 

@@ -1,6 +1,5 @@
 import api from './axios';
 
-// Types
 export interface AdminStats {
   totalUsers: number;
   totalSuppliers: number;
@@ -31,7 +30,6 @@ export interface ActiveSupplier {
   profileImage?: { url: string; alt?: string } | null;
 }
 
-// API functions
 export const getAdminStats = async (): Promise<AdminStats> => {
   const response = await api.get('/dashboard/summaryAdmin');
   return response.data;

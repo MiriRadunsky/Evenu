@@ -11,6 +11,8 @@ import {
 
 export function AdminDashboard() {
   const navigate = useNavigate();
+
+  // הסרנו activeSuppliers
   const [stats, setStats] = useState<AdminStats>({
     totalUsers: 0,
     totalSuppliers: 0,
@@ -19,7 +21,7 @@ export function AdminDashboard() {
     activeContracts: 0,
     totalRevenue: 0
   });
-  
+
   const [error, setError] = useState<string | null>(null);
   const [hasLoaded, setHasLoaded] = useState(false);
 
@@ -30,8 +32,6 @@ export function AdminDashboard() {
   const fetchDashboardData = async () => {
     try {
       setError(null);
-      
-      // קריאה אמיתית לשרת
       const statsData = await getAdminStats();
       setStats(statsData);
     } catch (error) {
@@ -77,29 +77,29 @@ export function AdminDashboard() {
     }
   ];
 
-  // Don't render until we have data from server
   if (!hasLoaded) {
-    return <AdminLayout><div /></AdminLayout>;
+    return (
+      <AdminLayout>
+        <div />
+      </AdminLayout>
+    );
   }
 
   return (
     <AdminLayout>
       <div className="space-y-6">
-        {/* Page Header */}
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">לוח בקרה</h1>
-          <p className="text-sm sm:text-base text-gray-500 mt-1">מבט כללי על המערכת</p>
+          <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">לוח בקרה</h1>
+          <p className="mt-1 text-sm text-gray-500 sm:text-base">מבט כללי על המערכת</p>
         </div>
 
-        {/* Error Message */}
         {error && (
-          <div className="bg-red-50 border-r-4 border-red-500 p-4 rounded-lg">
-            <p className="text-red-800 text-right">{error}</p>
+          <div className="p-4 border-r-4 border-red-500 rounded-lg bg-red-50">
+            <p className="text-right text-red-800">{error}</p>
           </div>
         )}
 
-        {/* Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
           {statsCards.map((stat, index) => (
             <Card
               key={index}
@@ -113,17 +113,19 @@ export function AdminDashboard() {
                   </div>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-sm text-gray-600 font-medium">{stat.title}</p>
-                  <p className="text-3xl font-bold bg-gradient-to-r from-[#d4a960] to-[#c89645] bg-clip-text text-transparent">{stat.value}</p>
+                  <p className="text-sm font-medium text-gray-600">{stat.title}</p>
+                  <p className="text-3xl font-bold bg-gradient-to-r from-[#d4a960] to-[#c89645] bg-clip-text text-transparent">
+                    {stat.value}
+                  </p>
                 </div>
-                <div className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${stat.color}`}></div>
+                <div className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${stat.color}`} />
               </div>
             </Card>
           ))}
         </div>
 
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+        {/* כרטיס ספקים ממתינים */}
+        <div className="grid grid-cols-1 gap-6 mt-8 md:grid-cols-2">
           <Card className="p-6 border-2 border-[#d4a960]/20 hover:border-[#d4a960]/40 transition-all hover:shadow-xl bg-gradient-to-br from-white to-[#faf8f3]">
             <div className="flex items-center gap-4 mb-4">
               <div className="p-3 rounded-lg bg-gradient-to-r from-[#d4a960] to-[#c89645] shadow-lg">
@@ -131,7 +133,7 @@ export function AdminDashboard() {
               </div>
               <div>
                 <h3 className="text-xl font-semibold text-gray-900">ספקים ממתינים לאישור</h3>
-                <p className="text-gray-600 text-sm">יש {stats.pendingSuppliers} ספקים הממתינים לבדיקה</p>
+                <p className="text-sm text-gray-600">יש {stats.pendingSuppliers} ספקים הממתינים לבדיקה</p>
               </div>
             </div>
             <Button
@@ -143,24 +145,7 @@ export function AdminDashboard() {
             </Button>
           </Card>
 
-          <Card className="p-6 border-2 border-[#b8935a]/20 hover:border-[#b8935a]/40 transition-all hover:shadow-xl bg-gradient-to-br from-white to-[#f5f3ed]">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="p-3 rounded-lg bg-gradient-to-r from-[#b8935a] to-[#a67c3d] shadow-lg">
-                <Users className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold text-gray-900">ספקים פעילים</h3>
-                <p className="text-gray-600 text-sm">יש {stats.activeSuppliers} ספקים פעילים במערכת</p>
-              </div>
-            </div>
-            <Button
-              onClick={() => navigate('/admin/active-suppliers')}
-              className="w-full bg-gradient-to-r from-[#b8935a] to-[#a67c3d] hover:from-[#a67c3d] hover:to-[#947142] text-white shadow-md hover:shadow-lg transition-all"
-            >
-              נהל ספקים פעילים
-              <ArrowLeft className="w-4 h-4 mr-2" />
-            </Button>
-          </Card>
+          {/* הסרתי את כל כרטיס "ספקים פעילים" כי אין activeSuppliers */}
         </div>
       </div>
     </AdminLayout>

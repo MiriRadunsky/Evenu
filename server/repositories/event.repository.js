@@ -49,26 +49,28 @@ export async function updateBudget(eventId, ownerId, newBudget, historyRecord) {
   ).select(EVENT_PROJECTION);
 }
 
-// 🔹 רק אירועים רלוונטיים (ברירת מחדל: מהיום והלאה, עם אפשרות from/to ב-query)
+// 🔹 רק אירועים רלוונטיים (כל האירועים של המשתמש)
 export async function findRelevantByOwnerId(ownerId, query = {}) {
-  const { status, type, from, to } = query;
+  const { type, from, to } = query;
 
-  const filter = buildFilter(ownerId, { status, type });
-
-  const now = new Date();
-  filter.date = {};
-
-  if (from) {
-    filter.date.$gte = new Date(from);
-  } else {
-    filter.date.$gte = now; // אם אין from – מהיום והלאה
+  const filter = { ownerId };
+  
+  // סינון לפי סוג אירוע
+  if (type) {
+    filter.type = type;
   }
 
-  if (to) {
-    filter.date.$lte = new Date(to);
+  // סינון לפי תאריכים אם צריך
+  if (from || to) {
+    filter.date = {};
+    if (from) filter.date.$gte = new Date(from);
+    if (to) filter.date.$lte = new Date(to);
   }
 
   return Event.find(filter)
+    .sort(DEFAULT_SORT)
+    .select("_id name date type")
+    .lean()
 }
 
 // 🔹 כל האירועים של משתמש (בלי פגינציה)
