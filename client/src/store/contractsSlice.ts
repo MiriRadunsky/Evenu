@@ -58,7 +58,6 @@ export const fetchContractsBySupplier = createAsyncThunk<
       const query = params ?? {};
       const { data } = await api.get("/contracts/supplier", { params: query });
       // מצופה: { items, total, page, pageSize, totalPages }
-      console.log(data);
       
       return data as ContractsPageResult;
     } catch (err: unknown) {
@@ -107,7 +106,7 @@ export const createContract = createAsyncThunk<
     const { data } = await api.post("/contracts", payload);
     return data.contract as Contract;
   } catch (err: unknown) {
-    console.log(err);
+    console.error(err);
    return rejectWithValue(getErrorMessage(err,'שגיאה ביצירת חוזה'));
   }
 });

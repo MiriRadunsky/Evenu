@@ -44,13 +44,11 @@ export default function MediaUploader({ onRegister }: { onRegister: () => void }
 
       uploadedData.media = { images, videos };
     }
-    console.log("Uploaded data:", uploadedData);
     const res= await api.patch('/suppliers/add-images', {
       profileImage: uploadedData.profileImage,
       media: uploadedData.media,
     });
     onRegister()
-    console.log("Uploaded data:", uploadedData,res);
   } catch (err) {
     console.error("Upload error:", err);
   } finally {

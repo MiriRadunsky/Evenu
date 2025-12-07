@@ -89,7 +89,7 @@ export default function AppRouter() {
   };
 
   const handleLoginAndRegister = async () => {
-    console.log("User logged in");
+
     
     // טוען את פרטי המשתמש לפני ניווט
     await dispatch(fetchUser());

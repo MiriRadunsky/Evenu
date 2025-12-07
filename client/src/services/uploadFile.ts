@@ -15,7 +15,6 @@ import axios from "axios";
     });
 
     const { url: presignedUrl, key } = res.data;
-    console.log("PRESIGNED:", presignedUrl);
 
     if (!presignedUrl || !key) {
       throw new Error("Invalid presigned response");
@@ -36,7 +35,6 @@ import axios from "axios";
 
   export const getImageUrl = async (key:string) => {
   const res = await api.get('/file/download-url', { params: { fileKey: key } });
-  console.log(res);
   
   return res.data.url; 
 };

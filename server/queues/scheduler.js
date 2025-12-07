@@ -44,19 +44,15 @@ const connection = new Redis(process.env.REDIS_URL || 'redis://localhost:6379', 
 
 
 
-// תור לניהול התראות (גם מיידיות וגם עתידיות)
 export const notificationQueue = new Queue('notifications', { connection });
 
-// Worker שמבצע שליחה בזמן הנכון
 export const notificationWorker = new Worker(
   'notifications',
   async (job) => {
     const notification = job.data;
 
-    // שולח בפועל דרך Socket.IO
     await sendNotification(notification);
 
-    // שומר ב־Redis רק אחרי השליחה (כדי שיופיע ב־client)
     const listKey = `user:${notification.userId}:notifications`;
     const mapKey = `user:${notification.userId}:notificationMap`;
 

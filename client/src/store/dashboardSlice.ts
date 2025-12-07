@@ -49,10 +49,10 @@ export const fetchDashboardSummaryUser = createAsyncThunk<
   DashboardSummaryResponse
 >("dashboard/fetchSummaryUser", async (_, { rejectWithValue }) => {
   try{
-  const res = await api.get("/dashboard/summaryUser");
+  const res = await api.get("/dashboard/summaryUser");  
   return res.data;
   }catch(err:unknown){
-    console.log(err);
+    console.error(err);
        return rejectWithValue(getErrorMessage(err,'שגיאה בטעינת פרטי המשתמש'));
 
   }
@@ -62,10 +62,11 @@ export const fetchDashboardSummarySupplier = createAsyncThunk<
 >("dashboard/fetchSummarySupplier", async (_, { rejectWithValue }) => {
   try{
   const res = await api.get("/dashboard/summarySupplier");
+
   return res.data;
   }
   catch(err:unknown){
-    console.log(err);
+    console.error(err);
     return rejectWithValue(getErrorMessage(err,'שגיאה בטעינת פרטי הספק'));
   }
 });

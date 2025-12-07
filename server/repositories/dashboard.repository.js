@@ -21,11 +21,9 @@ export const DashboardRepository ={
 
     return Event.find({
       ownerId,
-      status: { $in: ["תכנון", "פעיל"] },
       date: { $gte: now, $lte: limit },
     })
       .sort({ date: 1 })
-      .lean();
   }
 ,
   async findUpcomingEventsForSupplier(supplierId, daysAhead = 60) {
@@ -39,11 +37,9 @@ export const DashboardRepository ={
       .populate({
         path: "eventId",
         match: {
-          date: { $gte: now, $lte: limit },
-          status: { $in: ["תכנון", "פעיל"] },
+          date: { $gte: now, $lte: limit }
         },
       })
-      .lean();
 
     const events = contracts
       .map((c) => c.eventId)
