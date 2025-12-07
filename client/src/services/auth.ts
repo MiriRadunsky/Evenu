@@ -3,7 +3,6 @@ import { store } from "../store";
 import type { AuthResponse, RegisterData } from "../types/AuthTypes";
 import api from "./axios";
 
-// Interface עבור נתוני משתמש
 export interface User {
   id: string;
   name: string;
@@ -11,9 +10,6 @@ export interface User {
   phone?: string;
 }
 
-// Interface עבור תשובת התחברות/הרשמה
-
-// Interface עבור נתוני התחברות
 export interface LoginData {
   email: string;
   password: string;
@@ -21,7 +17,6 @@ export interface LoginData {
 
 
 
-// Interface עבור נתוני Google Auth
 export interface GoogleAuthData {
   email: string;
   name: string;
@@ -29,16 +24,13 @@ export interface GoogleAuthData {
   picture?: string;
 }
 
-// פונקציית התחברות
 export const login = async (data: LoginData): Promise<AuthResponse> => {
   try {
     const response = await api.post("/auth/login", data);
     return response.data;
   }
     
-   catch (error: unknown) {
-    // טיפול בשגיאות
-   
+   catch (error: unknown) {   
     throw new Error(getErrorMessage(error,"שגיאה בהתחברות"));
   }
 };
@@ -52,11 +44,10 @@ export const register = async (
 
     const route = role === "supplier" ? "suppliers/register" : "auth/register";
 
-    // אם ספק – שולחים את כל השדות, כולל שדות המשתמש
     const payload =
       role === "supplier"
-        ? { ...data, role: "supplier" } // שולחים את כל השדות במבנה אחד
-        : data; // למשתמש רגיל שולחים רק את השדות הבסיסיים
+        ? { ...data, role: "supplier" } 
+        : data; 
 
     const response = await api.post(route, payload);
     return response.data;

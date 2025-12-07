@@ -44,7 +44,7 @@ export default function MediaUploader({ onRegister }: { onRegister: () => void }
 
       uploadedData.media = { images, videos };
     }
-    const res= await api.patch('/suppliers/add-images', {
+    await api.patch('/suppliers/add-images', {
       profileImage: uploadedData.profileImage,
       media: uploadedData.media,
     });

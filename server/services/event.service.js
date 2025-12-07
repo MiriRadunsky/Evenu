@@ -80,9 +80,16 @@ export async function updateBudgetAllocated(eventId, userId, amount, session) {
   if (!event) {
     throw new AppError(404, "האירוע לא נמצא");
   }
-  if (!event.date < new Date()) {
-    throw new AppError(400, "אין להשתמש בתקציב לאחר התחלה של האירוע");
-  }
+ 
+const eventDate = new Date(event.date);
+
+if (!event.date || isNaN(eventDate.getTime())) {
+  throw new AppError(400, "תאריך האירוע אינו תקין");
+}
+
+if (eventDate < new Date()) {
+  throw new AppError(400, "אין להשתמש בתקציב לאחר התחלה של האירוע");
+}
 
   const ownerId =
     event.ownerId?._id?.toString?.() ?? event.ownerId?.toString?.();
