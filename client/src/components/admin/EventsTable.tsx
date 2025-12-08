@@ -64,7 +64,7 @@ export function EventsTable({ events, onView }: EventsTableProps) {
         {events.map((event) => (
           <div
             key={event._id}
-            className="p-4 transition-colors border-b border-gray-100 hover:bg-gray-50 cursor-pointer"
+            className="p-4 transition-colors border-b-2 border-gray-200 hover:bg-gray-50 cursor-pointer mb-2"
             onClick={() => onView?.(event._id)}
           >
             <div className="space-y-3">

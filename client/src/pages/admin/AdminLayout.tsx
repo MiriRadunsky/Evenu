@@ -20,7 +20,6 @@ import {
   UserCheck,
   Calendar,
   BarChart3,
-  LogOut
   LogOut,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";

@@ -86,7 +86,7 @@ const mockRecentEvents: RecentEvent[] = [
   { name: 'ברית - משפחת דוד', date: '2023-12-02' }
 ];
 
-const COLORS = ['#d4a960', '#c89645', '#b8935a', '#a67c3d', '#dbb76d', '#ca9f52'];
+const COLORS = ['#d4a960', '#8b6f47', '#e8c170', '#a67c3d', '#f4d799', '#6b563d'];
 
 export function AdminDashboard() {
   const navigate = useNavigate();
@@ -265,9 +265,10 @@ export function AdminDashboard() {
         {/* Charts Section */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* Bar Chart - Events by Month */}
-          <Card className="p-6 border-2 border-[#d4a960]/20 hover:border-[#d4a960]/40 transition-all bg-gradient-to-br from-white to-[#faf8f3]">
-            <h3 className="mb-6 text-xl font-semibold text-gray-900">אירועים לפי חודש</h3>
-            <ResponsiveContainer width="100%" height={300}>
+          <Card className="p-4 md:p-6 border-2 border-[#d4a960]/20 hover:border-[#d4a960]/40 transition-all bg-gradient-to-br from-white to-[#faf8f3]">
+            <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-4 md:mb-6">אירועים לפי חודש</h3>
+            <div className="h-[250px] sm:h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
               <BarChart data={monthlyEvents}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                 <XAxis 
@@ -299,12 +300,14 @@ export function AdminDashboard() {
                 </defs>
               </BarChart>
             </ResponsiveContainer>
+            </div>
           </Card>
 
           {/* Pie Chart - Suppliers by Category */}
-          <Card className="p-6 border-2 border-[#d4a960]/20 hover:border-[#d4a960]/40 transition-all bg-gradient-to-br from-white to-[#faf8f3]">
-            <h3 className="mb-6 text-xl font-semibold text-gray-900">חלוקת ספקים לפי קטגוריה</h3>
-            <ResponsiveContainer width="100%" height={350}>
+          <Card className="p-4 md:p-6 border-2 border-[#d4a960]/20 hover:border-[#d4a960]/40 transition-all bg-gradient-to-br from-white to-[#faf8f3]">
+            <h3 className="mb-4 md:mb-6 text-lg md:text-xl font-semibold text-gray-900">חלוקת ספקים לפי קטגוריה</h3>
+            <div className="h-[280px] sm:h-[350px]">
+              <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={categorySuppliers}
@@ -312,7 +315,7 @@ export function AdminDashboard() {
                   cy="45%"
                   labelLine={false}
                   label={false}
-                  outerRadius={90}
+                  outerRadius={110}
                   fill="#8884d8"
                   dataKey="value"
                   nameKey="category"
@@ -335,8 +338,8 @@ export function AdminDashboard() {
                 <Legend 
                   wrapperStyle={{ 
                     direction: 'rtl', 
-                    paddingTop: '25px',
-                    fontSize: '14px'
+                    paddingTop: '20px',
+                    fontSize: '12px'
                   }}
                   formatter={(value) => (
                     <span style={{ 
@@ -350,14 +353,15 @@ export function AdminDashboard() {
                 />
               </PieChart>
             </ResponsiveContainer>
+            </div>
           </Card>
         </div>
 
         {/* Recent Items Section */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* Recent Suppliers */}
-          <Card className="p-6 border-2 border-[#d4a960]/20 hover:border-[#d4a960]/40 transition-all bg-gradient-to-br from-white to-[#faf8f3]">
-            <h3 className="flex items-center gap-2 mb-4 text-xl font-semibold text-gray-900">
+          <Card className="p-4 md:p-6 border-2 border-[#d4a960]/20 hover:border-[#d4a960]/40 transition-all bg-gradient-to-br from-white to-[#faf8f3]">
+            <h3 className="flex items-center gap-2 mb-4 text-lg md:text-xl font-semibold text-gray-900">
               <Store className="w-5 h-5 text-[#d4a960]" />
               ספקים חדשים במערכת
             </h3>
@@ -365,17 +369,17 @@ export function AdminDashboard() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b-2 border-[#d4a960]/20">
-                    <th className="px-2 py-3 text-sm font-semibold text-right text-gray-700">שם הספק</th>
-                    <th className="px-2 py-3 text-sm font-semibold text-right text-gray-700">קטגוריה</th>
-                    <th className="px-2 py-3 text-sm font-semibold text-right text-gray-700">תאריך הצטרפות</th>
+                    <th className="px-1 sm:px-2 py-2 sm:py-3 text-xs sm:text-sm font-semibold text-right text-gray-700">שם הספק</th>
+                    <th className="px-1 sm:px-2 py-2 sm:py-3 text-xs sm:text-sm font-semibold text-right text-gray-700">קטגוריה</th>
+                    <th className="px-1 sm:px-2 py-2 sm:py-3 text-xs sm:text-sm font-semibold text-right text-gray-700">תאריך הצטרפות</th>
                   </tr>
                 </thead>
                 <tbody>
                   {recentSuppliers.map((supplier, index) => (
                     <tr key={index} className="border-b border-gray-200 hover:bg-[#faf8f3] transition-colors">
-                      <td className="px-2 py-3 text-sm text-gray-900">{supplier.name}</td>
-                      <td className="px-2 py-3 text-sm text-gray-600">{supplier.category}</td>
-                      <td className="px-2 py-3 text-sm text-gray-500">{formatDate(supplier.date)}</td>
+                      <td className="px-1 sm:px-2 py-2 sm:py-3 text-xs sm:text-sm text-gray-900">{supplier.name}</td>
+                      <td className="px-1 sm:px-2 py-2 sm:py-3 text-xs sm:text-sm text-gray-600">{supplier.category}</td>
+                      <td className="px-1 sm:px-2 py-2 sm:py-3 text-xs sm:text-sm text-gray-500">{formatDate(supplier.date)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -384,8 +388,8 @@ export function AdminDashboard() {
           </Card>
 
           {/* Recent Events */}
-          <Card className="p-6 border-2 border-[#d4a960]/20 hover:border-[#d4a960]/40 transition-all bg-gradient-to-br from-white to-[#faf8f3]">
-            <h3 className="flex items-center gap-2 mb-4 text-xl font-semibold text-gray-900">
+          <Card className="p-4 md:p-6 border-2 border-[#d4a960]/20 hover:border-[#d4a960]/40 transition-all bg-gradient-to-br from-white to-[#faf8f3]">
+            <h3 className="flex items-center gap-2 mb-4 text-lg md:text-xl font-semibold text-gray-900">
               <Calendar className="w-5 h-5 text-[#d4a960]" />
               אירועים חדשים במערכת
             </h3>
@@ -393,15 +397,15 @@ export function AdminDashboard() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b-2 border-[#d4a960]/20">
-                    <th className="px-2 py-3 text-sm font-semibold text-right text-gray-700">שם האירוע</th>
-                    <th className="px-2 py-3 text-sm font-semibold text-right text-gray-700">תאריך יצירה</th>
+                    <th className="px-1 sm:px-2 py-2 sm:py-3 text-xs sm:text-sm font-semibold text-right text-gray-700">שם האירוע</th>
+                    <th className="px-1 sm:px-2 py-2 sm:py-3 text-xs sm:text-sm font-semibold text-right text-gray-700">תאריך יצירה</th>
                   </tr>
                 </thead>
                 <tbody>
                   {recentEvents.map((event, index) => (
                     <tr key={index} className="border-b border-gray-200 hover:bg-[#faf8f3] transition-colors">
-                      <td className="px-2 py-3 text-sm text-gray-900">{event.name}</td>
-                      <td className="px-2 py-3 text-sm text-gray-500">{formatDate(event.date)}</td>
+                      <td className="px-1 sm:px-2 py-2 sm:py-3 text-xs sm:text-sm text-gray-900">{event.name}</td>
+                      <td className="px-1 sm:px-2 py-2 sm:py-3 text-xs sm:text-sm text-gray-500">{formatDate(event.date)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -412,18 +416,18 @@ export function AdminDashboard() {
 
         {/* Pending Suppliers Action Card */}
         {stats.pendingSuppliers > 0 && (
-          <Card className="p-6 border-2 border-[#d4a960]/20 hover:border-[#d4a960]/40 transition-all hover:shadow-xl bg-gradient-to-br from-white to-[#faf8f3]">
-            <div className="flex items-center gap-4 mb-4">
+          <Card className="p-4 md:p-6 border-2 border-[#d4a960]/20 hover:border-[#d4a960]/40 transition-all hover:shadow-xl bg-gradient-to-br from-white to-[#faf8f3]">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
               <div className="p-3 rounded-lg bg-gradient-to-r from-[#d4a960] to-[#c89645] shadow-lg">
                 <UserCheck className="w-6 h-6 text-white" />
               </div>
               <div className="flex-1">
-                <h3 className="text-xl font-semibold text-gray-900">ספקים ממתינים לאישור</h3>
-                <p className="text-sm text-gray-600">יש {stats.pendingSuppliers} ספקים הממתינים לבדיקה ואישור</p>
+                <h3 className="text-lg md:text-xl font-semibold text-gray-900">ספקים ממתינים לאישור</h3>
+                <p className="text-xs md:text-sm text-gray-600">יש {stats.pendingSuppliers} ספקים הממתינים לבדיקה ואישור</p>
               </div>
               <Button
                 onClick={() => navigate('/admin/pending-suppliers')}
-                className="bg-gradient-to-r from-[#d4a960] to-[#c89645] hover:from-[#c89645] hover:to-[#b8935a] text-white shadow-md hover:shadow-lg transition-all"
+                className="bg-gradient-to-r from-[#d4a960] to-[#c89645] hover:from-[#c89645] hover:to-[#b8935a] text-white shadow-md hover:shadow-lg transition-all text-sm md:text-base w-full sm:w-auto"
               >
                 עבור לעמוד אישורים
                 <ArrowLeft className="w-4 h-4 mr-2" />

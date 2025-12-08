@@ -69,7 +69,6 @@ export function UsersPage() {
     ? users 
     : users.filter(user => user.role === filter);
 
-  // Don't render until we have data from server
   if (!hasLoaded) {
     return <AdminLayout><div /></AdminLayout>;
   }
@@ -78,7 +77,7 @@ export function UsersPage() {
     <AdminLayout>
       <div className="space-y-6">
         {/* Page Header */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-4">
           <Button
             variant="outline"
             onClick={() => navigate('/admin/dashboard')}
@@ -88,15 +87,15 @@ export function UsersPage() {
             חזרה
           </Button>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">משתמשים</h1>
-            <p className="text-sm sm:text-base text-gray-500 mt-1">כל המשתמשים במערכת</p>
+            <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">משתמשים</h1>
+            <p className="mt-1 text-sm text-gray-500 sm:text-base">כל המשתמשים במערכת</p>
           </div>
         </div>
 
         {/* Error Message */}
         {error && (
-          <div className="bg-red-50 border-r-4 border-red-500 p-4 rounded-lg">
-            <p className="text-red-800 text-right">{error}</p>
+          <div className="p-4 border-r-4 border-red-500 rounded-lg bg-red-50">
+            <p className="text-right text-red-800">{error}</p>
           </div>
         )}
 
@@ -142,21 +141,21 @@ export function UsersPage() {
 
           {filteredUsers.length === 0 ? (
             <div className="p-8 text-center">
-              <p className="text-gray-500 font-light">אין משתמשים להצגה</p>
+              <p className="font-light text-gray-500">אין משתמשים להצגה</p>
             </div>
           ) : (
             <>
               {/* Mobile View - Cards */}
-              <div className="block md:hidden divide-y divide-gray-200">
+              <div className="block md:hidden">
                 {filteredUsers.map((user) => (
                   <div
                     key={user._id}
-                    className="p-5 hover:bg-gray-50 transition-colors"
+                    className="p-5 transition-colors border-b-2 border-gray-200 hover:bg-gray-50 mb-2"
                   >
                     <div className="space-y-3">
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex-1 min-w-0">
-                          <div className="font-semibold text-gray-900 text-lg mb-2">{user.name}</div>
+                          <div className="mb-2 text-lg font-semibold text-gray-900">{user.name}</div>
                         </div>
                         <div className="flex-shrink-0">
                           {getRoleBadge(user.role)}
@@ -165,15 +164,15 @@ export function UsersPage() {
 
                       <div className="space-y-2 text-sm">
                         <div className="flex items-center gap-2 text-gray-600">
-                          <Mail className="w-4 h-4 flex-shrink-0" />
+                          <Mail className="flex-shrink-0 w-4 h-4" />
                           <span className="font-light break-all">{user.email}</span>
                         </div>
                         <div className="flex items-center gap-2 text-gray-600">
-                          <Phone className="w-4 h-4 flex-shrink-0" />
+                          <Phone className="flex-shrink-0 w-4 h-4" />
                           <span className="font-light">{user.phone}</span>
                         </div>
-                        <div className="flex items-center gap-2 text-gray-500 text-xs">
-                          <Calendar className="w-4 h-4 flex-shrink-0" />
+                        <div className="flex items-center gap-2 text-xs text-gray-500">
+                          <Calendar className="flex-shrink-0 w-4 h-4" />
                           <span>הצטרף: {new Date(user.createdAt).toLocaleDateString('he-IL')}</span>
                         </div>
                       </div>
@@ -183,22 +182,22 @@ export function UsersPage() {
               </div>
 
               {/* Desktop View - Table */}
-              <div className="hidden md:block overflow-x-auto">
+              <div className="hidden overflow-x-auto md:block">
                 <table className="w-full">
                   <thead>
-                    <tr className="bg-gray-50 border-b-2 border-gray-200">
-                      <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">שם</th>
-                      <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">אימייל</th>
-                      <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">טלפון</th>
-                      <th className="px-6 py-4 text-center text-sm font-semibold text-gray-700">תפקיד</th>
-                      <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">תאריך הצטרפות</th>
+                    <tr className="border-b-2 border-gray-200 bg-gray-50">
+                      <th className="px-6 py-4 text-sm font-semibold text-right text-gray-700">שם</th>
+                      <th className="px-6 py-4 text-sm font-semibold text-right text-gray-700">אימייל</th>
+                      <th className="px-6 py-4 text-sm font-semibold text-right text-gray-700">טלפון</th>
+                      <th className="px-6 py-4 text-sm font-semibold text-center text-gray-700">תפקיד</th>
+                      <th className="px-6 py-4 text-sm font-semibold text-right text-gray-700">תאריך הצטרפות</th>
                     </tr>
                   </thead>
                   <tbody>
                     {filteredUsers.map((user) => (
                       <tr
                         key={user._id}
-                        className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
+                        className="transition-colors border-b border-gray-100 hover:bg-gray-50"
                       >
                         <td className="px-6 py-4">
                           <div className="font-medium text-gray-900">{user.name}</div>
