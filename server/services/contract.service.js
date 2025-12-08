@@ -104,14 +104,14 @@ export async function createContract(data, userId) {
   const totalAllocated = event.budgetAllocated ?? 0;
   const budget = event.budget ?? 0;
   const afterThisContract = totalAllocated + totalAmount;
-  console.log(
-    "mount",
-    paymentPlan,
-    totalAmount,
-    totalAllocated,
-    budget,
-    afterThisContract
-  );
+  // console.log(
+  //   "mount",
+  //   paymentPlan,
+  //   totalAmount,
+  //   totalAllocated,
+  //   budget,
+  //   afterThisContract
+  // );
 
   if (budget && afterThisContract > budget) {
     await NotificationService.createNotification({
