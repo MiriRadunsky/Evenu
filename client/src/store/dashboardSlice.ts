@@ -6,8 +6,23 @@ import {
 import api from "../services/axios";
 import type { Event } from "../types/Event";
 import { getErrorMessage } from "@/Utils/error";
+export interface PaymentsByMonth {
+  month: string; 
+  total: number;
+}
 
-// ----- טיפוס תשובה מהשרת -----
+export interface PaymentsByStatus {
+  status: string; 
+  count: number;  
+  [key: string]: string | number;
+
+}
+
+export interface DashboardChartsUserResponse {
+  paymentsByMonth: PaymentsByMonth[];
+  paymentsByStatus: PaymentsByStatus[];
+}
+
 export interface DashboardSummaryResponse {
   upcomingEvent: Event[]|null ; 
   pendingRequestsCount: number;
@@ -22,13 +37,17 @@ export interface DashboardSummaryResponse {
 export interface DashboardSummaryState {
   loading: boolean;
   error: string | null;
-  upcomingEvent: Event[]|null ;
+  upcomingEvent: Event[] | null;
   pendingRequestsCount: number;
-  approvedRequestsCount: number;  
-  activeContractsCount: number;    
+  approvedRequestsCount: number;
+  activeContractsCount: number;
   pendingPaymentsCount: number;
   pendingPaymentsTotal: number;
   overduePaymentsCount: number;
+
+  // חדשים – גרפים ליוזר
+  paymentsByMonth: PaymentsByMonth[];
+  paymentsByStatus: PaymentsByStatus[];
 }
 
 // ----- initialState -----
@@ -42,7 +61,27 @@ const initialState: DashboardSummaryState = {
   pendingPaymentsCount: 0,
   pendingPaymentsTotal: 0,
   overduePaymentsCount: 0,
+
+  paymentsByMonth: [],
+  paymentsByStatus: [],
 };
+
+export const fetchDashboardChartsUser = createAsyncThunk<
+  DashboardChartsUserResponse,
+  void
+>("dashboard/fetchChartsUser", async (_, { rejectWithValue }) => {
+  try {
+    const res = await api.get("/dashboard/user/charts");
+    console.log('res',res);
+    
+    return res.data as DashboardChartsUserResponse;
+  } catch (err: unknown) {
+    console.error(err);
+    return rejectWithValue(
+      getErrorMessage(err, "שגיאה בטעינת גרפים לדשבורד המשתמש")
+    );
+  }
+});
 
 // ----- thunk -----
 export const fetchDashboardSummaryUser = createAsyncThunk<
@@ -124,6 +163,26 @@ const dashboardSlice = createSlice({
         state.error =
         action.error.message || "שגיאה בטעינת נתוני הדשבורד";
       })
+        .addCase(fetchDashboardChartsUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchDashboardChartsUser.fulfilled,
+        (state, action: PayloadAction<DashboardChartsUserResponse>) => {
+          state.loading = false;
+          state.error = null;
+          state.paymentsByMonth = action.payload.paymentsByMonth;
+          state.paymentsByStatus = action.payload.paymentsByStatus;
+        }
+      )
+      .addCase(fetchDashboardChartsUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          (action.payload as string | undefined) ||
+          action.error.message ||
+          "שגיאה בטעינת גרפים לדשבורד המשתמש";
+      });
   },
 });
 

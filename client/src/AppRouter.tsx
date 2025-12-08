@@ -23,7 +23,7 @@ import ContractsPage from "./pages/ContractsPage";
 import { TermsOfService } from "./pages/TermsOfService";
 import { PrivacyPolicy } from "./pages/PrivacyPolicy";
 import NotificationsPage from "./pages/NotificationsPage";
-import DashboardUser from "./pages/DahboardUser";
+import DashboardUser from "./pages/DashboardUser";
 import ContractsPaymentsPage from "./pages/ContractsPaymentsPage";
 import BudgetManagementPage from "./pages/BudgetManagementPage";
 import { useDispatch } from "react-redux";

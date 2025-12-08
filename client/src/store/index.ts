@@ -10,6 +10,7 @@ import contractsReducer  from './contractsSlice'
 import categoriesReducer from './categoriesSlice'
 import paymentsReducer from './paymentsSlice'
 import budgetReducer from './budgetSlice'
+import supplierDashboardReducer from './supplierDashboardSlice'
 export const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -23,6 +24,7 @@ export const store = configureStore({
     payments: paymentsReducer,
     budget: budgetReducer,
     categories: categoriesReducer,
+    supplierDashboard: supplierDashboardReducer
 
   },
 })

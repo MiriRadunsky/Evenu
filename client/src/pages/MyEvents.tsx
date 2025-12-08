@@ -72,7 +72,7 @@ export default function MyEvents() {
       <Tabs value={selectedTab} onValueChange={setSelectedTab}>
         <TabsList>
           <TabsTrigger value="הכל">הכל</TabsTrigger>
-          <TabsTrigger value="פעיל">פעיל</TabsTrigger>
+          <TabsTrigger value="מתוכנן">מתוכנן</TabsTrigger>
           <TabsTrigger value="הושלם">הושלם</TabsTrigger>
         </TabsList>
 

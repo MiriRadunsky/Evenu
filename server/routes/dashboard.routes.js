@@ -8,8 +8,16 @@ const router = Router();
 router.use(authGuard);
 
 router.get("/summaryUser", roleGuard(["user"]), DashboardController.getDashboardSummaryForUser);
+router.get(
+  "/user/charts",
+  DashboardController.getDashboardChartsForUser
+);
 
 router.get("/summarySupplier", roleGuard(["supplier"]), DashboardController.getDashboardSummaryForSupplier);
+router.get(
+  "/supplier/charts",
+  DashboardController.getDashboardChartsForSupplier
+);
 router.get("/summaryAdmin", roleGuard(["admin"]), DashboardController.getDashboardSummaryForAdmin);
 
 export default router;
