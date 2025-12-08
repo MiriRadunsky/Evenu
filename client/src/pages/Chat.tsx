@@ -88,34 +88,34 @@ export default function Chat() {
   }, [conversationMessages]);
 
 
-  const handleSendMessage = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    if (!messageText.trim() || !selectedThreadId) return;
+ const handleSendMessage = async (e?: React.FormEvent) => {
+  if (e) e.preventDefault();
+  if (!messageText.trim() || !selectedThreadId || !user?._id) return; // בדיקה נוספת
 
-    const thread = safeThreads.find(t => t._id === selectedThreadId);
-    const from = user?._id;
-    const to = from === thread?.userId ? thread?.supplierId : thread?.userId;
+  const thread = safeThreads.find(t => t._id === selectedThreadId);
+  const from: string = user._id; // עכשיו בטוח שזה string
+  const to = from === thread?.userId ? thread?.supplierId : thread?.userId;
 
-    if (!to) {
-      console.warn("No recipient found in thread", thread);
-      toast.error("לא ניתן לשלוח הודעה – הספק עדיין לא צורף");
-      return;
-    }
+  if (!to) {
+    console.warn("No recipient found in thread", thread);
+    toast.error("לא ניתן לשלוח הודעה – הספק עדיין לא צורף");
+    return;
+  }
 
-    try {
-      const newMessage = await dispatch(sendMessage({
-        threadId: selectedThreadId,
-        body: messageText.trim(),
-        from,
-        to
-      })).unwrap();
+  try {
+    const newMessage = await dispatch(sendMessage({
+      threadId: selectedThreadId,
+      body: messageText.trim(),
+      from,
+      to
+    })).unwrap();
 
-      setMessageText("");
-    } catch (err:string | unknown) {
-     const errorText = String(err);
-      toast.error(errorText);
-    }
-  };
+    setMessageText("");
+  } catch (err: unknown) {
+    toast.error(String(err));
+  }
+};
+
 
 
   return (
@@ -175,7 +175,7 @@ export default function Chat() {
                     <div key={msg._id} className={`flex ${isCurrentUser ? "justify-end" : "justify-start"}`}>
                       <div className={`max-w-[70%] rounded-lg p-3 ${isCurrentUser ? "bg-background text-foreground" : "bg-primary/10"}`}>
                         <p className="text-sm whitespace-pre-wrap">{msg.body}</p>
-                        <p className="text-xs text-muted-foreground mt-1">{formatMessageTime(msg.createdAt)}</p>
+                        {/* <p className="text-xs text-muted-foreground mt-1">{formatMessageTime(msg.createdAt)}</p> */}
                       </div>
                     </div>
                   );

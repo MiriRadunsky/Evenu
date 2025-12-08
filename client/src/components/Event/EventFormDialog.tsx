@@ -33,35 +33,66 @@ import { toast } from "sonner";
 import { cn } from "../../lib/utils";
 import { useCitiesList } from "../../hooks/useCitiesList";
 
-const GoldInput = (props: any) => (
-  <Input
-    {...props}
-    className={`border-gray-300 focus:border-yellow-500 focus:ring-yellow-500 ${
-      props.className || ""
-    }`}
-  />
-);
+/* ----- טיפוסים ----- */
+
+type EventType =
+  | "חתונה"
+  | "ברית"
+  | "בר מצווה"
+  | "בת מצווה"
+  | "שבע ברכות"
+  | "אחר";
+
+interface Event {
+  name: string;
+  type?: EventType;
+  date?: string;
+  locationRegion?: string;
+  budget?: number;
+  estimatedGuests?: number;
+  // שדות נוספים אם יש
+}
+
+interface FormData {
+  name: string;
+  type: EventType | "";
+  date: string;
+  locationRegion: string;
+  budget: string;
+  estimatedGuests: string;
+}
+
+/* ----- רכיב ----- */
+
+const GoldInput: React.FC<React.InputHTMLAttributes<HTMLInputElement>> = (
+  props
+) => {
+  const className = `${props.className ?? ""} border-gray-300 focus:border-yellow-500 focus:ring-yellow-500`;
+  return <Input {...props} className={className} />;
+};
 
 interface EventFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  initialData?: any; // אם מדובר בעריכה
+  initialData?: Partial<Event> | null;
 }
 
-export const EventFormDialog = ({
+export const EventFormDialog: React.FC<EventFormDialogProps> = ({
   open,
   onOpenChange,
-  initialData,
-}: EventFormDialogProps) => {
+  initialData = null,
+}) => {
   const dispatch = useDispatch<AppDispatch>();
-  const {
-    types: eventTypes,
-    loadingList,
-    loadingOne,
-  } = useSelector((state: RootState) => state.events);
+  const { types: rawEventTypes, loadingList, loadingOne } = useSelector(
+    (s: RootState) => s.events
+  );
+
+  // מניעת undefined עבור eventTypes
+  const eventTypes: EventType[] = (rawEventTypes ?? []) as EventType[];
+
   const cities = useCitiesList();
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     name: "",
     type: "",
     date: "",
@@ -75,32 +106,27 @@ export const EventFormDialog = ({
   const [cityOpen, setCityOpen] = useState(false);
   const [citySearch, setCitySearch] = useState("");
 
-  // טען סוגי אירועים
   useEffect(() => {
     dispatch(fetchEventTypes());
   }, [dispatch]);
 
-  // מילוי טופס אם מדובר בעריכה
   useEffect(() => {
-    if (initialData) {
-      setFormData({
-        name: initialData.name || "",
-        type: initialData.type || "",
-        date: initialData.date ? initialData.date.split("T")[0] : "",
-        locationRegion: initialData.locationRegion || "",
-        budget: initialData.budget?.toString() || "",
-        estimatedGuests: initialData.estimatedGuests?.toString() || "",
-      });
-    }
+    if (!initialData) return;
+    setFormData({
+      name: initialData.name ?? "",
+      type: (initialData.type as EventType) ?? "",
+      date: initialData.date ? initialData.date.split("T")[0] : "",
+      locationRegion: initialData.locationRegion ?? "",
+      budget: initialData.budget?.toString() ?? "",
+      estimatedGuests: initialData.estimatedGuests?.toString() ?? "",
+    });
   }, [initialData]);
 
-  // סינון ערים לפי חיפוש
   const filteredCities = useMemo(() => {
     if (!citySearch) return cities.slice(0, 50);
-    return cities.filter((city) => city.includes(citySearch)).slice(0, 50);
+    return cities.filter((c) => c.includes(citySearch)).slice(0, 50);
   }, [cities, citySearch]);
 
-  // ולידציה
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
 
@@ -111,14 +137,15 @@ export const EventFormDialog = ({
       newErrors.name = "שם האירוע לא יכול להכיל יותר מ-100 תווים";
 
     if (!formData.type) newErrors.type = "יש לבחור סוג אירוע";
-    else if (!eventTypes.includes(formData.type))
+    else if (!eventTypes.includes(formData.type as EventType))
       newErrors.type = `סוג האירוע לא תקין. אפשרויות: ${eventTypes.join(", ")}`;
 
     if (!formData.date) newErrors.date = "תאריך האירוע הוא חובה";
-    else if (
-      new Date(formData.date) < new Date(new Date().toISOString().split("T")[0])
-    )
-      newErrors.date = "תאריך האירוע חייב להיות בעתיד";
+    else {
+      const chosen = new Date(formData.date);
+      const today = new Date(new Date().toISOString().split("T")[0]);
+      if (chosen < today) newErrors.date = "תאריך האירוע חייב להיות בעתיד";
+    }
 
     if (formData.estimatedGuests) {
       const guests = Number(formData.estimatedGuests);
@@ -141,28 +168,28 @@ export const EventFormDialog = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!validate()) return;
 
     setIsSubmitting(true);
 
-    const payload = {
-      name: formData.name||'',
-      type: formData.type||'אחר',
-      date: formData.date||'',
-      locationRegion: formData.locationRegion||'',
+    const payload: Partial<Event> = {
+      name: formData.name,
+      type: (formData.type || "אחר") as EventType,
+      date: formData.date || undefined,
+      locationRegion: formData.locationRegion || undefined,
       budget: formData.budget ? parseFloat(formData.budget) : undefined,
       estimatedGuests: formData.estimatedGuests
-        ? parseInt(formData.estimatedGuests)
+        ? parseInt(formData.estimatedGuests, 10)
         : undefined,
     };
 
     try {
       await dispatch(createEvent(payload)).unwrap();
-      toast.success(`האירוע  נוצר הצלחה!`);
+      toast.success("האירוע נוצר בהצלחה!");
       onOpenChange(false);
-    } catch (err: string|unknown) {
+    } catch (err: unknown) {
       const errorText = String(err);
       if (
         errorText.includes("Error creating event") ||
@@ -170,7 +197,7 @@ export const EventFormDialog = ({
         errorText.includes("ERR_CONNECTION_REFUSED")
       ) {
         toast.error("השרת אינו זמין כרגע");
-        onOpenChange(false); 
+        onOpenChange(false);
         return;
       }
       toast.error(errorText);
@@ -178,8 +205,6 @@ export const EventFormDialog = ({
       setIsSubmitting(false);
     }
   };
-
-  // const isLoading = isSubmitting || loadingList || loadingOne;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -200,12 +225,10 @@ export const EventFormDialog = ({
             <GoldInput
               value={formData.name}
               onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
+                setFormData({ ...formData, name: (e.target as HTMLInputElement).value })
               }
             />
-            {errors.name && (
-              <p className="text-red-500 text-sm">{errors.name}</p>
-            )}
+            {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
           </div>
 
           {/* סוג אירוע */}
@@ -213,26 +236,26 @@ export const EventFormDialog = ({
             <Label>סוג אירוע</Label>
             <Select
               value={formData.type}
-              onValueChange={(val) => setFormData({ ...formData, type: val })}
+              onValueChange={(val: string) =>
+                setFormData({ ...formData, type: val as EventType })
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="בחר סוג אירוע" />
               </SelectTrigger>
               <SelectContent>
                 {loadingList ? (
-                  <SelectItem value="none">טוען...</SelectItem>
+                  <SelectItem value="אחר">טוען...</SelectItem>
                 ) : (
-                  eventTypes.map((type) => (
-                    <SelectItem key={type} value={type}>
-                      {type}
+                  eventTypes.map((t) => (
+                    <SelectItem key={t} value={t}>
+                      {t}
                     </SelectItem>
                   ))
                 )}
               </SelectContent>
             </Select>
-            {errors.type && (
-              <p className="text-red-500 text-sm">{errors.type}</p>
-            )}
+            {errors.type && <p className="text-red-500 text-sm">{errors.type}</p>}
           </div>
 
           {/* תאריך */}
@@ -242,12 +265,10 @@ export const EventFormDialog = ({
               type="date"
               value={formData.date}
               onChange={(e) =>
-                setFormData({ ...formData, date: e.target.value })
+                setFormData({ ...formData, date: (e.target as HTMLInputElement).value })
               }
             />
-            {errors.date && (
-              <p className="text-red-500 text-sm">{errors.date}</p>
-            )}
+            {errors.date && <p className="text-red-500 text-sm">{errors.date}</p>}
           </div>
 
           {/* אורחים ותקציב */}
@@ -258,7 +279,7 @@ export const EventFormDialog = ({
                 type="number"
                 value={formData.estimatedGuests}
                 onChange={(e) =>
-                  setFormData({ ...formData, estimatedGuests: e.target.value })
+                  setFormData({ ...formData, estimatedGuests: (e.target as HTMLInputElement).value })
                 }
               />
               {errors.estimatedGuests && (
@@ -271,12 +292,10 @@ export const EventFormDialog = ({
                 type="number"
                 value={formData.budget}
                 onChange={(e) =>
-                  setFormData({ ...formData, budget: e.target.value })
+                  setFormData({ ...formData, budget: (e.target as HTMLInputElement).value })
                 }
               />
-              {errors.budget && (
-                <p className="text-red-500 text-sm">{errors.budget}</p>
-              )}
+              {errors.budget && <p className="text-red-500 text-sm">{errors.budget}</p>}
             </div>
           </div>
 
@@ -302,7 +321,7 @@ export const EventFormDialog = ({
                   <CommandInput
                     placeholder="חפש עיר..."
                     value={citySearch}
-                    onValueChange={setCitySearch}
+                    onValueChange={(val: string) => setCitySearch(val)}
                     className="h-9"
                   />
                   <CommandList className="max-h-[300px]">
@@ -314,7 +333,7 @@ export const EventFormDialog = ({
                         <CommandItem
                           key={city}
                           value={city}
-                          onSelect={(val) => {
+                          onSelect={(val: string) => {
                             setFormData({ ...formData, locationRegion: val });
                             setCityOpen(false);
                             setCitySearch("");
@@ -323,9 +342,7 @@ export const EventFormDialog = ({
                           <Check
                             className={cn(
                               "mr-2 h-4 w-4",
-                              formData.locationRegion === city
-                                ? "opacity-100"
-                                : "opacity-0"
+                              formData.locationRegion === city ? "opacity-100" : "opacity-0"
                             )}
                           />
                           {city}
@@ -342,10 +359,7 @@ export const EventFormDialog = ({
           </div>
 
           <DialogFooter>
-            <Button
-              type="submit"
-              disabled={isSubmitting || loadingList || loadingOne}
-            >
+            <Button type="submit" disabled={isSubmitting || loadingList || loadingOne}>
               {isSubmitting || loadingOne ? "שומר..." : "שמור"}
             </Button>
           </DialogFooter>

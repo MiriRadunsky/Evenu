@@ -12,6 +12,7 @@ import { errorHandler } from './middlewares/error.middleware.js';
 import { initSocket } from './sockets/message.gateway.js';
 import passport from './config/passport.config.js';
 import { initWebSocket } from './websocket/notification.socket.js';
+import { requestLogger, errorLogger } from './logger/logger.js';
 import './queues/scheduler.js';
 import './corn/eventStatusCron.js';
 
@@ -38,13 +39,14 @@ app.use(cors(corsOptions));
 app.use(cookieParser());
 
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, 
-  max: 100,
-  message: { error: 'Too many requests, please try again later.' },
+  windowMs: 1 * 60 * 1000, // דקה אחת
+  max: 3000,               // עד 3000 בקשות לדקה
 });
 app.use(limiter);
+app.use(requestLogger);
 app.use('/api',router)
 app.get('/health/mongo', mongoHealth);
+app.use(errorLogger);
 app.use(errorHandler);
 
 app.use(passport.initialize());
