@@ -29,7 +29,9 @@ import { fetchUser } from "../store/authSlice";
 import type { AppDispatch, RootState } from "../store";
 import type { AppRoute } from "../types/AppRouter";
 import { formatRelativeTime, getNotificationColor, getNotificationIcon } from "../Utils/NotificationUtils";
-import { initSocket } from "../socket/socket";
+import { initSocket } from "@/socket/socket";
+import type { Notification } from "@/types/Notification";
+// import { initSocket } from "../socket/socket";
 
 export default function AppLayout({ navigationItems, children }: { navigationItems: AppRoute[]; children: React.ReactNode }) {
   const dispatch: AppDispatch = useDispatch();
@@ -37,7 +39,7 @@ export default function AppLayout({ navigationItems, children }: { navigationIte
   const location = useLocation();
 
   const user = useSelector((state: RootState) => state.auth.user);
-  const notifications = useSelector((state: RootState) => state.notifications.items);
+  const notifications = useSelector((state: RootState) => state.notifications.notifications);
 
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [navigateNotification, setNavigateNotification] = useState("");
@@ -61,10 +63,10 @@ export default function AppLayout({ navigationItems, children }: { navigationIte
     const token = localStorage.getItem('token');
     if (!token) return;
     
-    const socket = initSocket(token);
+    const socket = initSocket(user._id, dispatch);
     dispatch(fetchNotifications());
 
-    const handleNotification = (notification: any) => {
+    const handleNotification = (notification: Notification) => {
       dispatch(addNotification(notification));
     };
 
@@ -119,10 +121,10 @@ export default function AppLayout({ navigationItems, children }: { navigationIte
       <SidebarProvider style={{ direction: "rtl" } as React.CSSProperties}>
         <Sidebar
           side="right"
-          className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-md"
+          className="bg-background dark:bg-gray-900 text-gray-900 dark:text-white shadow-md"
         >
           {/* HEADER */}
-          <SidebarHeader className="bg-white dark:bg-gray-900">
+          <SidebarHeader className="bg-background dark:bg-gray-900">
             <div className="flex flex-col items-center justify-start p-0 m-0">
               <img
                 src="/src/assets/logo.png"
@@ -135,7 +137,7 @@ export default function AppLayout({ navigationItems, children }: { navigationIte
           </SidebarHeader>
 
           {/* SIDEBAR ITEMS */}
-          <SidebarContent className="bg-white dark:bg-gray-900">
+          <SidebarContent className="bg-background dark:bg-gray-900">
             <SidebarGroup>
               <SidebarGroupContent>
                 <SidebarMenu>
@@ -146,7 +148,7 @@ export default function AppLayout({ navigationItems, children }: { navigationIte
                         <SidebarMenuButton asChild isActive={isActive}>
                           <Link
                             to={item.path}
-                            className="flex items-center gap-2 text-gray-900 dark:text-white"
+                            className="flex items-center gap-2 text-gray-900 dark:text-background"
                           >
                             <item.icon />
                             <span>{item.title}</span>
@@ -161,7 +163,7 @@ export default function AppLayout({ navigationItems, children }: { navigationIte
           </SidebarContent>
 
           {/* FOOTER */}
-          <SidebarFooter className="bg-white dark:bg-gray-900">
+          <SidebarFooter className="bg-background dark:bg-gray-900">
             <SidebarMenu>
               <SidebarMenuItem>
                 <div className="flex items-center gap-3 px-4 py-3 border-t">
@@ -187,9 +189,9 @@ export default function AppLayout({ navigationItems, children }: { navigationIte
         </Sidebar>
 
         {/* MAIN SECTION */}
-        <SidebarInset className="bg-white dark:bg-gray-900">
+        <SidebarInset className="bg-background dark:bg-gray-900">
           {/* TOP BAR */}
-          <div className="sticky top-0 z-10 flex items-center gap-2 px-4 py-3 border-b bg-white dark:bg-gray-900">
+          <div className="sticky top-0 z-10 flex items-center gap-2 px-4 py-3 border-b bg-background dark:bg-gray-900">
             <SidebarTrigger />
 
             {/* NOTIFICATION BUTTON */}
@@ -209,7 +211,7 @@ export default function AppLayout({ navigationItems, children }: { navigationIte
                   </Button>
                 </PopoverTrigger>
 
-                <PopoverContent className="w-[360px] p-0 bg-white dark:bg-gray-800" align="end">
+                <PopoverContent className="w-[360px] p-0 bg-background dark:bg-gray-800" align="end">
                   <div className="flex items-center justify-between p-3 border-b">
                     <h3 className="text-sm font-bold">התראות</h3>
                     <Button variant="ghost" size="icon" className="w-6 h-6" onClick={() => setIsNotificationsOpen(false)}>
@@ -268,7 +270,8 @@ export default function AppLayout({ navigationItems, children }: { navigationIte
           </div>
 
           {/* PAGE CONTENT */}
-          <main id="main-content" className="p-6 bg-white dark:bg-gray-900" role="main" aria-label="תוכן ראשי">{children}</main>
+          
+          <main id="main-content" className="p-6 bg-background dark:bg-gray-900" role="main" aria-label="תוכן ראשי">{children}</main>
         </SidebarInset>
       </SidebarProvider>
       <Toaster />

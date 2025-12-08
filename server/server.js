@@ -12,7 +12,7 @@ import { mongoHealth } from './db/health.db.js';
 import { errorHandler } from './middlewares/error.middleware.js';
 import session from 'express-session';
 import passport from './config/passport.config.js';
-import { initWebSocket } from './websocket/notification.socket.js';
+// import { initWebSocket } from './websocket/notification.socket.js';
 import { requestLogger, errorLogger } from './logger/logger.js';
 import './queues/scheduler.js';
 import './corn/eventStatusCron.js';
