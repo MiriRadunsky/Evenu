@@ -1,18 +1,20 @@
 import express from "express";
 import * as cnt from "../controllers/thread.controller.js";
+import { authGuard } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
+router.use(authGuard);
 // יצירת ת'רד חדש או מחזור קיים
 router.post("/create", cnt.createOrReuseThread);
 
-// ת'רד לפי מזהה
-router.get("/:threadId", cnt.getThread);
-
 // ת'רדים עבור משתמש
-router.get("/user/:userId", cnt.getUserThreads);
+router.get("/user", cnt.getUserThreads);
 
 // ת'רדים עבור ספק
-router.get("/supplier/:supplierId", cnt.getSupplierThreads);
+router.get("/supplier", cnt.getSupplierThreads);
+
+router.get("/:threadId", cnt.getThread);
+
 
 export default router;

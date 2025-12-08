@@ -56,7 +56,7 @@ export function PendingSuppliersTable({ suppliers, onApprove, onReject, onView }
         {suppliers.map((supplier) => (
           <div
             key={supplier._id}
-            className="border-b border-gray-100 p-4 hover:bg-gray-50 transition-colors"
+            className="p-4 transition-colors border-b-2 border-gray-200 hover:bg-gray-50 mb-2"
           >
             <div className="space-y-3">
               <div className="flex items-start gap-3">

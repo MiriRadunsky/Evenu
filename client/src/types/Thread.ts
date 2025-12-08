@@ -1,13 +1,16 @@
 export interface Thread {
-  _id: string;
-  userId: string;         
-  supplierId?: string;    
-  eventId?: string;
+  _id: string;            // מזהה ה-thread
+  userId: string;          // מזהה הלקוח
+  supplierId?: string;     // מזהה הספק
+  eventId?: string;        // מזהה האירוע (אם יש)
   createdAt?: string;
   updatedAt?: string;
-  supplierName?: string;
-  clientName?: string;
-  eventName?: string;
-  status?: string;
-  unreadCount?: number;
+
+  // שמות להצגה בצד המשתמש והספק
+  supplierName?: string;   // שם הספק
+  clientName?: string;     // שם הלקוח
+  eventName?: string;      // שם האירוע
+
+  status?: string;         // סטטוס הבקשה/השיחה
+  hasUnread: boolean;      // האם יש הודעות שלא נקראו
 }

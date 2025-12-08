@@ -58,7 +58,6 @@ export function PendingSuppliersPage() {
     navigate(`/admin/suppliers/${id}`);
   };
 
-  // Don't render until we have data from server
   if (!hasLoaded) {
     return <AdminLayout><div /></AdminLayout>;
   }
@@ -66,7 +65,6 @@ export function PendingSuppliersPage() {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        {/* Page Header */}
         <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-4">
           <Button
             variant="outline"
@@ -82,14 +80,12 @@ export function PendingSuppliersPage() {
           </div>
         </div>
 
-        {/* Error Message */}
         {error && (
           <div className="p-4 border-r-4 border-red-500 rounded-lg bg-red-50">
             <p className="text-right text-red-800">{error}</p>
           </div>
         )}
 
-        {/* Suppliers Table */}
         <PendingSuppliersTable
           suppliers={suppliers}
           onApprove={handleApprove}

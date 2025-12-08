@@ -8,41 +8,41 @@ import { SupplierRepository } from "../repositories/suppliers.repositry.js";
 
 export const RequestService = {
 
-async getRequestsByUserId(userId, { page, limit, status, eventId ,searchTerm}) {
-  return RequestRepository.getRequestsByUserId(userId, {
-    page,
-    limit,
-    status,
-    eventId,
-    searchTerm
-  });
-}
-,
+  async getRequestsByUserId(userId, { page, limit, status, eventId, searchTerm }) {
+    return RequestRepository.getRequestsByUserId(userId, {
+      page,
+      limit,
+      status,
+      eventId,
+      searchTerm
+    });
+  }
+  ,
 
-  async getRequestsBySupplierUserId(userId,{ page, limit, status, eventId ,searchTerm}) {
-    const supplierId=await SupplierRepository.getSupplierIdByUserId(userId);
+  async getRequestsBySupplierUserId(userId, { page, limit, status, eventId, searchTerm }) {
+    const supplierId = await SupplierRepository.getSupplierIdByUserId(userId);
     if (!supplierId) throw new Error("ספק לא נמצא");
-    return await RequestRepository.getBySupplier(supplierId,{ page, limit, status ,eventId ,searchTerm});
-   
+    return await RequestRepository.getBySupplier(supplierId, { page, limit, status, eventId, searchTerm });
+
   },
 
   async createSupplierRequest({ eventId, supplierId, clientId, notesFromClient }) {
     const now = new Date();
 
     const [event, supplier, client] = await Promise.all([
-      getEventById(eventId,clientId),
+      getEventById(eventId, clientId),
       SupplierRepository.getSupplierById(supplierId),
       getUserById(clientId),
     ]);
-    
+
     if (!event) {
       throw new AppError(404, "האירוע לא נמצא");
     }
 
-     if (event.date < now) {
-       throw new AppError(400, "לא ניתן ליצור חוזה לאירוע שכבר עבר");
-     }
- 
+    if (event.date < now) {
+      throw new AppError(400, "לא ניתן ליצור חוזה לאירוע שכבר עבר");
+    }
+
 
     if (!supplier) {
       throw new AppError(404, "הספק לא נמצא");
@@ -65,11 +65,11 @@ async getRequestsByUserId(userId, { page, limit, status, eventId ,searchTerm}) {
       throw new AppError(400, "כבר קיימת בקשה ממתינה לספק זה עבור האירוע");
     }
 
-     const basicEventSummary = {
+    const basicEventSummary = {
       eventName: event.name || "N/A",
       location: event.locationRegion || "N/A",
       type: event.type || "N/A",
-      date: event.date?.toLocaleDateString() || "N/A",
+      date: event.date instanceof Date ? event.date : new Date(event.date),
     };
 
     const eventDate = event.date ? new Date(event.date) : now;
@@ -94,7 +94,7 @@ async getRequestsByUserId(userId, { page, limit, status, eventId ,searchTerm}) {
 
     if (supplier.user) {
       await NotificationService.createNotification({
-        userId: supplier.user, 
+        userId: supplier.user,
         type: "בקשה",
         payload: {
           requestId: request._id,
@@ -103,7 +103,7 @@ async getRequestsByUserId(userId, { page, limit, status, eventId ,searchTerm}) {
           clientId,
           clientName: client.name,
           time: new Date().toISOString(),
-          note:'בקשה חדשה נוצרה'
+          note: 'בקשה חדשה נוצרה'
         },
         channel: "in-app",
       });
@@ -116,7 +116,7 @@ async getRequestsByUserId(userId, { page, limit, status, eventId ,searchTerm}) {
   async approveSupplierRequest(id, supplierId) {
     const now = new Date();
     const request = await RequestRepository.getRequestById(id);
-    
+
     ensurePendingSupplierRequest(request, supplierId);
     const result = await RequestRepository.updateStatus(id, "מאושר");
 
@@ -127,7 +127,7 @@ async getRequestsByUserId(userId, { page, limit, status, eventId ,searchTerm}) {
         requestId: request._id,
         supplierId,
         time: new Date().toISOString(),
-        note:"הבקשה אושרה"
+        note: "הבקשה אושרה"
       },
       channel: "in-app",
     });
@@ -138,7 +138,7 @@ async getRequestsByUserId(userId, { page, limit, status, eventId ,searchTerm}) {
   async declineSupplierRequest(id, supplierId) {
     const now = new Date();
     const request = await RequestRepository.getRequestById(id);
-        console.log(request);
+    console.log(request);
 
     ensurePendingSupplierRequest(request, supplierId);
     const result = await RequestRepository.updateStatus(id, "נדחה");
@@ -150,7 +150,7 @@ async getRequestsByUserId(userId, { page, limit, status, eventId ,searchTerm}) {
         requestId: request._id,
         supplierId,
         time: new Date().toISOString(),
-        note:'בקשה סורבה'
+        note: 'בקשה סורבה'
       },
       channel: "in-app",
     });
@@ -162,7 +162,7 @@ async getRequestsByUserId(userId, { page, limit, status, eventId ,searchTerm}) {
 
 
 //------validations----
- function ensurePendingSupplierRequest(request, supplierId) {
+function ensurePendingSupplierRequest(request, supplierId) {
   const now = new Date();
 
   if (!request) {

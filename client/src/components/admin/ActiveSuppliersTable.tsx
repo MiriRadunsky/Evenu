@@ -52,7 +52,7 @@ export function ActiveSuppliersTable({ suppliers, onBlock, onView }: ActiveSuppl
         {suppliers.map((supplier) => (
           <div
             key={supplier._id}
-            className="p-4 transition-colors border-b border-gray-100 hover:bg-gray-50"
+            className="p-4 transition-colors border-b-2 border-gray-200 hover:bg-gray-50 mb-2"
           >
             <div className="space-y-3">
               <div className="flex items-start gap-3">

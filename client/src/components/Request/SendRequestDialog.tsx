@@ -71,6 +71,8 @@ export const SendRequestDialog = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log('📤 Sending request:', { eventId, requestMessage, supplierId });
+    
     await onSubmit({
       eventId,
       requestMessage,
@@ -108,13 +110,14 @@ export const SendRequestDialog = ({
 
           {/* הודעה לספק */}
           <div className="space-y-2">
-            <Label>הודעה לספק</Label>
+            <Label>הודעה לספק (לפחות 5 תווים)</Label>
             <Textarea
               value={requestMessage}
               onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setRequestMessage(e.target.value)}
-              placeholder="כתוב הודעה לספק..."
+              placeholder="כתוב הודעה לספק (לפחות 5 תווים)..."
               rows={4}
               required
+              minLength={5}
             />
           </div>
 

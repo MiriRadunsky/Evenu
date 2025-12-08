@@ -87,41 +87,35 @@ export function UserRegisterForm({ onRegister, onRoleChange, currentRole }: Prop
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const validation: UserFormErrors = {
+    const newErrors = {
       name: validateName(formData.name),
       email: validateEmail(formData.email),
       phone: validatePhone(formData.phone),
       password: validatePassword(formData.password),
-      confirmPassword: validateConfirmPassword(formData.password, formData.confirmPassword),
+      confirmPassword: validateConfirmPassword(
+        formData.password,
+        formData.confirmPassword
+      ),
       agreedTerms: formData.agreedTerms ? "" : "יש לאשר את תנאי השימוש",
     };
-
-    const hasErrors = Object.values(validation).some(v => v);
-    if (hasErrors) {
-      setErrors(validation);
+    if (Object.values(newErrors).some(Boolean)) {
+      setErrors(newErrors);
       return;
     }
-
     setLoading(true);
-
+    const { name, email, phone, password } = formData;
     try {
-      await register(
-        {
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          password: formData.password,
-        },
-        "user"
-      );
+      await register({ name, email, phone, password }, "user");
       onRegister();
-    } catch (err) {
-      setErrors({ general: getErrorMessage(err, "שגיאה בהרשמה") });
+    } catch (err: any) {
+      setErrors({
+        general: err?.response?.data?.message || "שגיאה בהרשמה",
+      });
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <form
@@ -262,11 +256,10 @@ export function UserRegisterForm({ onRegister, onRoleChange, currentRole }: Prop
       </div>
       {errors.agreedTerms && <p className="text-xs text-red-500">{errors.agreedTerms}</p>}
 
-      {/* כפתור הרשמה */}
       <button
         type="submit"
         disabled={loading}
-        className="w-full h-14 bg-[#d4a960] hover:bg-[#c89645] text-white rounded-2xl font-light text-base shadow-sm"
+        className="w-full h-14 bg-[#d4a960] hover:bg-[#c89645] text-white rounded-2xl font-light text-base transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
       >
         {loading ? "נרשם..." : "הירשם למערכת"}
       </button>

@@ -1,105 +1,82 @@
-import { countUnreadMessages } from "../repositories/message.repository.js";
 import * as repo from "../repositories/thread.repository.js";
-import { sendMessage } from "./message.service.js";
-import {SupplierService} from "./supplier.service.js";
-import {SupplierRepository} from "../repositories/suppliers.repositry.js";
+import { SupplierRepository } from "../repositories/suppliers.repositry.js";
+import { hasUnreadMessages } from "../repositories/message.repository.js";
+import { AppError } from "../middlewares/error.middleware.js";
 
-export async function getOrCreateThread({ requestId, userId, supplierId }) {
+/**
+ * Create or return existing thread
+ */
+export async function getOrCreateThread({ requestId, userId, supplierId, delDate }) {
   const existingThread = await repo.getThreadByRequestId(requestId);
+  if (existingThread) return existingThread;
 
-  if (existingThread) {
-    return existingThread; // reuse
-  }
+  const supplier = await SupplierRepository.getSupplierById(supplierId);
+  if (!supplier) throw new AppError(404, "ספק לא נמצא");
 
-  const thread = await repo.createThread({ requestId, userId, supplierId });
-  const threadId = thread._id;
-  const body = "פנייתך בהמתנה";
-  const suppiler = await SupplierService.getSupplier(supplierId)
-  console.log("details - msg ", threadId, userId, suppiler.user, body );
-  
-  const msg = await sendMessage({ threadId, from: userId, to: supplierId, body });
-  console.log("details - msg sent ", msg ); 
+  const thread = await repo.createThread({
+    requestId,
+    userId,
+    supplierId,
+    supplierUserId: supplier.user, // ← חדש
+    deleteAt: delDate,
+  });
   return thread;
 }
 
+/**
+ * Get thread by ID
+ */
 export async function serviceGetThreadById(threadId) {
-  return await repo.getThreadById(threadId);
+  return repo.getThreadById(threadId);
 }
 
-// export async function serviceGetThreadsForUser(userId) {
-//   const threads = await repo.getThreadsForUser(userId);
-//   console.log("threads!!!!!!!!! ", threads);
+/**
+ * Enrich threads with additional fields
+ */
+async function enrichThreads(threads, userId) {
+  return Promise.all(
+    threads.map(async (thread) => {
+      const unread = await hasUnreadMessages(thread._id, userId);
 
-//   const enrichedThreads = await Promise.all(
-//       threads.map(async thread => ({
-//       ...thread, // פה זה כבר Object רגיל – מצוין
-//       supplierName: thread.supplierId?.user?.name ?? "",
-//       eventName: thread.requestId?.eventId?.name ?? "",
-//       status: thread.requestId?.status ?? "",
-//       // unreadCount: await countUnreadMessages(thread._id, userId)
-//     }))
-//   );
-//   console.log("enrichedThreads!!!!!!!!! ", enrichedThreads);
+      return {
+        _id: thread._id.toString(),
+        userId: thread.userId?._id?.toString() ?? null,
+        supplierId: thread.supplierId
+          ? { ...thread.supplierId, _id: thread.supplierId._id.toString() }
+          : null,
+        supplierUserId: thread.supplierUserId?.toString() ?? null,
+        requestId: thread.requestId
+          ? {
+              _id: thread.requestId._id.toString(),
+              status: thread.requestId.status,
+              eventId: thread.requestId.eventId
+                ? { ...thread.requestId.eventId, _id: thread.requestId.eventId._id.toString() }
+                : null,
+            }
+          : null,
+        supplierName: thread.supplierId?.user?.name ?? "",
+        clientName: thread.userId?.name ?? "",
+        eventName: thread.requestId?.eventId?.name ?? "",
+        status: thread.requestId?.status ?? "",
+        hasUnread: !!unread,
+      };
+    })
+  );
+}
 
-//   return enrichedThreads;
-// }
-
+/**
+ * Get threads for a normal user
+ */
 export async function serviceGetThreadsForUser(userId) {
-  console.log("serviceGetThreadsForUser userId: ", userId);
   const threads = await repo.getThreadsForUser(userId);
-
-  const enrichedThreads = threads.map(thread => ({
-    _id: thread._id.toString(),
-    userId: thread.userId.toString(),
-    supplierId: thread.supplierId
-      ? { ...thread.supplierId, _id: thread.supplierId._id.toString() }
-      : null,
-    requestId: thread.requestId
-      ? {
-          _id: thread.requestId._id.toString(),
-          status: thread.requestId.status,
-          eventId: thread.requestId.eventId
-            ? { ...thread.requestId.eventId, _id: thread.requestId.eventId._id.toString() }
-            : null,
-        }
-      : null,
-    supplierName: thread.supplierId?.user?.name ?? "",
-    eventName: thread.requestId?.eventId?.name ?? "",
-    status: thread.requestId?.status ?? "",
-    // unreadCount: await countUnreadMessages(thread._id, userId)
-  }));
-  console.log("enrichedThreads!!!!!!!!! ", enrichedThreads);
-  return enrichedThreads;
+  return enrichThreads(threads, userId);
 }
 
-
-
+/**
+ * Get threads for a supplier (by supplierUserId)
+ */
 export async function serviceGetThreadsForSupplier(supplierUserId) {
-  const supplierId = await SupplierRepository.getSupplierIdByUserId(supplierUserId);
-  if (!supplierId) {
-      throw new AppError(404, "ספק לא נמצא");
-    }
-  const threads = await repo.getThreadsForSupplier(supplierId);
-  const enrichedThreads = threads.map(thread => ({
-    _id: thread._id.toString(),
-    userId: thread.userId.toString(),
-    supplierId: thread.supplierId
-      ? { ...thread.supplierId, _id: thread.supplierId._id.toString() }
-      : null,
-    requestId: thread.requestId
-      ? {
-          _id: thread.requestId._id.toString(),
-          status: thread.requestId.status,
-          eventId: thread.requestId.eventId
-            ? { ...thread.requestId.eventId, _id: thread.requestId.eventId._id.toString() }
-            : null,
-        }
-      : null,
-    supplierName: thread.supplierId?.user?.name ?? "",
-    eventName: thread.requestId?.eventId?.name ?? "",
-    status: thread.requestId?.status ?? "",
-    // unreadCount: await countUnreadMessages(thread._id, userId)
-  }));
-  console.log("enrichedThreads for supplier!!!!!!!!! ", enrichedThreads);
-  return enrichedThreads;
+  console.log("Service: Getting threads for supplier user:", supplierUserId);
+  const threads = await repo.getThreadsForSupplier(supplierUserId);
+  return enrichThreads(threads, supplierUserId);
 }

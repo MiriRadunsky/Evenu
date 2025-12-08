@@ -22,14 +22,15 @@ export async function register({ name, email, phone, password, role }) {
 
 export async function login(email, password) {
     const user = await repo.findUserByEmail(email);
-    if (!user) throw new AppError(404, 'User not found');
+    if (!user) throw new AppError(404, 'משתמש לא נמצא');
 
     const valid = await bcrypt.compare(password, user.password);
-    if (!valid) throw new AppError(401, 'Invalid credentials');
+    if (!valid) throw new AppError(401, 'ערכים לא תקינים');
 
     const token = generateToken(user);
     return { token };
 }
+
 export async function googleAuth({ email, name, googleId }) {
   let user =
     await repo.findUserByGoogleId(googleId) ||

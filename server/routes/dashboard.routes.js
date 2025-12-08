@@ -19,5 +19,6 @@ router.get(
   DashboardController.getDashboardChartsForSupplier
 );
 router.get("/summaryAdmin", roleGuard(["admin"]), DashboardController.getDashboardSummaryForAdmin);
+router.get("/stats", roleGuard(["admin"]), DashboardController.getAdminStats);
 
 export default router;

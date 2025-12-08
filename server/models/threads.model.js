@@ -15,13 +15,24 @@ const threadSchema = new mongoose.Schema(
       ref: "Supplier",
       required: true,
     },
-
+    supplierUserId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     // המשתמש שפתח את הבקשה
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
+
+
+    deleteAt: {
+      type: Date,
+      index: { expireAfterSeconds: 0 },
+    },
+
   },
   {
     timestamps: true, // יוצר createdAt + updatedAt אוטומטית

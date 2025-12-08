@@ -10,6 +10,7 @@ import {
   createEventSchema,
   updateEventSchema,
 } from '../validation/event.validation.js';
+import { createRequestSchema } from '../validation/request.validation.js';
 
 const router = Router();
 
@@ -47,7 +48,12 @@ router.patch(
 router.delete('/:id', validateObjectId(), EventController.remove);
 
 // יצירת בקשה לספק עבור אירוע
-router.post('/:eventId/requests', RequestController.createRequest);
+router.post(
+  '/:eventId/requests',
+  validateObjectId('eventId'),
+  validateBody(createRequestSchema),
+  RequestController.createRequest
+);
 router.put('/:id/budget', EventController.updateEventBudget);
 
 export default router;

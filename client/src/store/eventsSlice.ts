@@ -131,7 +131,7 @@ export const updateEvent = createAsyncThunk<
     return rejectWithValue(getErrorMessage(err, "שגיאה בעדכון אירוע"));
   }
 });
-
+ 
 // 🔹 מחיקת אירוע
 export const deleteEvent = createAsyncThunk<
   string,

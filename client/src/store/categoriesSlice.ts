@@ -8,6 +8,7 @@ export const fetchCategories = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await api.get("/categories"); // endpoint בשרת
+      console.log("Categories response:", response.data);
       
       return response.data;
     }  catch (err: unknown) {
@@ -17,7 +18,7 @@ export const fetchCategories = createAsyncThunk(
 );
 
 interface CategoryState {
-  list: { _id: string; label: string }[];
+  list: { _id: string; label: string; isActive: boolean }[];
   loading: boolean;
   error: string | null;
 }

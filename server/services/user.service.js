@@ -8,11 +8,13 @@ export async function updateUser(userId, data) {
 
 export async function getUserProfile(userId) {
   const user = await userRepository.findById(userId);
-  
+
   if (!user) {
-    throw new Error('User not found');
+    throw new Error('משתמש לא נמצא');
   }
 
-  const { password, ...userWithoutPassword } = user.toObject();
-  return userWithoutPassword;
+  const { password, _id, ...userWithoutIdAndPassword } = user.toObject();
+  console.log('Fetched user profile for userId:', userWithoutIdAndPassword);
+  return userWithoutIdAndPassword;
+
 }

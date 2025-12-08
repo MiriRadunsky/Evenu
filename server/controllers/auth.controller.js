@@ -6,7 +6,6 @@ export const register = asyncHandler(async (req, res) => {
   console.log("Register - Request Body:", req.body);
   req.body.role = 'user';
   const { user, token } = await serv.register(req.body);
-  console.log("Register - Token:", token);
   res.cookie("token", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",

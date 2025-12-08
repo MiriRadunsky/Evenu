@@ -1,189 +1,154 @@
-import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import type { PayloadAction } from "@reduxjs/toolkit";
+import io, { Socket } from "socket.io-client";
 import api from "../services/axios";
+import type { Message } from "../types/Message";
 import type { Thread } from "../types/Thread";
-import type { Message } from "../types/type";
-import { getErrorMessage } from "@/Utils/error";
+import type { RootState } from "./index";
 
-// ==========================
-//     STATE
-// ==========================
+// ===========================
+// STATE
+// ===========================
 export interface ChatState {
   threads: Thread[];
   messagesByThread: Record<string, Message[]>;
   loading: boolean;
   error?: string;
+  activeThreadId?: string;
 }
 
 const initialState: ChatState = {
   threads: [],
   messagesByThread: {},
   loading: false,
-  error: undefined,
 };
 
-// ==========================
-//     THUNKS
-// ==========================
+// ===========================
+// SOCKET INIT (GLOBAL CACHE)
+// ===========================
+let socket: Socket | undefined;
 
-// 1️⃣ Fetch user threads
+// ===========================
+// THUNKS
+// ===========================
 export const fetchThreads = createAsyncThunk<
   Thread[],
-  { id: string; role: "user" | "supplier" },
+  { role: "user" | "supplier" },
   { rejectValue: string }
->(
-  "chat/fetchThreads",
-  async ({ id, role }, { rejectWithValue }) => {
-    try {
-      const url =
-        role === "supplier"
-          ? `/threads/supplier/${id}`
-          : `/threads/user/${id}`;
-
-      const res = await api.get(url);
-
-      return res.data?.data ?? res.data;
-    }  catch (err: unknown) {
-        return rejectWithValue(getErrorMessage(err,'שגיאה בטעינת משתמשים'));
-      }
+>("chat/fetchThreads", async ({ role }, thunkAPI) => {
+  try {
+    const url = role === "supplier" ? `/threads/supplier` : `/threads/user`;
+    const { data } = await api.get(url);
+    // data כבר מכיל fields: _id, userId, supplierId, supplierName, clientName, eventName, status, hasUnread
+    return data;
+  } catch (err) {
+  if (err instanceof Error) {
+    return thunkAPI.rejectWithValue(err.message);
   }
-);
+    return thunkAPI.rejectWithValue("שגיאה לא ידועה");
+  }
+});
 
 
-// 2️⃣ Fetch messages for a thread
 export const fetchMessages = createAsyncThunk<
-  { threadId: string; messages: Message[] },
+  Message[],
   { threadId: string },
   { rejectValue: string }
->(
-  "chat/fetchMessages",
-  async ({ threadId }, { rejectWithValue }) => {
-    console.log("[Thunk] fetchMessages called for threadId:", threadId);
-    try {
-      const res = await api.get(`/messages/${threadId}`);
-      console.log("[Thunk] fetchMessages response:", res.data);
-      const messages = res.data?.data ?? res.data;
-      return { threadId, messages };
-    } catch (err: unknown) {
-      console.error("[Thunk] fetchMessages error:", err);
-      return rejectWithValue(getErrorMessage(err,'שגיאה בטעינת הודעות'))
-    }
+>("chat/fetchMessages", async ({ threadId }, thunkAPI) => {
+  try {
+    const { data } = await api.get(`/messages/${threadId}`);
+    return data;
+  } catch (err) {
+  if (err instanceof Error) {
+    return thunkAPI.rejectWithValue(err.message);
   }
-);
+    return thunkAPI.rejectWithValue("שגיאה לא ידועה");
+  }
+});
 
-// 3️⃣ Send message
-export const sendMessage = createAsyncThunk<
-  Message,
-  { threadId: string; body: string; from: string; to?: string },
-  { rejectValue: string }
->(
-  "chat/sendMessage",
-  async ({ threadId, body, from, to  }, { rejectWithValue }) => {
-    console.log("[Thunk] sendMessage called for threadId:", threadId, "body:", body);
-    const data = {threadId,from, to, body};
-    try {
-      const res = await api.post("/messages", data);
-      console.log("[Thunk] sendMessage response:", res.data);
-      return res.data?.data ?? res.data;
-    } catch (err: unknown) {
-      console.error("[Thunk] sendMessage error:", err);
-    return rejectWithValue(getErrorMessage(err,'שגיאה בשליחת הודעה'))
-  }
-    
-  }
-);
 
-// 4️⃣ Update message
-export const updateMessage = createAsyncThunk<
-  Message,
-  { id: string; data: Partial<Message> },
-  { rejectValue: string }
->(
-  "chat/updateMessage",
-  async ({ id, data }, { rejectWithValue }) => {
-    console.log("[Thunk] updateMessage called for id:", id, "data:", data);
-    try {
-      const res = await api.patch(`/messages/${id}`, data);
-      console.log("[Thunk] updateMessage response:", res.data);
-      return res.data?.data ?? res.data;
-    } catch (err: unknown) {
-      console.error("[Thunk] updateMessage error:", err);
-      return rejectWithValue(getErrorMessage(err,"שגיאה בעדכון הודעה"));
-    }
-  }
-);
-
-// ==========================
-//     SLICE
-// ==========================
+// ===========================
+// SLICE
+// ===========================
 const chatSlice = createSlice({
   name: "chat",
   initialState,
   reducers: {
-    clearMessages: (state, action: PayloadAction<string>) => {
-      const threadId = action.payload;
-      console.log("[Reducer] clearMessages for threadId:", threadId);
-      delete state.messagesByThread[threadId];
+    // --- SELECT THREAD + SOCKET JOIN ---
+    joinThread: (state, action: PayloadAction<{ threadId: string }>) => {
+      const threadId = action.payload.threadId;
+      state.activeThreadId = threadId;
+
+      if (socket?.connected) {
+        socket.emit("join_thread", threadId);
+      }
     },
 
-    addLocalMessage: (state, action: PayloadAction<Message>) => {
+    // --- NEW MESSAGE FROM SOCKET ---
+    appendMessage: (state, action: PayloadAction<Message>) => {
       const msg = action.payload;
-      console.log("[Reducer] addLocalMessage:", msg);
-      if (!state.messagesByThread[msg.threadId]) {
-        state.messagesByThread[msg.threadId] = [];
+      const tid = msg.threadId;
+
+      if (!tid) return;
+
+      if (!state.messagesByThread[tid]) {
+        state.messagesByThread[tid] = [];
       }
-      state.messagesByThread[msg.threadId].push(msg);
+      state.messagesByThread[tid].push(msg);
     },
   },
 
   extraReducers: (builder) => {
     builder
-      // Threads
-      .addCase(fetchThreads.pending, (state) => {
-        console.log("[ExtraReducer] fetchThreads pending");
-        state.loading = true;
-        state.error = undefined;
-      })
       .addCase(fetchThreads.fulfilled, (state, action) => {
-        console.log("[ExtraReducer] fetchThreads fulfilled:", action.payload);
-        state.loading = false;
         state.threads = action.payload;
       })
-      .addCase(fetchThreads.rejected, (state, action) => {
-        console.error("[ExtraReducer] fetchThreads rejected:", action.payload);
-        state.loading = false;
-        state.error = action.payload || action.error?.message;
-      })
 
-      // Messages
       .addCase(fetchMessages.fulfilled, (state, action) => {
-        console.log("[ExtraReducer] fetchMessages fulfilled for threadId:", action.payload.threadId , action.payload);
-        state.messagesByThread[action.payload.threadId] = action.payload.messages;
-        console.log("addCase in the reducer ", state.messagesByThread);
-        
-      })
-
-      // Send message
-      .addCase(sendMessage.fulfilled, (state, action) => {
-        console.log("[ExtraReducer] sendMessage fulfilled:", action.payload);
-        const msg = action.payload;
-        if (!state.messagesByThread[msg.threadId]) {
-          state.messagesByThread[msg.threadId] = [];
+        const messages = action.payload;
+        if (messages.length > 0) {
+          const threadId = messages[0].threadId;
+          state.messagesByThread[threadId] = messages;
         }
-        state.messagesByThread[msg.threadId].push(msg);
       })
 
-      // Update message
-      .addCase(updateMessage.fulfilled, (state, action) => {
-        console.log("[ExtraReducer] updateMessage fulfilled:", action.payload);
-        const msg = action.payload;
-        const list = state.messagesByThread[msg.threadId];
-        if (!list) return;
-
-        const idx = list.findIndex(m => m._id === msg._id);
-        if (idx !== -1) list[idx] = msg;
-      });
   },
 });
 
-export const { clearMessages, addLocalMessage } = chatSlice.actions;
+// ===========================
+// SOCKET SETUP FUNCTION
+// ===========================
+export const initChatSocket = (
+  token: string,
+  getState: () => RootState,
+  dispatch: (a: unknown) => void
+) => {
+  if (socket) return socket;
+
+  socket = io("http://localhost:3000", {
+    auth: { token },
+    transports: ["websocket"],
+  });
+
+  socket.on("connect", () => {
+    const active = getState().chat.activeThreadId;
+    if (active) socket!.emit("join_thread", active);
+  });
+
+  socket.on("reconnect", () => {
+    const active = getState().chat.activeThreadId;
+    if (active) socket!.emit("join_thread", active);
+  });
+
+  socket.on("new_message", (msg: Message) => {
+    dispatch(appendMessage(msg));
+  });
+
+globalThis.__chat_socket = socket;
+
+  return socket;
+};
+
+// ===========================
+export const { joinThread, appendMessage } = chatSlice.actions;
 export default chatSlice.reducer;

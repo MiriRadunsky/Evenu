@@ -153,20 +153,29 @@ export function SupplierRegisterForm({ onRegister, onRoleChange, currentRole }: 
     setLoading(true);
 
     try {
-      await register({
-        name,
-        email,
-        phone,
-        password,
-        category,
-        regions,
-        kashrut,
-        description
-      }, "supplier");
+      // הכנה של הנתונים לפי מבנה שהשרת מצפה לו
+      // המרת regions ממחרוזת למערך (מפריד לפי פסיק)
+      const regionsArray = regions ? regions.split(',').map(r => r.trim()).filter(r => r) : [];
 
-      setStep(2);
-    } catch (err: unknown) {
-      setErrors({ general: getErrorMessage(err, "שגיאה בהרשמה")});
+await register(
+  {
+    name,
+    email,
+    phone,
+    password,   // חובה כאן
+    category,
+    regions: regionsArray,
+    kashrut,
+    description
+  },
+  "supplier"
+);
+
+      setStep(2); // עבור ספקים עוברים לשלב הבא
+    } catch (err: any) {
+      setErrors({
+        general: err?.response?.data?.message || "שגיאה בהרשמה",
+      });
     } finally {
       setLoading(false);
     }

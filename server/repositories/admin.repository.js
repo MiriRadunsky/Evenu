@@ -92,3 +92,10 @@ export async function getAllUsers() {
     .select('name email phone role createdAt')
     .sort({ createdAt: -1 });
 }
+
+// 🔹 קבלת כל האירועים
+export async function getAllEvents() {
+  return await Event.find()
+    .populate('ownerId', 'name email')
+    .sort({ createdAt: -1 });
+}
