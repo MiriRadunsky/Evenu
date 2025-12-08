@@ -23,12 +23,17 @@ export function GoogleLoginButton({ onSuccess, onError, mode = 'login' }: Google
         const userInfo = await userInfoResponse.json();
         
         // שליחת הפרטים לשרת שלנו
-        await googleAuth({
+        const response = await googleAuth({
           email: userInfo.email,
           name: userInfo.name,
           googleId: userInfo.sub,
           picture: userInfo.picture,
         });
+        
+        // שמירת הטוקן ב-localStorage
+        if (response.token) {
+          localStorage.setItem('token', response.token);
+        }
         
         onSuccess();
       } catch (err: any) {

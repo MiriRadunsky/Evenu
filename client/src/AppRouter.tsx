@@ -28,20 +28,12 @@ import DashboardUser from "./pages/DashboardUser";
 import ContractsPaymentsPage from "./pages/ContractsPaymentsPage";
 import BudgetManagementPage from "./pages/BudgetManagementPage";
 import { useDispatch } from "react-redux";
+import { AccessibilityMenu } from "./components/AccessibilityMenu";
 import { fetchUser } from "./store/authSlice";
 import type { AppDispatch } from "./store";
-import { useEffect } from "react";
 
 export default function AppRouter() {
   const dispatch: AppDispatch = useDispatch();
-
-  // מעדכן את פרטי המשתמש מהשרת אם יש token
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      dispatch(fetchUser());
-    }
-  }, [dispatch]);
 
   const userRoutes = [
     { title: "לוח בקרה", path: "/dashboard", element: < DashboardUser />, icon: LayoutDashboard },
@@ -102,6 +94,7 @@ export default function AppRouter() {
   };
 
   return (
+    <>
     <Routes>
       <Route path="/" element={<LandingPage onNavigate={handleNavigate} />} />
       <Route
@@ -169,5 +162,7 @@ export default function AppRouter() {
       />
 
     </Routes>
+    <AccessibilityMenu />
+    </>
   );
 }
