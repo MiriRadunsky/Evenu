@@ -22,7 +22,11 @@ const handleSubmit = async (e: React.FormEvent) => {
   setLoading(true);
 
   try {
-    await login({ email, password });
+    const response = await login({ email, password });
+    // שמירת הטוקן ב-localStorage
+    if (response.token) {
+      localStorage.setItem('token', response.token);
+    }
     onLogin();
   } catch (err: any) {
     setError(

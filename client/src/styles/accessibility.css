@@ -1,0 +1,147 @@
+/* Accessibility Styles */
+
+/* High Contrast Mode */
+.high-contrast {
+  filter: contrast(1.3);
+}
+
+.high-contrast * {
+  border-color: #000 !important;
+}
+
+.high-contrast button,
+.high-contrast a {
+  font-weight: 600 !important;
+}
+
+/* Highlight Links */
+.highlight-links a {
+  text-decoration: underline !important;
+  text-decoration-thickness: 2px !important;
+  text-underline-offset: 3px !important;
+  font-weight: 600 !important;
+}
+
+.highlight-links a:hover {
+  background-color: #fff3cd !important;
+  padding: 2px 4px !important;
+  border-radius: 4px !important;
+}
+
+/* Readable Font */
+.readable-font * {
+  font-family: 'Arial', 'Helvetica', sans-serif !important;
+  letter-spacing: 0.05em !important;
+  line-height: 1.8 !important;
+}
+
+/* Large Cursor */
+.large-cursor,
+.large-cursor * {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path d="M2 2 L2 28 L12 20 L16 28 L20 26 L16 18 L28 18 Z" fill="black" stroke="white" stroke-width="2"/></svg>'), auto !important;
+}
+
+.large-cursor button,
+.large-cursor a,
+.large-cursor input,
+.large-cursor select,
+.large-cursor textarea {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path d="M16 2 L16 12 L21 7 L25 11 L20 16 L30 16 L30 18 L20 18 L25 23 L21 27 L16 22 L16 32 L14 32 L14 22 L9 27 L5 23 L10 18 L0 18 L0 16 L10 16 L5 11 L9 7 L14 12 L14 2 Z" fill="black" stroke="white" stroke-width="2"/></svg>'), pointer !important;
+}
+
+/* Keyboard Navigation */
+.keyboard-nav *:focus {
+  outline: 3px solid #d4a960 !important;
+  outline-offset: 3px !important;
+  border-radius: 4px !important;
+}
+
+.keyboard-nav *:focus-visible {
+  box-shadow: 0 0 0 4px rgba(212, 169, 96, 0.3) !important;
+}
+
+/* Skip to content link for screen readers */
+.skip-to-content {
+  position: absolute;
+  left: -9999px;
+  z-index: 999;
+  padding: 1em;
+  background-color: #d4a960;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+}
+
+.skip-to-content:focus {
+  left: 50%;
+  transform: translateX(-50%);
+  top: 10px;
+}
+
+/* Accessibility Button Vertical Text */
+.writing-mode-vertical-rl {
+  writing-mode: vertical-rl;
+}
+
+/* Ensure accessibility button is always visible and not covering content */
+@media (max-width: 640px) {
+  /* On mobile, make button slightly smaller */
+  .accessibility-button {
+    padding: 1rem 0.5rem !important;
+    min-height: 100px !important;
+    min-width: 40px !important;
+    bottom: 60px !important;
+  }
+  
+  /* Move menu to better position on mobile */
+  .accessibility-button + * + div[role="dialog"] {
+    left: 2px !important;
+    bottom: 10px !important;
+    width: calc(100vw - 16px) !important;
+    max-width: 340px !important;
+  }
+}
+
+/* Ensure animations can be disabled for motion sensitivity */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast mode improvements for accessibility button */
+.high-contrast .accessibility-button {
+  border: 2px solid #000 !important;
+}
+
+/* Smooth animation for menu opening */
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-in {
+  animation: slideInFromLeft 0.3s ease-out;
+}
+
+/* Ensure button doesn't interfere with page scrolling */
+.accessibility-button {
+  pointer-events: auto;
+}
+
+/* Focus visible styles for better keyboard navigation */
+.accessibility-button:focus-visible {
+  outline: 3px solid #d4a960 !important;
+  outline-offset: 3px !important;
+}
+

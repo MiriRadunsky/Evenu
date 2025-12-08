@@ -52,9 +52,9 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen" role="document">
       
-      <section className="relative flex items-center justify-center h-screen overflow-hidden">
+      <section className="relative flex items-center justify-center h-screen overflow-hidden" aria-labelledby="hero-heading">
         <div className="absolute inset-0 z-0">
 <ImageWithFallback
   src="https://png.pngtree.com/thumb_back/fh260/background/20250822/pngtree-elegant-wedding-venue-with-luxurious-floral-decorations-sparkling-chandeliers-and-glossy-image_18234318.webp"
@@ -82,7 +82,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
             <img src="/src/assets/logo.png" alt="Évenu לוגו" className="h-72 w-auto" style={{display:'block'}} />
           </div>
 
-          <h1 className="text-3xl font-light leading-tight text-white md:text-4xl lg:text-5xl mt-[-4rem]">
+          <h1 id="hero-heading" className="text-3xl font-light leading-tight text-white md:text-4xl lg:text-5xl mt-[-4rem]">
             ניהול אירועים חכם ומסודר
             <br />
             <span className="inline-block mt-2 text-gradient-gold">
@@ -100,25 +100,27 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
             </span>
           </p>
 
-          <div className="flex flex-col justify-center gap-4 sm:flex-row">
+          <div className="flex flex-col justify-center gap-4 sm:flex-row" role="group" aria-label="פעולות ראשיות">
             <Button
               onClick={() => onNavigate("register")}
               className="gradient-gold hover:opacity-90 text-white px-8 py-3.5 rounded-xl shadow-gold transition-all duration-300 hover:scale-105 hover:shadow-luxury-lg group text-base font-normal"
+              aria-label="הירשם למערכת ותתחיל לנהל אירועים"
             >
               <span>התחל עכשיו</span>
-              <ArrowLeft className="w-5 h-5 mr-2 transition-transform group-hover:translate-x-1" />
+              <ArrowLeft className="w-5 h-5 mr-2 transition-transform group-hover:translate-x-1" aria-hidden="true" />
             </Button>
             <Button
               onClick={() => onNavigate("login")}
               className="glass-dark border-2 border-[#d4a960]/40 text-white hover:bg-white/20 px-8 py-3.5 rounded-xl backdrop-blur-xl transition-all duration-300 hover:scale-105 hover:border-[#d4a960]/60 text-base font-normal"
+              aria-label="התחבר למערכת עם חשבון קיים"
             >
               <span>התחבר למערכת</span>
             </Button>
           </div>
         </div>
       </section>
-      <section className="relative px-4 py-20 overflow-hidden bg-white">
-        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#d4a960]/30 to-transparent"></div>
+      <section className="relative px-4 py-20 overflow-hidden bg-white" aria-labelledby="features-heading">
+        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#d4a960]/30 to-transparent" aria-hidden="true"></div>
 
         <div className="max-w-6xl mx-auto">
           <div className="mb-12 text-center">
@@ -126,7 +128,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
               <Star className="w-4 h-4 text-[#d4a960]" />
               <span className="text-[#2d2d35] text-xs font-light">יתרונות המערכת</span>
             </div>
-            <h2 className="text-[#2d2d35] mb-3 text-2xl font-light">
+            <h2 id="features-heading" className="text-[#2d2d35] mb-3 text-2xl font-light">
               למה לבחור במערכת שלנו?
             </h2>
             <p className="text-[#6d6d78] text-sm max-w-2xl mx-auto leading-relaxed font-light">

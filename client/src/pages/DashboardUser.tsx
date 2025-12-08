@@ -140,9 +140,10 @@ export default function Dashboard() {
       })
       .slice(0, 3);
   }, [notifications]);
+  
   useEffect(() => {
     dispatch(fetchDashboardSummaryUser());
-    dispatch(fetchDashboardChartsUser());
+    // dispatch(fetchDashboardChartsUser()); // Uncomment if needed
   }, [dispatch]);
 
   const upcomingFirst: Event | null = upcomingEvent?.[0] || null;

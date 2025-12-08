@@ -45,47 +45,6 @@ interface RecentEvent {
   date: string;
 }
 
-// Mock data for charts
-const mockMonthlyEvents: MonthlyEvents[] = [
-  { month: 'ינואר', events: 12 },
-  { month: 'פברואר', events: 19 },
-  { month: 'מרץ', events: 15 },
-  { month: 'אפריל', events: 25 },
-  { month: 'מאי', events: 22 },
-  { month: 'יוני', events: 30 },
-  { month: 'יולי', events: 28 },
-  { month: 'אוגוסט', events: 35 },
-  { month: 'ספטמבר', events: 32 },
-  { month: 'אוקטובר', events: 27 },
-  { month: 'נובמבר', events: 24 },
-  { month: 'דצמבר', events: 29 }
-];
-
-const mockCategorySuppliers: CategorySuppliers[] = [
-  { category: 'צילום', value: 45 },
-  { category: 'קייטרינג', value: 38 },
-  { category: 'אולמות', value: 25 },
-  { category: 'מוזיקה', value: 32 },
-  { category: 'פרחים', value: 28 },
-  { category: 'אחר', value: 20 }
-];
-
-const mockRecentSuppliers: RecentSupplier[] = [
-  { name: 'צילום מושלם בע"מ', category: 'צילום', date: '2023-12-05' },
-  { name: 'קייטרינג דוד', category: 'קייטרינג', date: '2023-12-04' },
-  { name: 'פרחי השדה', category: 'פרחים', date: '2023-12-03' },
-  { name: 'מוזיקה חיה', category: 'מוזיקה', date: '2023-12-02' },
-  { name: 'אולמי אירועים VIP', category: 'אולמות', date: '2023-12-01' }
-];
-
-const mockRecentEvents: RecentEvent[] = [
-  { name: 'חתונה - משפחת כהן', date: '2023-12-06' },
-  { name: 'בר מצווה - משפחת לוי', date: '2023-12-05' },
-  { name: 'אירוסין - משפחת ישראלי', date: '2023-12-04' },
-  { name: 'חתונה - משפחת שרון', date: '2023-12-03' },
-  { name: 'ברית - משפחת דוד', date: '2023-12-02' }
-];
-
 const COLORS = ['#d4a960', '#8b6f47', '#e8c170', '#a67c3d', '#f4d799', '#6b563d'];
 
 export function AdminDashboard() {
@@ -101,10 +60,10 @@ export function AdminDashboard() {
     activeSuppliers: 0
   });
 
-  const [monthlyEvents, setMonthlyEvents] = useState<MonthlyEvents[]>(mockMonthlyEvents);
-  const [categorySuppliers, setCategorySuppliers] = useState<CategorySuppliers[]>(mockCategorySuppliers);
-  const [recentSuppliers, setRecentSuppliers] = useState<RecentSupplier[]>(mockRecentSuppliers);
-  const [recentEvents, setRecentEvents] = useState<RecentEvent[]>(mockRecentEvents);
+  const [monthlyEvents, setMonthlyEvents] = useState<MonthlyEvents[]>([]);
+  const [categorySuppliers, setCategorySuppliers] = useState<CategorySuppliers[]>([]);
+  const [recentSuppliers, setRecentSuppliers] = useState<RecentSupplier[]>([]);
+  const [recentEvents, setRecentEvents] = useState<RecentEvent[]>([]);
 
   const [error, setError] = useState<string | null>(null);
   const [hasLoaded, setHasLoaded] = useState(false);
@@ -124,23 +83,13 @@ export function AdminDashboard() {
         const response = await api.get('/dashboard/stats');
         const additionalStats = response.data;
         
-        if (additionalStats.monthlyEvents && additionalStats.monthlyEvents.length > 0) {
-          setMonthlyEvents(additionalStats.monthlyEvents);
-        }
-        
-        if (additionalStats.categorySuppliers && additionalStats.categorySuppliers.length > 0) {
-          setCategorySuppliers(additionalStats.categorySuppliers);
-        }
-        
-        if (additionalStats.recentSuppliers && additionalStats.recentSuppliers.length > 0) {
-          setRecentSuppliers(additionalStats.recentSuppliers);
-        }
-        
-        if (additionalStats.recentEvents && additionalStats.recentEvents.length > 0) {
-          setRecentEvents(additionalStats.recentEvents);
-        }
+        setMonthlyEvents(additionalStats.monthlyEvents || []);
+        setCategorySuppliers(additionalStats.categorySuppliers || []);
+        setRecentSuppliers(additionalStats.recentSuppliers || []);
+        setRecentEvents(additionalStats.recentEvents || []);
       } catch (err) {
-        console.log('Using mock data for charts - API call failed', err);
+        console.error('Error fetching dashboard stats:', err);
+        setError('שגיאה בטעינת סטטיסטיקות הדשבורד');
       }
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
@@ -267,6 +216,7 @@ export function AdminDashboard() {
           {/* Bar Chart - Events by Month */}
           <Card className="p-4 md:p-6 border-2 border-[#d4a960]/20 hover:border-[#d4a960]/40 transition-all bg-gradient-to-br from-white to-[#faf8f3]">
             <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-4 md:mb-6">אירועים לפי חודש</h3>
+            {monthlyEvents.length > 0 ? (
             <div className="h-[250px] sm:h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
               <BarChart data={monthlyEvents}>
@@ -301,11 +251,17 @@ export function AdminDashboard() {
               </BarChart>
             </ResponsiveContainer>
             </div>
+            ) : (
+              <div className="h-[250px] sm:h-[300px] flex items-center justify-center text-gray-500">
+                <p>אין נתונים להצגה</p>
+              </div>
+            )}
           </Card>
 
           {/* Pie Chart - Suppliers by Category */}
           <Card className="p-4 md:p-6 border-2 border-[#d4a960]/20 hover:border-[#d4a960]/40 transition-all bg-gradient-to-br from-white to-[#faf8f3]">
             <h3 className="mb-4 md:mb-6 text-lg md:text-xl font-semibold text-gray-900">חלוקת ספקים לפי קטגוריה</h3>
+            {categorySuppliers.length > 0 ? (
             <div className="h-[280px] sm:h-[350px]">
               <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -354,6 +310,11 @@ export function AdminDashboard() {
               </PieChart>
             </ResponsiveContainer>
             </div>
+            ) : (
+              <div className="h-[280px] sm:h-[350px] flex items-center justify-center text-gray-500">
+                <p>אין נתונים להצגה</p>
+              </div>
+            )}
           </Card>
         </div>
 
