@@ -50,12 +50,13 @@
 //   return socketInstance;
 // };
 // src/socket/socket.ts
-import { io, type Socket } from "socket.io-client";
+import io from "socket.io-client";
 import { addNotification } from "@/store/notificationsSlice";
 import type { Notification } from "@/types/Notification";
 import type { AppDispatch } from "@/store";
 
-let socketInstance: Socket | null = null;
+let socketInstance: ReturnType<typeof io> | null = null;
+
 
 export const initSocket = (userId: string, dispatch: AppDispatch) => {
   if (!socketInstance) {
@@ -64,7 +65,7 @@ export const initSocket = (userId: string, dispatch: AppDispatch) => {
 
     socketInstance = io(socketUrl, {
       transports: ["websocket"],
-      withCredentials: true,
+      // withCredentials: true,
     });
 
     socketInstance.on("connect", () => {

@@ -1,10 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import io, { Socket } from "socket.io-client";
 import api from "../services/axios";
 import type { Message } from "../types/Message";
 import type { Thread } from "../types/Thread";
 import type { RootState } from "./index";
+import io from "socket.io-client";
+
 
 // ===========================
 // STATE
@@ -26,7 +27,8 @@ const initialState: ChatState = {
 // ===========================
 // SOCKET INIT (GLOBAL CACHE)
 // ===========================
-let socket: Socket | undefined;
+// let socket: Socket | undefined;
+let socket: ReturnType<typeof io> | undefined;
 
 // ===========================
 // THUNKS
