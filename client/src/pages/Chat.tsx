@@ -10,7 +10,7 @@ import { Send, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback } from "../components/ui/avatar";
 import type { Thread } from "../types/Thread";
-import { getSocket } from "../services/socket";
+import { getSocket } from "../socket/socket";
 import type { Message } from "@/types/Message";
 
 export default function Chat() {
