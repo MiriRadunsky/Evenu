@@ -64,7 +64,6 @@ export const notificationWorker = new Worker(
   { connection }
 );
 
-// אירועי דיבוג
 notificationWorker.on('completed', (job) => {
   console.log(`🎉 Job ${job.id} completed`);
 });

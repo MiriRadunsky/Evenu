@@ -5,9 +5,8 @@ import type { AppDispatch, RootState } from "../store";
 import {
   fetchBudgetEvents,
   updateBudget,
-  type BudgetHistoryItem,
-  type EventWithBudget,
 } from "../store/budgetSlice";
+import type { BudgetHistoryItem } from "@/types/Budget";
 import {
   Card,
   CardHeader,
@@ -27,6 +26,7 @@ import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { toast } from "sonner";
 import { Wallet, Calendar, ArrowUpRight } from "lucide-react";
+import type { Event } from "@/types/Event";
 
 export default function BudgetManagementPage() {
   const dispatch: AppDispatch = useDispatch();
@@ -42,7 +42,7 @@ export default function BudgetManagementPage() {
     dispatch(fetchBudgetEvents());
   }, [dispatch]);
 
-  const selectedEvent: EventWithBudget | null = useMemo(() => {
+  const selectedEvent: Event | null = useMemo(() => {
     if (selectedEventId === "all") return null;
     return events.find((e) => e._id === selectedEventId) || null;
   }, [events, selectedEventId]);

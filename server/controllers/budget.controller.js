@@ -18,7 +18,7 @@ export const getBudgetEvents = asyncHandler(async (req, res) =>{
       type,
     });
 
-    res.json({ events });
+    res.status(200).json({ events });
   
 })
 
