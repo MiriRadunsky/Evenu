@@ -1,13 +1,10 @@
 
 import io from "socket.io-client";
-import { addNotification } from "@/store/notificationsSlice";
-import type { Notification } from "@/types/Notification";
-import type { AppDispatch } from "@/store";
 
 let socketInstance: ReturnType<typeof io> | null = null;
 
 
-export const initSocket = (userId: string, dispatch: AppDispatch) => {
+export const initSocket = (userId: string) => {
   if (!socketInstance) {
     const socketUrl =
       import.meta.env.VITE_SOCKET_URL || "http://localhost:3000";
@@ -20,14 +17,6 @@ export const initSocket = (userId: string, dispatch: AppDispatch) => {
       console.log("🟢 Connected with id:", socketInstance?.id);
       socketInstance?.emit("register", userId);
     });
-
-    socketInstance.on(
-      "notification",
-      (notification: Notification) => {
-        dispatch(addNotification(notification));
-      }
-    );
-
     socketInstance.on("disconnect", () =>
       console.log("🔴 Disconnected")
     );

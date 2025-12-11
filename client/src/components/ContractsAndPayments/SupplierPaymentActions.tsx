@@ -45,7 +45,6 @@ interface SupplierConfirmProps {
   defaultAmount?: number;
   onSuccess?: () => void;
 }
-
 function SupplierConfirmDialog({
   paymentId,
   defaultAmount,
@@ -59,6 +58,11 @@ function SupplierConfirmDialog({
   const [loading, setLoading] = useState(false);
 
   const handleConfirm = async () => {
+    if (!file) {
+      toast.error("יש להעלות קבלה / מסמך לפני אישור התשלום");
+      return;
+    }
+
     try {
       setLoading(true);
       let documentKey: string | undefined;
@@ -81,8 +85,8 @@ function SupplierConfirmDialog({
       setNote("");
       setFile(null);
       onSuccess?.();
-    }  catch (err:string | unknown) {
-     const errorText = String(err);
+    } catch (err: unknown) {
+      const errorText = String(err);
       toast.error(errorText);
     } finally {
       setLoading(false);
@@ -133,7 +137,10 @@ function SupplierConfirmDialog({
         </div>
 
         <div className="space-y-1">
-          <Label>העלאת קבלה / מסמך לספרים (לא חובה)</Label>
+          <Label>
+            העלאת קבלה / מסמך לספרים
+            <span className="text-red-500 mr-1">*</span>
+          </Label>
           <Input
             type="file"
             accept="image/*,application/pdf"
@@ -152,7 +159,7 @@ function SupplierConfirmDialog({
           >
             ביטול
           </Button>
-          <Button onClick={handleConfirm} disabled={loading}>
+          <Button onClick={handleConfirm} disabled={loading || !file}>
             {loading ? "מאשר..." : "אשר"}
           </Button>
         </div>
@@ -161,7 +168,8 @@ function SupplierConfirmDialog({
   );
 }
 
-// ----- דחיית תשלום -----
+
+
 interface SupplierRejectProps {
   paymentId: string;
   onSuccess?: () => void;

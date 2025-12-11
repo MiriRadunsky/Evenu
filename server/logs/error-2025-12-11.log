@@ -1,0 +1,2 @@
+[2025-12-11T10:56:31.036Z] [ERROR] [d38f923b-9a09-44ff-822a-d6c149e35df7] POST /api/contracts/693aa0f0b9b1881577d484b2/sign - אין מספיק תקציב זמין עבור החוזה. עדכני תקציב לפני החתימה.
+[2025-12-11T10:56:53.565Z] [ERROR] [a62bc152-132e-4450-b41d-a8e6bc32d799] PATCH /api/budget/events/6936e806de5d9e819f1af033 - next is not defined
