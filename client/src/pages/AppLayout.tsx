@@ -49,19 +49,15 @@ export default function AppLayout({ navigationItems, children }: { navigationIte
     dispatch(fetchUser());
   }, [dispatch]);
 
-  // Set notification navigation path based on user role
   useEffect(() => {
     if (user) {
       setNavigateNotification(user.role === "supplier" ? "/supplier/notifications" : "/notifications");
     }
   }, [user]);
 
-  // Initialize socket and fetch notifications once when user is loaded
   useEffect(() => {
     if (!user?._id) return;
-
-    
-    const socket = initSocket(user._id, dispatch);
+    const socket = initSocket(user._id);
     dispatch(fetchNotifications());
 
     const handleNotification = (notification: Notification) => {
@@ -72,7 +68,6 @@ export default function AppLayout({ navigationItems, children }: { navigationIte
 
     return () => {
       socket.off("notification", handleNotification);
-      socket.disconnect?.();
     };
   }, [user?._id, dispatch]);
 
