@@ -1,3 +1,5 @@
+import type { BudgetHistoryItem } from "./Budget";
+
 export interface Event {
   _id: string;
   ownerId: string;
@@ -6,7 +8,8 @@ export interface Event {
   date: string;
   locationRegion: string;
   budget?: number;
-  
+  budgetAllocated?: number;
+    budgetHistory?: BudgetHistoryItem[];
   estimatedGuests: number;
   status: "פעיל" | "הושלם" | "בוטל";
   createdAt: Date;

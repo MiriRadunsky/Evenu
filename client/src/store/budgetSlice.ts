@@ -1,30 +1,13 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import api from "../services/axios";
 import { getErrorMessage } from "@/Utils/error";
-export interface BudgetHistoryItem {
-  oldValue: number;
-  newValue: number;
-  changedAt: string;
-  changedBy?: {
-    _id: string;
-    name?: string;
-    email?: string;
-  } | string;
-  reason?: string;
-}
+import type { Event } from "@/types/Event";
 
-export interface EventWithBudget {
-  _id: string;
-  name: string;
-  date: string;
-  budget?: number;
-  budgetAllocated?: number;
-  budgetHistory?: BudgetHistoryItem[];
-}
+
 
 
 interface BudgetState {
-  events: EventWithBudget[];
+  events: Event[];
   loading: boolean;
   error: string | null;
 }
@@ -36,12 +19,14 @@ const initialState: BudgetState = {
 };
 
 export const fetchBudgetEvents = createAsyncThunk<
-  EventWithBudget[],
+  Event[],
   void,
   { rejectValue: string }
 >("budget/fetchEvents", async (_, { rejectWithValue }) => {
   try {
     const { data } = await api.get("/budget/events");
+    console.log(data);
+    
     return data.events;
   } catch (err: unknown) {
     return rejectWithValue(getErrorMessage(err, "שגיאה בטעינת נתוני התקציב"));
@@ -50,7 +35,7 @@ export const fetchBudgetEvents = createAsyncThunk<
 });
 
 export const updateBudget = createAsyncThunk<
-  EventWithBudget,
+  Event,
   { eventId: string; newBudget: number; reason?: string },
   { rejectValue: string }
 >("budget/updateBudget", async ({ eventId, newBudget, reason }, { rejectWithValue }) => {
