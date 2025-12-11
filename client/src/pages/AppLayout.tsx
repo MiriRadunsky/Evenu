@@ -60,8 +60,6 @@ export default function AppLayout({ navigationItems, children }: { navigationIte
   useEffect(() => {
     if (!user?._id) return;
 
-    const token = localStorage.getItem('token');
-    if (!token) return;
     
     const socket = initSocket(user._id, dispatch);
     dispatch(fetchNotifications());
