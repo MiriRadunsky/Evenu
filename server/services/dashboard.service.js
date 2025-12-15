@@ -1,5 +1,6 @@
 import  {DashboardRepository}  from "../repositories/dashboard.repository.js";
 import { SupplierRepository } from "../repositories/suppliers.repositry.js";
+import { AppError } from "../middlewares/error.middleware.js";
 
 export const DashboardService ={
   async getDashboardSummaryForUser(userId) {

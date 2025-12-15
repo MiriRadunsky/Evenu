@@ -22,7 +22,7 @@ export interface Supplier {
     _id: string;
     label: string;
   };
-  regions: string[];
+  regions: string;
   kashrut?: string;
   media: PortfolioItem;
   profileImage?: ProfileImage | null;

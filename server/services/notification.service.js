@@ -1,11 +1,8 @@
 
 import { randomUUID } from 'crypto';
-import Redis from 'ioredis';
+import connection from '../queues/scheduler.js';
 import { notificationQueue } from '../queues/scheduler.js';
 import { sendNotification } from '../sockets/notification.gateway.js';
-const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379', {
-  maxRetriesPerRequest: null
-})
  async function createNotificationUnsafe({ userId, type, payload, scheduledFor, channel = 'in-app' }) {
   const notification = {
     id: randomUUID(),
@@ -24,8 +21,8 @@ const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379', {
       });
     } else {
       await sendNotification(notification);
-      await redis.rpush(`user:${userId}:notifications`, notification.id);
-      await redis.hset(`user:${userId}:notificationMap`, notification.id, JSON.stringify(notification));
+      await connection.rpush(`user:${userId}:notifications`, notification.id);
+      await connection.hset(`user:${userId}:notificationMap`, notification.id, JSON.stringify(notification));
     }
   }
 
@@ -47,14 +44,14 @@ export const NotificationService = {
 
   async getUserNotifications(userId) {
     const mapKey = `user:${userId}:notificationMap`;
-    const notifications = await redis.hvals(mapKey);
+    const notifications = await connection.hvals(mapKey);
     return notifications.map(n => JSON.parse(n)).sort((a, b) => b.createdAt - a.createdAt);
   },
 
   
   async markAsRead(userId, notificationId) {
     const mapKey = `user:${userId}:notificationMap`;
-    await redis.hdel(mapKey, notificationId);
+    await connection.hdel(mapKey, notificationId);
     return notificationId;
   },
 
@@ -64,12 +61,12 @@ export const NotificationService = {
     const mapKey = `user:${userId}:notificationMap`;
 
     const now = Date.now();
-    const notifications = await redis.hgetall(mapKey);
+    const notifications = await connection.hgetall(mapKey);
 
     for (const [id, data] of Object.entries(notifications)) {
       const parsed = JSON.parse(data);
       if (now - parsed.createdAt > days * 24 * 60 * 60 * 1000) {
-        await redis.hdel(mapKey, id);
+        await connection.hdel(mapKey, id);
       }
     }
 

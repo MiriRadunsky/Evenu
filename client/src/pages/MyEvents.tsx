@@ -22,7 +22,7 @@ export default function MyEvents() {
   const dispatch: AppDispatch = useDispatch();
   const { eventsList, loadingList, error } = useSelector(
     (state: RootState) => state.events);
-
+console.log("eventsList ", eventsList);
   const [selectedTab, setSelectedTab] = useState("הכל");
   const [viewingEvent, setViewingEvent] = useState<Event | null>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);

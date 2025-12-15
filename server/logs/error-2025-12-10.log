@@ -1,3 +1,9 @@
+<<<<<<< HEAD
+[2025-12-10T10:29:37.675Z] [ERROR] [29dd12ab-d723-4857-bbbd-d7c718c1a5f7] GET /api/suppliers?q=%D7%90 - text index required for $text query
+[2025-12-10T10:29:42.936Z] [ERROR] [0cd478e6-2f47-42bc-98d1-786bd6094d2d] GET /api/suppliers?q=%D7%90%D7%90 - text index required for $text query
+[2025-12-10T10:30:32.675Z] [ERROR] [a1a65899-6094-4835-b360-f055d239e6ec] GET /api/suppliers?q=%D7%90 - text index required for $text query
+=======
 [2025-12-10T10:48:24.070Z] [ERROR] [d0a13abf-7756-498d-a8a8-a3fa8fc9e044] GET /api/suppliers?q=%D7%A7%D7%95%D7%A0 - text index required for $text query
 [2025-12-10T10:48:27.023Z] [ERROR] [8fd1f317-de97-4070-a1df-5a070cd50a4e] GET /api/suppliers?q=%D7%A7%D7%95%D7%A0%D7%A7 - text index required for $text query
 [2025-12-10T10:48:28.479Z] [ERROR] [5f5f8f71-977f-4d9f-9ae2-ba6f75da7cd5] GET /api/suppliers?q=%D7%A7%D7%95%D7%A0%D7%A7%D7%95%D7%A8%D7%93 - text index required for $text query
+>>>>>>> 4c4876976a98ec24a4f5bdaa1ccd1484e3cc84db

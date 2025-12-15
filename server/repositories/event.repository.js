@@ -51,20 +51,23 @@ export async function findRelevantByOwnerId(ownerId, query = {}) {
   const { type, from, to } = query;
 
   const filter = { ownerId };
+
+  // סוג האירוע
   if (type) {
     filter.type = type;
   }
-  if (from || to) {
-    filter.date = {};
-    if (from) filter.date.$gte = new Date(from);
-    if (to) filter.date.$lte = new Date(to);
-  }
+
+  // תנאי תאריכים
+  filter.date = { $gte: new Date() }; // רק אירועים שלא עברו
+  if (from) filter.date.$gte = new Date(from);
+  if (to) filter.date.$lte = new Date(to);
 
   return Event.find(filter)
     .sort(DEFAULT_SORT)
-    .select("_id name date type")
-    .lean()
+    .select("_id name date type locationRegion estimatedGuests budget status") // כל השדות הדרושים
+    .lean();
 }
+
 
 export async function findAllByOwnerId(ownerId, query = {}) {
   const filter = buildFilter(ownerId, query);

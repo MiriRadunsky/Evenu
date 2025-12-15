@@ -63,7 +63,7 @@ export default function Suppliers() {
   useEffect(() => {
     const loadUrls = async () => {
       if (!suppliersList) return;
-   
+
       const updated = await Promise.all(
         suppliersList.map(async (s) => {
           if (s.profileImage?.key) {
@@ -93,9 +93,9 @@ export default function Suppliers() {
   }) => {
     try {
       setIsSending(true);
-      
+
       console.log('🚀 Sending request with:', { eventId, requestMessage, supplierId });
-      
+
       const result = await dispatch(
         createSupplierRequest({
           eventId,
@@ -104,8 +104,9 @@ export default function Suppliers() {
         })
       ).unwrap();
       
+
       console.log('✅ Request sent successfully:', result);
-      
+
       toast.success("הבקשה נשלחה בהצלחה");
       dispatch(clearSelectedSupplier());
       setSendRequest(false);
@@ -208,7 +209,7 @@ export default function Suppliers() {
                 {s.regions && (
                   <div className="flex items-center gap-2 text-sm">
                     <MapPin className="h-4 w-4 text-muted-foreground" />
-                    <span>{s.regions.join(", ")}</span>
+                    <span>{s.regions}</span>
                   </div>
                 )}
 
@@ -250,11 +251,17 @@ export default function Suppliers() {
           <SendRequestDialog
             supplier={selectedSupplier}
             open={sendRequest}
-            onOpenChange={(open) => !open && setSendRequest(false)}
+            onOpenChange={(open) => {
+              if (!open) {
+                setSendRequest(false);
+                dispatch(clearSelectedSupplier()); // ← חשוב מאוד
+              }
+            }}
             onSubmit={handleSendRequest}
             isLoading={false}
             isSending={isSending}
           />
+
         ) : (
           <SupplierDetailsDialog
             supplier={selectedSupplier}

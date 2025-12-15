@@ -32,6 +32,7 @@ import type { AppDispatch, RootState } from "../../store";
 import { toast } from "sonner";
 import { cn } from "../../lib/utils";
 import { useCitiesList } from "../../hooks/useCitiesList";
+import { useRegionsList } from "@/hooks/use-region";
 
 /* ----- טיפוסים ----- */
 
@@ -90,8 +91,9 @@ export const EventFormDialog: React.FC<EventFormDialogProps> = ({
   // מניעת undefined עבור eventTypes
   const eventTypes: EventType[] = (rawEventTypes ?? []) as EventType[];
 
-  const cities = useCitiesList();
-
+  const regions = useRegionsList();
+  const [regionsOpen, setRegionsOpen] = useState(false);
+  const [regionsSearch, setRegionsSearch] = useState("");
   const [formData, setFormData] = useState<FormData>({
     name: "",
     type: "",
@@ -105,6 +107,13 @@ export const EventFormDialog: React.FC<EventFormDialogProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [cityOpen, setCityOpen] = useState(false);
   const [citySearch, setCitySearch] = useState("");
+
+const filteredRegions = useMemo(() => {
+  const list = regions.regionsList || [];
+  if (!regionsSearch) return list.slice(0, 50);
+  return list.filter((r) => r.includes(regionsSearch)).slice(0, 50);
+}, [regions, regionsSearch]);
+
 
   useEffect(() => {
     dispatch(fetchEventTypes());
@@ -121,11 +130,6 @@ export const EventFormDialog: React.FC<EventFormDialogProps> = ({
       estimatedGuests: initialData.estimatedGuests?.toString() ?? "",
     });
   }, [initialData]);
-
-  const filteredCities = useMemo(() => {
-    if (!citySearch) return cities.slice(0, 50);
-    return cities.filter((c) => c.includes(citySearch)).slice(0, 50);
-  }, [cities, citySearch]);
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -300,52 +304,59 @@ export const EventFormDialog: React.FC<EventFormDialogProps> = ({
           </div>
 
           {/* מיקום */}
+          {/* מיקום לפי אזור */}
           <div className="space-y-2">
-            <Label>מיקום (עיר)</Label>
-            <Popover open={cityOpen} onOpenChange={setCityOpen}>
+            <Label>אזור</Label>
+
+            <Popover open={regionsOpen} onOpenChange={setRegionsOpen}>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
                   role="combobox"
                   className="w-full justify-between border-gray-300 hover:border-yellow-500"
                 >
-                  {formData.locationRegion || "בחר עיר..."}
+                  {formData.locationRegion || "בחר אזור..."}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
+
               <PopoverContent
                 className="w-[var(--radix-popover-trigger-width)] p-0"
                 align="start"
               >
                 <Command shouldFilter={false}>
                   <CommandInput
-                    placeholder="חפש עיר..."
-                    value={citySearch}
-                    onValueChange={(val: string) => setCitySearch(val)}
+                    placeholder="חפש אזור..."
+                    value={regionsSearch}
+                    onValueChange={(val: string) => setRegionsSearch(val)}
                     className="h-9"
                   />
+
                   <CommandList className="max-h-[300px]">
                     <CommandEmpty>
-                      {cities.length === 0 ? "טוען ערים..." : "לא נמצאה עיר"}
+                      {regions.regionsList.length === 0 ? "טוען אזורים..." : "לא נמצא אזור"}
                     </CommandEmpty>
+
                     <CommandGroup>
-                      {filteredCities.map((city) => (
+                      {filteredRegions.map((region) => (
                         <CommandItem
-                          key={city}
-                          value={city}
+                          key={region}
+                          value={region}
                           onSelect={(val: string) => {
                             setFormData({ ...formData, locationRegion: val });
-                            setCityOpen(false);
-                            setCitySearch("");
+                            setRegionsOpen(false);
+                            setRegionsSearch("");
                           }}
                         >
                           <Check
                             className={cn(
                               "mr-2 h-4 w-4",
-                              formData.locationRegion === city ? "opacity-100" : "opacity-0"
+                              formData.locationRegion === region
+                                ? "opacity-100"
+                                : "opacity-0"
                             )}
                           />
-                          {city}
+                          {region}
                         </CommandItem>
                       ))}
                     </CommandGroup>
@@ -353,10 +364,12 @@ export const EventFormDialog: React.FC<EventFormDialogProps> = ({
                 </Command>
               </PopoverContent>
             </Popover>
+
             {errors.locationRegion && (
               <p className="text-red-500 text-sm">{errors.locationRegion}</p>
             )}
           </div>
+
 
           <DialogFooter>
             <Button type="submit" disabled={isSubmitting || loadingList || loadingOne}>

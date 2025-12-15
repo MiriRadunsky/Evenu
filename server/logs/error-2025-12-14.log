@@ -1,0 +1,35 @@
+[2025-12-14T10:41:19.759Z] [ERROR] [91e3ade2-94d0-45f4-8f3c-68fb3615e809] GET /api/dashboard/supplier/charts - AppError is not defined
+[2025-12-14T10:41:19.811Z] [ERROR] [8b27b6c4-3d66-4670-88d3-7d4c6d4ac5ef] GET /api/dashboard/summarySupplier - AppError is not defined
+[2025-12-14T10:41:20.012Z] [ERROR] [043afffe-ab9b-4ebd-a4bf-a81a5129e3bf] GET /api/dashboard/supplier/charts - AppError is not defined
+[2025-12-14T10:41:20.018Z] [ERROR] [b789bb70-e1c5-4f16-9cc7-e39c6aa37f47] GET /api/dashboard/summarySupplier - AppError is not defined
+[2025-12-14T11:03:22.083Z] [ERROR] [87d96067-cc0b-4efe-92a4-3157d8db4ae9] GET /api/dashboard/summarySupplier - AppError is not defined
+[2025-12-14T11:03:22.141Z] [ERROR] [b5202de2-5800-4a6b-b521-c8123e989da1] GET /api/dashboard/supplier/charts - AppError is not defined
+[2025-12-14T11:03:22.805Z] [ERROR] [b4fd3cdf-71d4-4c1d-89b2-c08c651a6066] GET /api/dashboard/summarySupplier - AppError is not defined
+[2025-12-14T11:03:23.076Z] [ERROR] [afec9af7-b535-4277-a262-f92720f5ac25] GET /api/dashboard/supplier/charts - AppError is not defined
+[2025-12-14T11:19:37.077Z] [ERROR] [765d68a7-dd1b-4517-82a5-931a2bce665d] POST /api/events/693e93fbf7101f5531a66028/requests - createRequestEntry is not defined
+[2025-12-14T11:24:34.384Z] [ERROR] [28e9727f-aad2-4f97-be80-bd004713a493] POST /api/events/693e93fbf7101f5531a66028/requests - handleThread is not defined
+[2025-12-14T11:41:17.892Z] [ERROR] [b9fcd248-a124-4e6c-b5f9-edae6e800687] POST /api/events/693e93fbf7101f5531a66028/requests - כבר קיימת בקשה ממתינה לספק זה עבור האירוע
+[2025-12-14T11:48:57.754Z] [ERROR] [2606b958-3717-4454-8397-8bb3f56ac90e] GET /api/dashboard/supplier/charts - AppError is not defined
+[2025-12-14T11:48:57.798Z] [ERROR] [eed2b4c7-2cf9-47fa-a7d2-a075326e1981] GET /api/dashboard/summarySupplier - AppError is not defined
+[2025-12-14T11:48:58.095Z] [ERROR] [91a2cdbe-f7a9-4f63-8634-34894e45d31c] GET /api/dashboard/summarySupplier - AppError is not defined
+[2025-12-14T11:48:58.134Z] [ERROR] [656dcf00-7a61-41cc-8b4b-3bde70c99313] GET /api/dashboard/supplier/charts - AppError is not defined
+[2025-12-14T11:49:06.481Z] [ERROR] [6016309a-50aa-4019-bf9b-b7a2530cfab2] GET /api/requests/supplier?page=1&limit=10&debouncedSearch= - ספק לא נמצא
+[2025-12-14T11:49:06.658Z] [ERROR] [fb815507-92a8-49b7-b82e-37553d22ec22] GET /api/requests/supplier?page=1&limit=10&debouncedSearch= - ספק לא נמצא
+[2025-12-14T11:52:08.000Z] [ERROR] [f24e70f1-d26f-40a8-99f1-d2e4c07f8c53] GET /api/dashboard/summarySupplier - AppError is not defined
+[2025-12-14T11:52:08.018Z] [ERROR] [e05bfd90-b9d0-4c81-8a05-57932bb3ca28] GET /api/dashboard/supplier/charts - AppError is not defined
+[2025-12-14T11:52:08.202Z] [ERROR] [53cac0fc-98d4-4ce1-b08b-8659b37dd06d] GET /api/dashboard/supplier/charts - AppError is not defined
+[2025-12-14T11:52:08.383Z] [ERROR] [eba6aae4-83e7-4d50-b808-208fcd10e131] GET /api/dashboard/summarySupplier - AppError is not defined
+[2025-12-14T11:52:14.999Z] [ERROR] [f3e51ebf-5872-46d6-88bf-7d89b67cde1a] GET /api/requests/supplier?page=1&limit=10&debouncedSearch= - ספק לא נמצא
+[2025-12-14T11:52:15.220Z] [ERROR] [c766122f-dd52-469e-97e1-aca27069db6a] GET /api/requests/supplier?page=1&limit=10&debouncedSearch= - ספק לא נמצא
+[2025-12-14T11:52:23.134Z] [ERROR] [afde68e1-aaae-4ef4-a144-d6860f7aba58] GET /api/dashboard/summarySupplier - AppError is not defined
+[2025-12-14T11:52:23.158Z] [ERROR] [b1221408-b8e0-4744-b894-6f74feefcfc1] GET /api/dashboard/supplier/charts - AppError is not defined
+[2025-12-14T11:52:23.300Z] [ERROR] [9f061ff8-b87b-4f5b-9fcf-dae05820ceef] GET /api/dashboard/summarySupplier - AppError is not defined
+[2025-12-14T11:52:23.334Z] [ERROR] [2fff5b5c-8dee-42ee-b4f1-3e84dea54f21] GET /api/dashboard/supplier/charts - AppError is not defined
+[2025-12-14T11:55:13.591Z] [ERROR] [e95eeb5d-3953-42a5-a16c-223a78fdf1c7] GET /api/dashboard/summarySupplier - ספק לא נמצא
+[2025-12-14T11:55:13.628Z] [ERROR] [944f45d4-281e-4543-ae43-8c65bf77c195] GET /api/dashboard/supplier/charts - ספק לא נמצא
+[2025-12-14T11:55:13.838Z] [ERROR] [2b508c29-3471-4396-9c2d-fd144f37cbd6] GET /api/dashboard/summarySupplier - ספק לא נמצא
+[2025-12-14T11:55:13.877Z] [ERROR] [b518a90c-53eb-4a89-a4c3-fceaccc37af3] GET /api/dashboard/supplier/charts - ספק לא נמצא
+[2025-12-14T11:56:53.325Z] [ERROR] [474dc753-db47-4837-ba38-57d79155f1bd] GET /api/dashboard/supplier/charts - ספק לא נמצא
+[2025-12-14T11:56:53.379Z] [ERROR] [1096d369-9adc-483a-85bf-cc01da12cf95] GET /api/dashboard/summarySupplier - ספק לא נמצא
+[2025-12-14T11:56:53.489Z] [ERROR] [ea17b21c-dc85-4d69-badf-7cc70c3145e1] GET /api/dashboard/supplier/charts - ספק לא נמצא
+[2025-12-14T11:56:53.550Z] [ERROR] [3c97d2be-eb9c-487d-b936-5fc9068bf84a] GET /api/dashboard/summarySupplier - ספק לא נמצא

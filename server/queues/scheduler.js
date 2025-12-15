@@ -40,7 +40,7 @@ import { sendNotification } from '../sockets/notification.gateway.js';
 const connection = new Redis(process.env.REDIS_URL || 'redis://localhost:6379', {
   maxRetriesPerRequest: null
 })
-
+export default connection;
 
 
 
@@ -71,3 +71,4 @@ notificationWorker.on('completed', (job) => {
 notificationWorker.on('failed', (job, err) => {
   console.error(`❌ Job ${job?.id} failed`, err);
 });
+

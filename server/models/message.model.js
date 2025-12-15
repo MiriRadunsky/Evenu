@@ -28,9 +28,14 @@ const messageSchema = new Schema(
       trim: true,
     },
 
-    isRead: {
-      type: Boolean,
-      default: false,
+    // Array of user IDs who have read this message
+    readBy: [{
+      type: Types.ObjectId,
+      ref: "User",
+    }],
+    // Timestamp of last read (optional, for analytics)
+    readAt: {
+      type: Date,
     },
   },
   {

@@ -1,6 +1,7 @@
 import express from "express";
 import * as cnt from "../controllers/thread.controller.js";
 import { authGuard } from "../middlewares/auth.middleware.js";
+import {threadAuthGuard} from "../middlewares/threadAuth.middleware.js";
 
 const router = express.Router();
 
@@ -11,10 +12,9 @@ router.post("/create", cnt.createOrReuseThread);
 // ת'רדים עבור משתמש
 router.get("/user", cnt.getUserThreads);
 
-// ת'רדים עבור ספק
 router.get("/supplier", cnt.getSupplierThreads);
 
-router.get("/:threadId", cnt.getThread);
+router.get("/:threadId", threadAuthGuard, cnt.getThread);
 
 
 export default router;

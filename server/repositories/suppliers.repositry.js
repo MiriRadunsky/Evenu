@@ -1,5 +1,5 @@
 import models from "../models/index.model.js";
-import Category from "../models/category.model.js"; 
+import Category from "../models/category.model.js";
 
 const Supplier = models.Supplier;
 
@@ -22,7 +22,7 @@ export const SupplierRepository = {
   async findMany({ category, region, active, q, page = 1, limit = 20 }) {
     const filter = {};
 
-    if (region) filter.regions = region;
+    if (region) filter.regions = region.trim();
 
     filter.status = "מאושר";
 
@@ -51,12 +51,12 @@ export const SupplierRepository = {
         .populate("user", "name email")
         .populate("category", "label")
         .sort({ createdAt: -1 })
-        .skip(skip)
+        // .skip(skip)
         .limit(Number(limit))
         .lean(),
       Supplier.countDocuments(filter),
     ]);
-
+    console.log("Suppliers found:", items);
     return {
       items,
       total,
@@ -89,7 +89,7 @@ export const SupplierRepository = {
     return supplier || null;
   },
   async getSupplierById(_id) {
-    const supplier = await Supplier.findOne({_id}).lean();    
+    const supplier = await Supplier.findOne({ _id }).lean();
     return supplier || null;
   },
   async findById(id) {

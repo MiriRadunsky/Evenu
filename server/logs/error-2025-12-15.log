@@ -1,0 +1,4 @@
+[2025-12-15T07:26:37.201Z] [ERROR] [4e5d2237-42ea-4873-b2be-78a47f16f5db] GET /api/dashboard/summarySupplier - ספק לא נמצא
+[2025-12-15T07:26:37.221Z] [ERROR] [008b202f-d302-4f92-b19c-baf55399995d] GET /api/dashboard/supplier/charts - ספק לא נמצא
+[2025-12-15T07:26:37.394Z] [ERROR] [f4902e76-4e2b-4ddc-b434-912a53f5a3ae] GET /api/dashboard/summarySupplier - ספק לא נמצא
+[2025-12-15T07:26:37.403Z] [ERROR] [84dd96df-f981-420d-93ed-2f3f9e5f7477] GET /api/dashboard/supplier/charts - ספק לא נמצא

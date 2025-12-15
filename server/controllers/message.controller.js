@@ -1,3 +1,12 @@
+import * as repo from '../repositories/message.repository.js';
+// Fetch messages by read/unread state for a user
+export const getMessagesByReadState = asyncHandler(async (req, res) => {
+  const { threadId, read } = req.query;
+  const userId = req.user._id;
+  const isRead = read === 'true';
+  const messages = await repo.getMessagesByReadState(threadId, userId, isRead);
+  res.json(messages);
+});
 import asyncHandler from '../middlewares/asyncHandler.middleware.js';
 import * as messageService from '../services/message.service.js';
 

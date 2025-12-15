@@ -1,6 +1,5 @@
 import { NotificationService } from "../services/notification.service.js";
-import { io } from "../websocket/socket.js";
-
+import { io } from "../sockets/socket.js";
 /**
  * רישום אירועי התראות לכל Socket
  * @param {import("socket.io").Server} io 

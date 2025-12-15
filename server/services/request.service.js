@@ -16,16 +16,45 @@ export const RequestService = {
       eventId,
       searchTerm
     });
-  }
-  ,
+  },
 
   async getRequestsBySupplierUserId(userId, { page, limit, status, eventId, searchTerm }) {
     const supplierId = await SupplierRepository.getSupplierIdByUserId(userId);
     if (!supplierId) throw new Error("ספק לא נמצא");
     return await RequestRepository.getBySupplier(supplierId, { page, limit, status, eventId, searchTerm });
-
   },
 
+  // יוצרת thread ומקשרת לבקשה
+  async handleThread(requestId, clientId, supplierId) {
+    const thread = await getOrCreateThread({ requestId, userId: clientId, supplierId });
+    await RequestRepository.updateRequestTheardId(requestId, thread._id);
+    return thread;
+  },
+
+  // שולחת התראה לספק
+  async sendNotificationToSupplier(supplierUserId, request, event, client) {
+    try {
+      await NotificationService.createNotification({
+        userId: supplierUserId,
+        type: "בקשה",
+        payload: {
+          requestId: request._id,
+          eventId: event._id,
+          eventName: event.name,
+          clientId: client._id,
+          clientName: client.name,
+          time: new Date().toISOString(),
+          note: 'בקשה חדשה נוצרה',
+        },
+        channel: "in-app",
+      });
+      console.log("Notification sent to supplier user");
+    } catch (err) {
+      console.error("Failed to send notification:", err);
+    }
+  },
+
+  // פונקציה ראשית ליצירת בקשה
   async createSupplierRequest({ eventId, supplierId, clientId, notesFromClient }) {
     const now = new Date();
 
@@ -35,35 +64,14 @@ export const RequestService = {
       getUserById(clientId),
     ]);
 
-    if (!event) {
-      throw new AppError(404, "האירוע לא נמצא");
-    }
+    if (!event) throw new AppError(404, "האירוע לא נמצא");
+    if (event.date < now) throw new AppError(400, "לא ניתן ליצור חוזה לאירוע שכבר עבר");
+    if (!supplier) throw new AppError(404, "הספק לא נמצא");
+    if (supplier.status !== "מאושר") throw new AppError(400, "לא ניתן לשלוח בקשה לספק שאינו מאושר");
+    if (!client) throw new AppError(404, "הלקוח לא נמצא");
 
-    if (event.date < now) {
-      throw new AppError(400, "לא ניתן ליצור חוזה לאירוע שכבר עבר");
-    }
-
-
-    if (!supplier) {
-      throw new AppError(404, "הספק לא נמצא");
-    }
-    if (supplier.status !== "מאושר") {
-      throw new AppError(400, "לא ניתן לשלוח בקשה לספק שאינו מאושר");
-    }
-
-    if (!client) {
-      throw new AppError(404, "הלקוח לא נמצא");
-    }
-
-    const existing = await RequestRepository.checkIfRequestExists({
-      eventId,
-      supplierId,
-      clientId,
-    });
-
-    if (existing) {
-      throw new AppError(400, "כבר קיימת בקשה ממתינה לספק זה עבור האירוע");
-    }
+    const existing = await RequestRepository.checkIfRequestExists({ eventId, supplierId, clientId });
+    if (existing) throw new AppError(400, "כבר קיימת בקשה ממתינה לספק זה עבור האירוע");
 
     const basicEventSummary = {
       eventName: event.name || "N/A",
@@ -81,37 +89,18 @@ export const RequestService = {
       clientId,
       notesFromClient,
       basicEventSummary,
-      expiresAt,
+      expiresAt
     });
 
-    const thread = await getOrCreateThread({
-      requestId: request._id,
-      userId: clientId,
-      supplierId,
-    });
-
-    await RequestRepository.updateRequestTheardId(request._id, thread._id);
+    // כאן משתמשים ב־this כדי לגשת ל־handleThread
+    const thread = await this.handleThread(request._id, clientId, supplierId);
 
     if (supplier.user) {
-      await NotificationService.createNotification({
-        userId: supplier.user,
-        type: "בקשה",
-        payload: {
-          requestId: request._id,
-          eventId: event._id,
-          eventName: event.name,
-          clientId,
-          clientName: client.name,
-          time: new Date().toISOString(),
-          note: 'בקשה חדשה נוצרה'
-        },
-        channel: "in-app",
-      });
+      await this.sendNotificationToSupplier(supplier.user, request, event, client);
     }
 
     return { request, threadId: thread._id };
   },
-
 
   async approveSupplierRequest(id, supplierId) {
     const now = new Date();
@@ -138,7 +127,6 @@ export const RequestService = {
   async declineSupplierRequest(id, supplierId) {
     const now = new Date();
     const request = await RequestRepository.getRequestById(id);
-    console.log(request);
 
     ensurePendingSupplierRequest(request, supplierId);
     const result = await RequestRepository.updateStatus(id, "נדחה");
@@ -159,9 +147,7 @@ export const RequestService = {
   },
 };
 
-
-
-//------validations----
+// ------ Validations ------
 function ensurePendingSupplierRequest(request, supplierId) {
   const now = new Date();
 
