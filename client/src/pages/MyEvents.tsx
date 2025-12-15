@@ -26,17 +26,14 @@ console.log("eventsList ", eventsList);
   const [selectedTab, setSelectedTab] = useState("הכל");
   const [viewingEvent, setViewingEvent] = useState<Event | null>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
 
-
-  const eventsFetched = useRef(false);
-
+  // Fetch events when page or tab changes
   useEffect(() => {
-    if (!eventsFetched.current) {
-      dispatch(fetchEvents());
-      eventsFetched.current = true;
-    }
-  }, [dispatch]);
-
+    const status = selectedTab === "הכל" ? undefined : selectedTab;
+    dispatch(fetchEvents({ page, pageSize, status }));
+  }, [dispatch, page, pageSize, selectedTab]);
 
   const filteredEvents = useMemo(() => {
     if (!eventsList) return [];
@@ -75,9 +72,9 @@ console.log("eventsList ", eventsList);
         </TabsList>
 
         <TabsContent value={selectedTab} className="mt-6">
-          {filteredEvents.length > 0 ? (
+          {eventsList.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredEvents.map((event:Event) => (
+              {eventsList.map((event:Event) => (
                 <Card key={event._id} className="hover:shadow-lg transition-shadow">
                   <CardHeader>
                     <CardTitle>{event.name}</CardTitle>
@@ -131,6 +128,12 @@ console.log("eventsList ", eventsList);
           )}
         </TabsContent>
       </Tabs>
+
+      <div className="flex justify-center my-4 gap-2">
+        <Button disabled={page === 1} onClick={() => setPage(page - 1)}>הקודם</Button>
+        <span>עמוד {page}</span>
+        <Button disabled={eventsList.length < pageSize} onClick={() => setPage(page + 1)}>הבא</Button>
+      </div>
 
       {/* יצירת אירוע */}
       <EventFormDialog

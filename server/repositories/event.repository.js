@@ -6,7 +6,10 @@ const DEFAULT_SORT = { date: 1 };
 
 function buildFilter(ownerId, { status, type } = {}) {
   const filter = { ownerId };
-  if (status) filter.status = status;
+  // Only filter by DB status if status is a real DB value (not a virtual)
+  if (status && status !== "מתוכנן" && status !== "הושלם" && status !== "בפעולה") {
+    filter.status = status;
+  }
   if (type) filter.type = type;
   return filter;
 }
@@ -94,23 +97,43 @@ export async function findByOwnerId(ownerId, query = {}) {
   const limitNumber = Number(limit);
   const skip = (pageNumber - 1) * limitNumber;
 
-  const filter = buildFilter(ownerId, { status, type });
-
-  const [items, total] = await Promise.all([
-    Event.find(filter)
+  let filter = buildFilter(ownerId, { status, type });
+  // If filtering by a virtual status (not DB field), fetch all for owner, filter in JS, then page
+  if (status && (status === "מתוכנן" || status === "הושלם" || status === "בפעולה")) {
+    // Fetch all events for owner/type
+    let all = await Event.find(buildFilter(ownerId, { type }))
       .sort(DEFAULT_SORT)
-      .skip(skip)
-      .limit(limitNumber)
-      .select(EVENT_PROJECTION),
-    Event.countDocuments(filter),
-  ]);
-
-  return {
-    items,
-    total,
-    page: pageNumber,
-    limit: limitNumber,
-  };
+      .select(EVENT_PROJECTION);
+    // Filter by virtual status
+    all = all.filter(e => {
+      if (typeof e.autoStatus === 'function') return e.autoStatus() === status;
+      return e.autoStatus === status;
+    });
+    const total = all.length;
+    const items = all.slice(skip, skip + limitNumber);
+    return {
+      items,
+      total,
+      page: pageNumber,
+      limit: limitNumber,
+    };
+  } else {
+    // DB status filter
+    const [items, total] = await Promise.all([
+      Event.find(filter)
+        .sort(DEFAULT_SORT)
+        .skip(skip)
+        .limit(limitNumber)
+        .select(EVENT_PROJECTION),
+      Event.countDocuments(filter),
+    ]);
+    return {
+      items,
+      total,
+      page: pageNumber,
+      limit: limitNumber,
+    };
+  }
 }
 
 export async function updateById(id, ownerId, data) {
