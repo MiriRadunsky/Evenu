@@ -5,8 +5,8 @@ const budgetHistorySub = new Schema(
     oldValue: { type: Number, required: true },
     newValue: { type: Number, required: true },
     changedAt: { type: Date, default: Date.now },
-    changedBy: { type: Types.ObjectId, ref: "User" }, // מי עשה את השינוי
-    reason: { type: String }, // אופציונלי: "הוספנו עוד ספק צילום" וכו'
+    changedBy: { type: Types.ObjectId, ref: "User" },
+    reason: { type: String }, 
   },
   { _id: false }
 );

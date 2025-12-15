@@ -8,7 +8,6 @@ import asyncHandler from '../middlewares/asyncHandler.middleware.js';
 export const getBudgetEvents = asyncHandler(async (req, res) =>{
     const ownerId = req.user._id;
 
-    // אפשר לקבל ?from&to ב-query, אבל זה לא חובה
     const { from, to, status, type } = req.query;
 
     const { events } = await getUserRelevantEvents(ownerId, {

@@ -2,3 +2,24 @@
 [2025-12-15T07:26:37.221Z] [ERROR] [008b202f-d302-4f92-b19c-baf55399995d] GET /api/dashboard/supplier/charts - ספק לא נמצא
 [2025-12-15T07:26:37.394Z] [ERROR] [f4902e76-4e2b-4ddc-b434-912a53f5a3ae] GET /api/dashboard/summarySupplier - ספק לא נמצא
 [2025-12-15T07:26:37.403Z] [ERROR] [84dd96df-f981-420d-93ed-2f3f9e5f7477] GET /api/dashboard/supplier/charts - ספק לא נמצא
+[2025-12-15T19:01:43.996Z] [ERROR] [d9fdf54e-7d78-4af0-bd57-59ccd69250b1] GET /api/suppliers?q=%D7%A7%D7%95%D7%A0%D7%A7%D7%95%D7%A8%D7%93 - text index required for $text query
+[2025-12-15T19:01:50.607Z] [ERROR] [cf502c27-ebcf-43a8-9e23-7c5ac0bc6d65] GET /api/suppliers?region=%D7%92&q=%D7%A7%D7%95%D7%A0%D7%A7%D7%95%D7%A8%D7%93 - text index required for $text query
+[2025-12-15T19:01:50.759Z] [ERROR] [fd6732e4-8eb7-42d7-bab7-8e4f140fbcdb] GET /api/suppliers?region=%D7%92%D7%95&q=%D7%A7%D7%95%D7%A0%D7%A7%D7%95%D7%A8%D7%93 - text index required for $text query
+[2025-12-15T19:01:50.952Z] [ERROR] [e7be02d1-ed85-4ca4-b947-7ee4c2d0d249] GET /api/suppliers?region=%D7%92%D7%95%D7%A9&q=%D7%A7%D7%95%D7%A0%D7%A7%D7%95%D7%A8%D7%93 - text index required for $text query
+[2025-12-15T19:01:51.381Z] [ERROR] [94f19ddd-2000-410c-a3b4-caa179727825] GET /api/suppliers?region=%D7%92%D7%95%D7%A9+&q=%D7%A7%D7%95%D7%A0%D7%A7%D7%95%D7%A8%D7%93 - text index required for $text query
+[2025-12-15T19:01:51.576Z] [ERROR] [e1f2d00f-3b32-43ca-8598-902a4bdcb174] GET /api/suppliers?region=%D7%92%D7%95%D7%A9+%D7%93&q=%D7%A7%D7%95%D7%A0%D7%A7%D7%95%D7%A8%D7%93 - text index required for $text query
+[2025-12-15T19:01:51.768Z] [ERROR] [3d9b7397-c499-4bae-b997-79fc1218392c] GET /api/suppliers?region=%D7%92%D7%95%D7%A9+%D7%93%D7%9F&q=%D7%A7%D7%95%D7%A0%D7%A7%D7%95%D7%A8%D7%93 - text index required for $text query
+[2025-12-15T19:01:59.906Z] [ERROR] [9d629da3-3666-4907-af76-d85a628c506a] GET /api/suppliers?region=%D7%92%D7%95%D7%A9+%D7%93&q=%D7%A7%D7%95%D7%A0%D7%A7%D7%95%D7%A8%D7%93 - text index required for $text query
+[2025-12-15T19:02:00.391Z] [ERROR] [4d7745e1-2d32-4f2a-81a7-a78208d032d4] GET /api/suppliers?region=%D7%92%D7%95%D7%A9+&q=%D7%A7%D7%95%D7%A0%D7%A7%D7%95%D7%A8%D7%93 - text index required for $text query
+[2025-12-15T19:02:00.439Z] [ERROR] [261c5945-569f-4e0c-913b-8a619ca5cda5] GET /api/suppliers?region=%D7%92%D7%95%D7%A9&q=%D7%A7%D7%95%D7%A0%D7%A7%D7%95%D7%A8%D7%93 - text index required for $text query
+[2025-12-15T19:02:00.462Z] [ERROR] [22871351-efd1-4493-a32d-776846631424] GET /api/suppliers?region=%D7%92%D7%95&q=%D7%A7%D7%95%D7%A0%D7%A7%D7%95%D7%A8%D7%93 - text index required for $text query
+[2025-12-15T19:02:00.484Z] [ERROR] [c50bdc89-bd66-4ffa-9272-3cb14cb11864] GET /api/suppliers?region=%D7%92&q=%D7%A7%D7%95%D7%A0%D7%A7%D7%95%D7%A8%D7%93 - text index required for $text query
+[2025-12-15T19:02:00.520Z] [ERROR] [485aba6d-e749-48aa-8c94-aa1adb2056e7] GET /api/suppliers?q=%D7%A7%D7%95%D7%A0%D7%A7%D7%95%D7%A8%D7%93 - text index required for $text query
+[2025-12-15T19:02:01.385Z] [ERROR] [b325a77f-6f40-46d7-8a08-06a073f7f7bd] GET /api/suppliers?region=%D7%9E&q=%D7%A7%D7%95%D7%A0%D7%A7%D7%95%D7%A8%D7%93 - text index required for $text query
+[2025-12-15T19:02:01.551Z] [ERROR] [462d5090-733f-45ea-83c8-3ddcc6447d61] GET /api/suppliers?region=%D7%9E%D7%A8&q=%D7%A7%D7%95%D7%A0%D7%A7%D7%95%D7%A8%D7%93 - text index required for $text query
+[2025-12-15T19:02:01.869Z] [ERROR] [b1c04548-a34b-46a3-970a-d09eed5c400e] GET /api/suppliers?region=%D7%9E%D7%A8%D7%9B&q=%D7%A7%D7%95%D7%A0%D7%A7%D7%95%D7%A8%D7%93 - text index required for $text query
+[2025-12-15T19:02:02.244Z] [ERROR] [a30d8ba1-1974-4df3-89fa-02a61b65b5bd] GET /api/suppliers?region=%D7%9E%D7%A8%D7%9B%D7%96&q=%D7%A7%D7%95%D7%A0%D7%A7%D7%95%D7%A8%D7%93 - text index required for $text query
+[2025-12-15T19:02:05.035Z] [ERROR] [0e0a2693-3646-419c-8500-56c3cf51d85b] GET /api/suppliers?q=%D7%A7%D7%95%D7%A0%D7%A7%D7%95%D7%A8%D7%93 - text index required for $text query
+[2025-12-15T19:10:31.418Z] [ERROR] [6abbe416-47b9-4ab4-91db-f361de139cd1] GET /api/suppliers?q=%D7%A7%D7%95%D7%A0%D7%A7%D7%95 - User is not defined
+[2025-12-15T19:10:33.349Z] [ERROR] [0ac2a1b8-499c-4f0c-a918-c1ca57826bef] GET /api/suppliers?q=%D7%A7%D7%95%D7%A0%D7%A7%D7%95%D7%A8%D7%93 - User is not defined
+[2025-12-15T19:10:42.840Z] [ERROR] [1ebf824f-264f-4589-baeb-cffb82db811b] GET /api/suppliers?q=%D7%A7%D7%95%D7%A0%D7%A7%D7%95%D7%A8%D7%93 - User is not defined
