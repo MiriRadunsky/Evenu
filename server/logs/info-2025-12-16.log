@@ -223,6 +223,7 @@
 [2025-12-16T09:24:41.612Z] [INFO] [47e8f9a5-02eb-430b-beda-c995b18f4f85] GET /api/users/me - Request finished with status 304
 [2025-12-16T09:24:41.831Z] [INFO] [cae2bf0a-1b67-419f-93d0-bd38f0dcd8b9] GET /api/users/me - Request finished with status 304
 [2025-12-16T09:24:42.066Z] [INFO] [5ed56dec-5771-4e7f-8564-e45a069c7565] GET /api/users/me - Request finished with status 304
+<<<<<<< HEAD
 [2025-12-16T09:30:34.076Z] [INFO] [69cf1d2a-7677-40db-9465-03ca0dd73e05] GET /api/users/me - Request finished with status 304
 [2025-12-16T09:30:34.277Z] [INFO] [a27dd0b6-849f-444e-88d7-9c68ed629eac] GET /api/users/me - Request finished with status 304
 [2025-12-16T09:30:34.472Z] [INFO] [3829a7fc-81b8-473a-b8fe-ba4a60485e10] GET /api/users/me - Request finished with status 304
@@ -668,3 +669,239 @@
 [2025-12-16T11:50:48.622Z] [INFO] [5dbe6c56-c31c-4f30-a9e8-8954153bed1a] GET /api/file/download-url?fileKey=htmjyejy.png - Request finished with status 200
 [2025-12-16T11:50:48.644Z] [INFO] [cf68a045-29be-45be-852c-291f10f53932] GET /api/file/download-url?fileKey=htmjyejy.png - Request finished with status 304
 [2025-12-16T11:50:53.973Z] [INFO] [2286c6dd-5f48-4e54-96bc-398963f8acff] GET /api/suppliers?region=%D7%92%D7%9C%D7%99%D7%9C+%D7%AA%D7%97%D7%AA%D7%95%D7%9F&page=1&limit=9 - Request finished with status 200
+=======
+[2025-12-16T09:55:08.289Z] [INFO] [0ecdd163-4276-46c6-8769-0e7375598246] POST /api/auth/google - Request finished with status 200
+[2025-12-16T09:55:08.513Z] [INFO] [4e875d53-4a16-4d54-8372-bcf746de532d] GET /api/users/me - Request finished with status 200
+[2025-12-16T09:55:08.746Z] [INFO] [9dc501f2-ec97-4621-9ccc-67d4a36ece6a] GET /api/users/me - Request finished with status 304
+[2025-12-16T09:55:08.974Z] [INFO] [e3f20ae4-af4e-47d5-9f19-a34d75f113d9] GET /api/users/me - Request finished with status 304
+[2025-12-16T09:55:09.087Z] [INFO] [c131b5e6-b898-49f8-a754-c350babeded8] GET /api/users/me - Request finished with status 304
+[2025-12-16T09:55:09.196Z] [INFO] [c9dc8692-41fd-4b04-b796-247c17ebc5e7] GET /api/users/me - Request finished with status 304
+[2025-12-16T09:55:09.312Z] [INFO] [26d25546-53bf-4f73-8cd1-c36d74d323ff] GET /api/users/me - Request finished with status 304
+[2025-12-16T09:55:09.437Z] [INFO] [6da0cb9b-9f94-45ba-b8df-8cf0e660073d] GET /api/users/me - Request finished with status 304
+[2025-12-16T09:55:09.509Z] [INFO] [5f39ea12-6559-47f0-9fe2-df16413df59d] GET /api/notifications - Request finished with status 201
+[2025-12-16T09:55:09.556Z] [INFO] [acbe664c-60d9-47f9-9aef-332879aa34db] GET /api/users/me - Request finished with status 304
+[2025-12-16T09:55:09.683Z] [INFO] [edce5018-73a5-41a3-9072-b5021fb74e20] GET /api/dashboard/user/charts - Request finished with status 200
+[2025-12-16T09:55:10.087Z] [INFO] [e2ed66f4-9008-4580-a98c-cb7140064b8d] GET /api/notifications - Request finished with status 201
+[2025-12-16T09:55:10.487Z] [INFO] [883d227d-b316-41eb-a4d0-bc039aa1aecb] GET /api/dashboard/user/charts - Request finished with status 304
+[2025-12-16T09:55:10.968Z] [INFO] [2505b352-d8b0-405c-81a3-8cb2a2200e94] GET /api/dashboard/summaryUser - Request finished with status 200
+[2025-12-16T09:55:11.789Z] [INFO] [0a0faf68-fbc6-4555-b0b0-cbca39d57c56] GET /api/dashboard/summaryUser - Request finished with status 304
+[2025-12-16T09:58:47.387Z] [INFO] [6bc1bcb8-fba2-4564-807e-842c353edafb] GET /api/regions - Request finished with status 200
+[2025-12-16T09:58:47.402Z] [INFO] [eb8e5f28-68b8-4c49-885f-cb27f2da88df] GET /api/regions - Request finished with status 304
+[2025-12-16T09:58:47.468Z] [INFO] [7c7484bc-7b38-425a-8cfc-1224ccf23144] GET /api/events/types - Request finished with status 200
+[2025-12-16T09:58:47.489Z] [INFO] [d1244dd3-3d7a-43d1-9b02-ff53d150b490] GET /api/regions - Request finished with status 304
+[2025-12-16T09:58:47.501Z] [INFO] [00593fbd-a0cd-4e17-8a45-b3bf461d15f7] GET /api/regions - Request finished with status 304
+[2025-12-16T09:58:47.608Z] [INFO] [c18e0c59-2d50-4d19-8371-faba55ae2074] GET /api/events/types - Request finished with status 304
+[2025-12-16T09:58:47.618Z] [INFO] [c1149b4b-736e-45c1-989a-382146765f99] GET /api/events?page=1&pageSize=10 - Request finished with status 200
+[2025-12-16T09:58:47.693Z] [INFO] [0946bbcd-0004-4763-891e-6abd56927fd4] GET /api/events/types - Request finished with status 304
+[2025-12-16T09:58:47.779Z] [INFO] [e27e13ba-4f9e-4ede-b767-e0340302ba9e] GET /api/events?page=1&pageSize=10 - Request finished with status 304
+[2025-12-16T09:58:47.782Z] [INFO] [eac81b24-1739-4f4f-9d2d-03057add1779] GET /api/events/types - Request finished with status 304
+[2025-12-16T10:02:31.430Z] [INFO] [39c2bd99-52f1-446d-a131-de2e8ec57366] POST /api/events - Request finished with status 201
+[2025-12-16T10:02:45.088Z] [INFO] [dfa05a8e-3479-47da-9b20-6a69868740de] GET /api/suppliers - Request finished with status 200
+[2025-12-16T10:02:45.143Z] [INFO] [f805a865-dbfc-4c86-b20e-fa77a0cb03be] GET /api/file/download-url?fileKey=Screenshot+2025-12-06+221717.png - Request finished with status 200
+[2025-12-16T10:02:45.148Z] [INFO] [d4859f75-2764-41e3-b382-2f4e257fcb4b] GET /api/file/download-url?fileKey=miri_1+(2)+(1).jpg - Request finished with status 200
+[2025-12-16T10:02:45.152Z] [INFO] [b8accdcd-f6f1-4305-b089-176321ff2e30] GET /api/file/download-url?fileKey=htmjyejy.png - Request finished with status 200
+[2025-12-16T10:02:45.156Z] [INFO] [fd95a325-08d1-4df5-ae60-d1daff46eff5] GET /api/file/download-url?fileKey=htmjyejy.png - Request finished with status 304
+[2025-12-16T10:02:45.371Z] [INFO] [f4a061ab-79c3-4190-af07-8697ac56e868] GET /api/suppliers - Request finished with status 304
+[2025-12-16T10:02:45.393Z] [INFO] [cde84e49-5975-43a9-b961-d48e6618d869] GET /api/file/download-url?fileKey=Screenshot+2025-12-06+221717.png - Request finished with status 304
+[2025-12-16T10:02:45.397Z] [INFO] [8bd5e647-f5ec-4c50-90c2-cd33a40f1224] GET /api/file/download-url?fileKey=miri_1+(2)+(1).jpg - Request finished with status 304
+[2025-12-16T10:02:45.400Z] [INFO] [6df22378-fd28-4f56-8ca4-d0821b06f681] GET /api/file/download-url?fileKey=htmjyejy.png - Request finished with status 304
+[2025-12-16T10:02:45.404Z] [INFO] [f5d3b58b-6e16-4d78-b4c3-79c9eb640faf] GET /api/file/download-url?fileKey=htmjyejy.png - Request finished with status 304
+[2025-12-16T10:03:10.981Z] [INFO] [4366f836-b4f9-40c6-8e7f-0659ef67c899] GET /api/regions - Request finished with status 304
+[2025-12-16T10:03:10.989Z] [INFO] [16b21adb-0369-4378-8f5c-edef22f68f66] GET /api/regions - Request finished with status 304
+[2025-12-16T10:03:11.112Z] [INFO] [8f6d1d71-fee3-4925-97bd-6ac199532814] GET /api/events/types - Request finished with status 304
+[2025-12-16T10:03:11.131Z] [INFO] [e87d9009-bfc7-48a1-b175-f12ca5b4fe0a] GET /api/regions - Request finished with status 304
+[2025-12-16T10:03:11.136Z] [INFO] [63773213-9f54-43db-b45f-6f4e62567342] GET /api/regions - Request finished with status 304
+[2025-12-16T10:03:11.213Z] [INFO] [33281d7d-8eb4-4425-adcf-e4fa84c37faa] GET /api/events?page=1&pageSize=10 - Request finished with status 200
+[2025-12-16T10:03:11.215Z] [INFO] [885f8e1d-1078-4bac-81f3-8cb29d5c7988] GET /api/events/types - Request finished with status 304
+[2025-12-16T10:03:11.283Z] [INFO] [799defa0-23c6-4abd-a060-369f0bbd45c6] GET /api/events/types - Request finished with status 304
+[2025-12-16T10:03:11.518Z] [INFO] [ba578780-3041-4a0f-b4d6-bd9010f93985] GET /api/events/types - Request finished with status 304
+[2025-12-16T10:03:11.521Z] [INFO] [be297835-3969-4912-bff2-4bec8225909d] GET /api/events?page=1&pageSize=10 - Request finished with status 304
+[2025-12-16T10:11:41.729Z] [INFO] [5f8e3f04-badd-4551-a6ef-30aec5bf0a54] POST /api/auth/logout - Request finished with status 200
+[2025-12-16T10:11:44.934Z] [INFO] [ddb37c2b-352d-492f-8df5-ef818ec5de0f] POST /api/auth/logout - Request finished with status 401
+[2025-12-16T10:11:44.936Z] [INFO] [2a4e55db-56d2-4faa-a2d5-8aded318a8f6] POST /api/auth/logout - Request finished with status 401
+[2025-12-16T10:11:46.499Z] [INFO] [147689bb-0adc-4730-bf59-9b468c08eeed] GET /api/kashrut - Request finished with status 200
+[2025-12-16T10:11:46.502Z] [INFO] [64043847-787b-4911-9365-70b333107f3f] GET /api/regions - Request finished with status 304
+[2025-12-16T10:11:46.516Z] [INFO] [c7a4a2e9-61c1-44ac-9604-24292110fda5] GET /api/kashrut - Request finished with status 304
+[2025-12-16T10:11:46.519Z] [INFO] [c2750df8-799b-411c-8463-ee7747de3079] GET /api/regions - Request finished with status 304
+[2025-12-16T10:11:46.578Z] [INFO] [358af4ba-491c-421f-b355-d385d1ff01df] GET /api/categories - Request finished with status 200
+[2025-12-16T10:11:46.680Z] [INFO] [dca3e84b-3c02-4688-aca0-d43b4e146da0] GET /api/categories - Request finished with status 304
+[2025-12-16T10:12:47.063Z] [ERROR] [cd7c3192-8975-40c0-b5f4-57a9d100a612] POST /api/suppliers/register - משתש כבר קיים
+[2025-12-16T10:12:47.079Z] [INFO] [cd7c3192-8975-40c0-b5f4-57a9d100a612] POST /api/suppliers/register - Request finished with status 409
+[2025-12-16T10:12:56.396Z] [ERROR] [614a0707-b414-4106-976e-e44bd81bb931] POST /api/suppliers/register - Supplier validation failed: regions: Cast to string failed for value "[ 'גוש דן' ]" (type Array) at path "regions"
+[2025-12-16T10:12:56.406Z] [INFO] [614a0707-b414-4106-976e-e44bd81bb931] POST /api/suppliers/register - Request finished with status 400
+[2025-12-16T10:13:02.812Z] [ERROR] [d1ed678b-e0ba-4867-88e5-936b33ad1fb5] POST /api/suppliers/register - משתש כבר קיים
+[2025-12-16T10:13:02.814Z] [INFO] [d1ed678b-e0ba-4867-88e5-936b33ad1fb5] POST /api/suppliers/register - Request finished with status 409
+[2025-12-16T10:13:10.378Z] [ERROR] [ee2939a3-f57f-4fa8-9a22-de73daab6adf] POST /api/suppliers/register - Supplier validation failed: regions: Cast to string failed for value "[ 'גוש דן' ]" (type Array) at path "regions"
+[2025-12-16T10:13:10.380Z] [INFO] [ee2939a3-f57f-4fa8-9a22-de73daab6adf] POST /api/suppliers/register - Request finished with status 400
+[2025-12-16T10:13:28.294Z] [ERROR] [adecf606-ffe9-4b17-b94d-ba9b0a68ea06] POST /api/suppliers/register - משתש כבר קיים
+[2025-12-16T10:13:28.295Z] [INFO] [adecf606-ffe9-4b17-b94d-ba9b0a68ea06] POST /api/suppliers/register - Request finished with status 409
+[2025-12-16T10:13:33.616Z] [ERROR] [dd493276-7c1d-440b-86bc-070b57b6f17d] POST /api/suppliers/register - Supplier validation failed: regions: Cast to string failed for value "[ 'גוש דן' ]" (type Array) at path "regions"
+[2025-12-16T10:13:33.619Z] [INFO] [dd493276-7c1d-440b-86bc-070b57b6f17d] POST /api/suppliers/register - Request finished with status 400
+[2025-12-16T10:13:36.485Z] [ERROR] [8957410f-ed6f-47b2-b039-8b3b8da89dbf] POST /api/suppliers/register - משתש כבר קיים
+[2025-12-16T10:13:36.486Z] [INFO] [8957410f-ed6f-47b2-b039-8b3b8da89dbf] POST /api/suppliers/register - Request finished with status 409
+[2025-12-16T10:13:42.330Z] [ERROR] [f82613b9-4251-407a-8d4d-4d536eab67a2] POST /api/suppliers/register - Supplier validation failed: regions: Cast to string failed for value "[ 'גוש דן' ]" (type Array) at path "regions"
+[2025-12-16T10:13:42.332Z] [INFO] [f82613b9-4251-407a-8d4d-4d536eab67a2] POST /api/suppliers/register - Request finished with status 400
+[2025-12-16T10:18:00.108Z] [INFO] [51ecec66-f00a-446f-bcd3-32ab3f318d3e] POST /api/suppliers/register - Request finished with status 400
+[2025-12-16T10:18:06.684Z] [INFO] [dac4dce6-d182-4c88-a64d-e37aeb1c7ccd] POST /api/auth/logout - Request finished with status 401
+[2025-12-16T10:18:06.687Z] [INFO] [32ffec0b-fa14-4811-835f-78811ce4d657] POST /api/auth/logout - Request finished with status 401
+[2025-12-16T10:18:08.184Z] [INFO] [9b636301-deab-42d7-ae3a-351dce7fdf96] GET /api/kashrut - Request finished with status 304
+[2025-12-16T10:18:08.187Z] [INFO] [d5b2c97c-d47e-415f-8d63-dc8c23adf9fb] GET /api/regions - Request finished with status 304
+[2025-12-16T10:18:08.194Z] [INFO] [b4babb9a-b7da-4361-a1eb-6196aa69be12] GET /api/kashrut - Request finished with status 304
+[2025-12-16T10:18:08.196Z] [INFO] [cba1d5b1-41b5-473c-81f5-0752a87ab842] GET /api/regions - Request finished with status 304
+[2025-12-16T10:18:08.299Z] [INFO] [190a3aaf-e7ce-4248-a3e8-8190d9a23a0a] GET /api/categories - Request finished with status 304
+[2025-12-16T10:18:08.391Z] [INFO] [0128c7a5-f40a-4e29-8752-525a70497d20] GET /api/categories - Request finished with status 304
+[2025-12-16T10:18:53.538Z] [INFO] [44b12399-3d1d-416a-b016-77c8f11f222f] POST /api/suppliers/register - Request finished with status 400
+[2025-12-16T10:20:07.516Z] [ERROR] [cd61a717-b3e1-487f-8b86-5439dbe28b0e] POST /api/suppliers/register - Supplier validation failed: regions: Cast to string failed for value "[ 'גוש דן' ]" (type Array) at path "regions"
+[2025-12-16T10:20:07.523Z] [INFO] [cd61a717-b3e1-487f-8b86-5439dbe28b0e] POST /api/suppliers/register - Request finished with status 400
+[2025-12-16T10:21:17.854Z] [ERROR] [3ac51b0c-9b2d-4c86-ba8e-c4b1795d679c] POST /api/suppliers/register - משתש כבר קיים
+[2025-12-16T10:21:17.859Z] [INFO] [3ac51b0c-9b2d-4c86-ba8e-c4b1795d679c] POST /api/suppliers/register - Request finished with status 409
+[2025-12-16T10:21:23.656Z] [ERROR] [d47b9704-db4c-45cc-b2ec-d3b998b87dc8] POST /api/suppliers/register - Supplier validation failed: regions: Cast to string failed for value "[ 'גוש דן' ]" (type Array) at path "regions"
+[2025-12-16T10:21:23.661Z] [INFO] [d47b9704-db4c-45cc-b2ec-d3b998b87dc8] POST /api/suppliers/register - Request finished with status 400
+[2025-12-16T10:22:32.470Z] [ERROR] [8ddaf229-8281-4fd5-b096-4019d7b1d4f2] POST /api/suppliers/register - משתש כבר קיים
+[2025-12-16T10:22:32.474Z] [INFO] [8ddaf229-8281-4fd5-b096-4019d7b1d4f2] POST /api/suppliers/register - Request finished with status 409
+[2025-12-16T10:22:38.175Z] [ERROR] [691c92b8-b98c-45d6-a759-eb873088778b] POST /api/suppliers/register - Supplier validation failed: regions: Cast to string failed for value "[ 'גוש דן' ]" (type Array) at path "regions"
+[2025-12-16T10:22:38.184Z] [INFO] [691c92b8-b98c-45d6-a759-eb873088778b] POST /api/suppliers/register - Request finished with status 400
+[2025-12-16T10:22:43.164Z] [ERROR] [ab6d5f39-5a9f-4fc4-94d8-962b90bf9abd] POST /api/suppliers/register - Supplier validation failed: regions: Cast to string failed for value "[ 'גוש דן' ]" (type Array) at path "regions"
+[2025-12-16T10:22:43.166Z] [INFO] [ab6d5f39-5a9f-4fc4-94d8-962b90bf9abd] POST /api/suppliers/register - Request finished with status 400
+[2025-12-16T10:22:46.032Z] [ERROR] [de3dcafa-9ea1-4507-a539-706e7fa7a382] POST /api/suppliers/register - משתש כבר קיים
+[2025-12-16T10:22:46.033Z] [INFO] [de3dcafa-9ea1-4507-a539-706e7fa7a382] POST /api/suppliers/register - Request finished with status 409
+[2025-12-16T10:26:02.698Z] [ERROR] [5ecfad68-1182-480d-83bc-af11920a555e] POST /api/suppliers/register - משתש כבר קיים
+[2025-12-16T10:26:02.712Z] [INFO] [5ecfad68-1182-480d-83bc-af11920a555e] POST /api/suppliers/register - Request finished with status 409
+[2025-12-16T10:26:08.860Z] [ERROR] [573685ad-6e99-4c5d-9d5a-34aad481c63c] POST /api/suppliers/register - Supplier validation failed: regions: Cast to string failed for value "[ 'גוש דן' ]" (type Array) at path "regions"
+[2025-12-16T10:26:08.870Z] [INFO] [573685ad-6e99-4c5d-9d5a-34aad481c63c] POST /api/suppliers/register - Request finished with status 400
+[2025-12-16T10:31:14.380Z] [ERROR] [785e9529-2028-43c3-8161-811870fd7793] POST /api/suppliers/register - Supplier validation failed: regions: Cast to string failed for value "[ 'גוש דן' ]" (type Array) at path "regions"
+[2025-12-16T10:31:14.397Z] [INFO] [785e9529-2028-43c3-8161-811870fd7793] POST /api/suppliers/register - Request finished with status 400
+[2025-12-16T10:32:19.281Z] [ERROR] [0765fb9a-a7bd-45a1-a3c1-28c8a271d277] POST /api/suppliers/register - Supplier validation failed: regions: Cast to string failed for value "[ 'גוש דן' ]" (type Array) at path "regions"
+[2025-12-16T10:32:19.287Z] [INFO] [0765fb9a-a7bd-45a1-a3c1-28c8a271d277] POST /api/suppliers/register - Request finished with status 400
+[2025-12-16T10:32:23.903Z] [ERROR] [658593f2-0911-435a-b87c-89bdf82adbd0] POST /api/suppliers/register - Supplier validation failed: regions: Cast to string failed for value "[ 'גוש דן' ]" (type Array) at path "regions"
+[2025-12-16T10:32:23.906Z] [INFO] [658593f2-0911-435a-b87c-89bdf82adbd0] POST /api/suppliers/register - Request finished with status 400
+[2025-12-16T10:45:41.841Z] [ERROR] [ff9a93dd-8db2-411c-bf8c-8a9ae545c0c1] POST /api/suppliers/register - Supplier validation failed: regions: Cast to string failed for value "[ 'גוש דן' ]" (type Array) at path "regions"
+[2025-12-16T10:45:41.848Z] [INFO] [ff9a93dd-8db2-411c-bf8c-8a9ae545c0c1] POST /api/suppliers/register - Request finished with status 400
+[2025-12-16T10:54:17.615Z] [INFO] [31858f5d-ff8a-4d40-9fd7-97e61aaf9026] POST /api/suppliers/register - Request finished with status 201
+[2025-12-16T10:54:28.255Z] [INFO] [7c610477-f7d6-4878-aad6-5aadced91180] GET /api/file/upload-url?fileName=%D7%90%D7%99%D7%A9%D7%95%D7%A8+%D7%94%D7%A2%D7%A1%D7%A7%D7%94-%D7%A4%D7%A8%D7%98%D7%99%D7%A7%D7%95%D7%9D+%D7%A1%D7%95%D7%A4%D7%99+.pdf&contentType=application%2Fpdf - Request finished with status 200
+[2025-12-16T10:54:29.508Z] [INFO] [8333138c-7c5c-4d13-8c18-2591bd39194b] PATCH /api/suppliers/add-images - Request finished with status 201
+[2025-12-16T10:54:29.615Z] [INFO] [a293df7f-373a-4e37-8651-3c9fd4e778a7] GET /api/users/me - Request finished with status 200
+[2025-12-16T10:54:29.691Z] [INFO] [64e7e6b0-a801-49a5-83ec-c26c11c1fbdb] GET /api/users/me - Request finished with status 304
+[2025-12-16T10:54:29.828Z] [INFO] [2ca5c4d1-5885-4e9d-85c6-6587373e468f] GET /api/users/me - Request finished with status 304
+[2025-12-16T10:54:29.899Z] [INFO] [3b1b2e33-1249-4a37-ac9d-f90b5844e21e] GET /api/users/me - Request finished with status 304
+[2025-12-16T10:54:30.005Z] [INFO] [50b29828-30ba-408a-966e-2ec783c01113] GET /api/users/me - Request finished with status 304
+[2025-12-16T10:54:30.081Z] [INFO] [e8531760-ba3a-4ce7-9a78-6976e35788d0] GET /api/users/me - Request finished with status 304
+[2025-12-16T10:54:30.185Z] [INFO] [42f16ec1-b88e-41bd-8b75-0343b71a5ca7] GET /api/users/me - Request finished with status 304
+[2025-12-16T10:54:30.258Z] [INFO] [1c7f8f5d-a41c-472e-a436-c88d729deed1] GET /api/users/me - Request finished with status 304
+[2025-12-16T10:54:30.294Z] [INFO] [208651b9-7f40-4a36-9a21-2011ead6a54a] GET /api/notifications - Request finished with status 201
+[2025-12-16T10:54:30.386Z] [INFO] [244772a5-10ad-46b9-8759-da4d2d279de8] GET /api/dashboard/supplier/charts - Request finished with status 200
+[2025-12-16T10:54:30.439Z] [INFO] [782c59ab-65a8-41c4-a63f-ecc914913bc7] GET /api/notifications - Request finished with status 201
+[2025-12-16T10:54:30.687Z] [INFO] [555299b8-707d-43fb-b861-14a9c2815dbb] GET /api/dashboard/supplier/charts - Request finished with status 304
+[2025-12-16T10:54:30.722Z] [INFO] [902c4046-d44a-4a86-92a0-9ced409c6f13] GET /api/dashboard/summarySupplier - Request finished with status 200
+[2025-12-16T10:54:31.344Z] [INFO] [61b6bc7c-86ef-4f9d-87f6-dee466645d69] GET /api/dashboard/summarySupplier - Request finished with status 304
+[2025-12-16T10:54:41.360Z] [INFO] [eb103038-37fe-4a36-968e-ce323e72af18] POST /api/auth/logout - Request finished with status 200
+[2025-12-16T10:54:41.362Z] [INFO] [aa33f359-e12b-472d-abb8-ac71d200e5b3] POST /api/auth/logout - Request finished with status 200
+[2025-12-16T10:54:44.840Z] [INFO] [dfb8d62b-a7fb-4928-a734-90da5d1ce771] POST /api/auth/logout - Request finished with status 401
+[2025-12-16T10:54:44.843Z] [INFO] [391eb45c-8f3d-479e-8f68-8af8312d93df] POST /api/auth/logout - Request finished with status 401
+[2025-12-16T10:55:07.723Z] [INFO] [6332352f-858c-4aea-b486-e4b80b5103e4] POST /api/auth/register - Request finished with status 201
+[2025-12-16T10:55:07.801Z] [INFO] [2defd845-db37-4d0a-83d8-fac5acf31a07] GET /api/users/me - Request finished with status 200
+[2025-12-16T10:55:07.871Z] [INFO] [fc9e6b84-9cc1-4220-8bd4-bc35789a5eeb] GET /api/users/me - Request finished with status 304
+[2025-12-16T10:55:07.984Z] [INFO] [c616dcff-433b-422e-bddc-ef8fd844a3d8] GET /api/users/me - Request finished with status 304
+[2025-12-16T10:55:08.050Z] [INFO] [7b7a2844-8b1e-4ae5-92d1-cc2bbcf66526] GET /api/users/me - Request finished with status 304
+[2025-12-16T10:55:08.118Z] [INFO] [b8027016-0288-4ffd-ba22-9812950fd619] GET /api/users/me - Request finished with status 304
+[2025-12-16T10:55:08.185Z] [INFO] [825671d1-f110-4148-9d69-08d67bfeffa7] GET /api/users/me - Request finished with status 304
+[2025-12-16T10:55:08.253Z] [INFO] [e8a24a85-6974-42ac-be23-0bd1954a4cf1] GET /api/users/me - Request finished with status 304
+[2025-12-16T10:55:08.314Z] [INFO] [08a5dd9f-abfd-495b-9b8c-51229fbb5d23] GET /api/notifications - Request finished with status 201
+[2025-12-16T10:55:08.347Z] [INFO] [01c5eeb1-4f4a-4dc2-b574-1443cb5d8a7b] GET /api/users/me - Request finished with status 304
+[2025-12-16T10:55:08.370Z] [INFO] [3288311d-106e-4868-97a3-1532cab75d77] GET /api/dashboard/user/charts - Request finished with status 200
+[2025-12-16T10:55:08.483Z] [INFO] [6410fccf-0373-4688-8603-64f6175676c7] GET /api/notifications - Request finished with status 201
+[2025-12-16T10:55:08.594Z] [INFO] [04a1489e-b4de-47dd-9f5e-88a78afb3988] GET /api/dashboard/user/charts - Request finished with status 304
+[2025-12-16T10:55:08.646Z] [INFO] [5b8cfed7-a45d-4c50-8803-f5753fb3e036] GET /api/dashboard/summaryUser - Request finished with status 200
+[2025-12-16T10:55:09.128Z] [INFO] [5924ef23-3d96-4bd7-aa1c-34d8ffe9663f] GET /api/dashboard/summaryUser - Request finished with status 304
+[2025-12-16T10:55:10.569Z] [INFO] [a3c0be24-2b86-4658-9421-687c6a2b3041] POST /api/auth/logout - Request finished with status 200
+[2025-12-16T10:55:12.901Z] [INFO] [c7c67d2c-f1fe-40f7-ac73-7d3d9283150b] POST /api/auth/logout - Request finished with status 401
+[2025-12-16T10:55:12.903Z] [INFO] [9fb59853-3b25-458b-84b9-51aed9abd55b] POST /api/auth/logout - Request finished with status 401
+[2025-12-16T10:55:14.653Z] [INFO] [53d225fc-e397-40ac-a16e-bba1e8815153] GET /api/kashrut - Request finished with status 304
+[2025-12-16T10:55:14.654Z] [INFO] [6a9dd66f-5d52-478e-a97c-3337dda03132] GET /api/regions - Request finished with status 304
+[2025-12-16T10:55:14.661Z] [INFO] [1ad204e6-b3a4-4b58-b14b-e8b5153b8b29] GET /api/kashrut - Request finished with status 304
+[2025-12-16T10:55:14.663Z] [INFO] [b1853349-201e-422b-af97-a3928a759de8] GET /api/regions - Request finished with status 304
+[2025-12-16T10:55:15.045Z] [INFO] [40f19cf6-1b60-4d03-b77d-883d4541ad2d] GET /api/categories - Request finished with status 304
+[2025-12-16T10:55:15.115Z] [INFO] [b50b3b9e-1edf-4b51-a9e7-72a79319becc] GET /api/categories - Request finished with status 304
+[2025-12-16T10:58:43.081Z] [INFO] [7ac56a97-ea3f-4cfd-b595-025f4b223ab1] POST /api/suppliers/register - Request finished with status 201
+[2025-12-16T10:58:45.132Z] [INFO] [16f1827c-4cfe-47fc-969f-63c9ac30617a] PATCH /api/suppliers/add-images - Request finished with status 201
+[2025-12-16T10:58:45.206Z] [INFO] [73123d35-7bfa-4c9f-93b4-d2d867ade474] GET /api/users/me - Request finished with status 200
+[2025-12-16T10:58:45.285Z] [INFO] [84552de4-22a4-4f9d-86a3-c4ae5cf7c5fa] GET /api/users/me - Request finished with status 304
+[2025-12-16T10:58:45.371Z] [INFO] [279c8c33-bd15-49cf-8e57-e8072ba076b1] GET /api/users/me - Request finished with status 304
+[2025-12-16T10:58:45.441Z] [INFO] [26b7c5ed-5e7b-4954-9c0a-f795fe2c6250] GET /api/users/me - Request finished with status 304
+[2025-12-16T10:58:45.511Z] [INFO] [01f31947-eb78-4e32-967b-cb3752cb0543] GET /api/users/me - Request finished with status 304
+[2025-12-16T10:58:45.594Z] [INFO] [e8fcac18-f0ab-449a-b1bc-cde3cc6988c7] GET /api/users/me - Request finished with status 304
+[2025-12-16T10:58:45.663Z] [INFO] [2b213d50-32f1-4fdf-a18e-7a37e34aa507] GET /api/users/me - Request finished with status 304
+[2025-12-16T10:58:45.695Z] [INFO] [60739c4a-8c85-468e-960d-29a47db2be2f] GET /api/notifications - Request finished with status 201
+[2025-12-16T10:58:45.739Z] [INFO] [0ae25eeb-4a4c-4fa4-8969-0ae5e6265a81] GET /api/users/me - Request finished with status 304
+[2025-12-16T10:58:45.947Z] [INFO] [68ac0879-2b6b-4e60-b1f5-8723a66185b0] GET /api/notifications - Request finished with status 201
+[2025-12-16T10:58:46.460Z] [INFO] [ca405ce5-9372-4da6-84cd-4ae0749a2771] GET /api/dashboard/supplier/charts - Request finished with status 304
+[2025-12-16T10:58:46.667Z] [INFO] [8cd2a14a-46d8-4d24-8f9f-33d8114c56e6] GET /api/dashboard/summarySupplier - Request finished with status 304
+[2025-12-16T10:58:47.484Z] [INFO] [b2ac3f20-3a0c-4741-906b-6f4b5fe31041] GET /api/dashboard/supplier/charts - Request finished with status 304
+[2025-12-16T10:58:47.582Z] [INFO] [534556bb-6b9f-461b-ad37-52318b941b75] GET /api/dashboard/summarySupplier - Request finished with status 304
+[2025-12-16T10:58:53.510Z] [INFO] [9b899471-f813-4e49-b822-b291ce82b228] POST /api/auth/logout - Request finished with status 200
+[2025-12-16T10:58:58.695Z] [INFO] [cff2cb57-a427-4e5d-9612-2fd7283535cb] POST /api/auth/logout - Request finished with status 401
+[2025-12-16T10:58:58.698Z] [INFO] [fdb7e2af-e6db-4a51-af04-aa84735c0958] POST /api/auth/logout - Request finished with status 401
+[2025-12-16T10:59:29.826Z] [INFO] [209a2d81-224e-4890-bb1b-76fe13b5d3ee] POST /api/auth/register - Request finished with status 201
+[2025-12-16T10:59:29.902Z] [INFO] [3cb59059-f538-445e-8051-d0f95f66abba] GET /api/users/me - Request finished with status 200
+[2025-12-16T10:59:29.974Z] [INFO] [f7e44773-5ab6-46e1-8bcf-20667bebd66c] GET /api/users/me - Request finished with status 304
+[2025-12-16T10:59:30.064Z] [INFO] [9d78e9fd-8278-4139-a576-b7e002b709e7] GET /api/users/me - Request finished with status 304
+[2025-12-16T10:59:30.140Z] [INFO] [8c96fbed-1ac3-472a-bfeb-fd7febfbb4ae] GET /api/users/me - Request finished with status 304
+[2025-12-16T10:59:30.256Z] [INFO] [75348b06-560f-4306-8a34-737f01ba5a24] GET /api/users/me - Request finished with status 304
+[2025-12-16T10:59:30.357Z] [INFO] [810e463e-ae5c-4ceb-88a9-c5135fea3a71] GET /api/users/me - Request finished with status 304
+[2025-12-16T10:59:30.467Z] [INFO] [ee0c2111-66c5-41e9-8f9a-ad9809db35b2] GET /api/users/me - Request finished with status 304
+[2025-12-16T10:59:30.567Z] [INFO] [32e017b8-bf0b-40aa-a5ca-eba657d8a7b7] GET /api/users/me - Request finished with status 304
+[2025-12-16T10:59:30.630Z] [INFO] [4f2bdaba-0ec4-43a3-9cb6-ad0d9c63a000] GET /api/dashboard/user/charts - Request finished with status 304
+[2025-12-16T10:59:30.853Z] [INFO] [af8d1197-e05a-482f-a63f-54bb4bf1ea93] GET /api/notifications - Request finished with status 201
+[2025-12-16T10:59:30.901Z] [INFO] [8d5a0c21-fa3b-4f6e-af07-8e20151695f2] GET /api/dashboard/user/charts - Request finished with status 304
+[2025-12-16T10:59:30.976Z] [INFO] [cf0173ba-8eaf-41b3-b33e-db23ef64abeb] GET /api/dashboard/summaryUser - Request finished with status 304
+[2025-12-16T10:59:31.003Z] [INFO] [5f9b3c01-1dcd-49eb-856c-90e0ad06670f] GET /api/notifications - Request finished with status 201
+[2025-12-16T10:59:31.690Z] [INFO] [82c3237f-8421-4c67-ad81-46faa0ede46d] GET /api/dashboard/summaryUser - Request finished with status 304
+[2025-12-16T10:59:32.124Z] [INFO] [9e4f385c-7196-4c0e-9e1f-879916a6353a] GET /api/regions - Request finished with status 304
+[2025-12-16T10:59:32.136Z] [INFO] [d1527391-8ea0-4adf-a334-f3d941824fed] GET /api/regions - Request finished with status 304
+[2025-12-16T10:59:32.222Z] [INFO] [3b1ed3db-1e85-4531-b542-e6bf34244f59] GET /api/events/types - Request finished with status 304
+[2025-12-16T10:59:32.236Z] [INFO] [ffcd95a2-a58e-4341-8403-88c03dc97fb0] GET /api/regions - Request finished with status 304
+[2025-12-16T10:59:32.242Z] [INFO] [27110c71-ef27-4436-af54-9c3d35f3673b] GET /api/regions - Request finished with status 304
+[2025-12-16T10:59:32.306Z] [INFO] [2a4afec2-598a-4a78-b1e7-03b6ec19facb] GET /api/events?page=1&pageSize=10 - Request finished with status 200
+[2025-12-16T10:59:32.308Z] [INFO] [f1fae4d5-9aed-49bf-8cd1-6b70a17e9752] GET /api/events/types - Request finished with status 304
+[2025-12-16T10:59:32.407Z] [INFO] [ac637c02-12d2-4fc2-b74b-debddd6a1748] GET /api/events/types - Request finished with status 304
+[2025-12-16T10:59:32.507Z] [INFO] [7f3bb66c-197b-4650-b893-875b4a0104f6] GET /api/events/types - Request finished with status 304
+[2025-12-16T10:59:32.508Z] [INFO] [b62180af-56b8-46b5-abce-054502f6a359] GET /api/events?page=1&pageSize=10 - Request finished with status 304
+[2025-12-16T10:59:33.841Z] [INFO] [560a8401-37ef-49f3-a517-38b431fa2e2f] POST /api/auth/logout - Request finished with status 200
+[2025-12-16T10:59:47.651Z] [INFO] [9da516dd-90f4-496d-a766-caaa1283c789] POST /api/auth/login - Request finished with status 200
+[2025-12-16T10:59:47.728Z] [INFO] [0db1bd00-4b63-4126-be73-b0cc32c152f9] GET /api/users/me - Request finished with status 200
+[2025-12-16T10:59:47.801Z] [INFO] [d855ca6f-bd07-4e0c-9bb6-1a1f8da5fbf3] GET /api/users/me - Request finished with status 304
+[2025-12-16T10:59:47.891Z] [INFO] [28400b1d-4075-47b7-973a-a6009df34f9b] GET /api/users/me - Request finished with status 304
+[2025-12-16T10:59:47.960Z] [INFO] [80ae5b1b-92c6-412f-acb2-c83123ede542] GET /api/users/me - Request finished with status 304
+[2025-12-16T10:59:48.031Z] [INFO] [04b6df84-f774-4a5a-beb9-51b0f6dd80e1] GET /api/users/me - Request finished with status 304
+[2025-12-16T10:59:48.100Z] [INFO] [5b2384a2-53a8-4587-98f8-a92212e2fe5b] GET /api/users/me - Request finished with status 304
+[2025-12-16T10:59:48.679Z] [INFO] [366c68b2-c455-4e82-8efd-f83d8b45bb47] GET /api/dashboard/summaryAdmin - Request finished with status 200
+[2025-12-16T10:59:49.293Z] [INFO] [a4430ff3-6406-4b22-ac51-d7b1174addba] GET /api/dashboard/stats - Request finished with status 200
+[2025-12-16T10:59:49.394Z] [INFO] [a2f87b61-bdae-4dbe-ad39-289d9f972d66] GET /api/dashboard/summaryAdmin - Request finished with status 304
+[2025-12-16T10:59:50.213Z] [INFO] [2d40ad51-8874-4db8-bf68-6593714ae3ea] GET /api/dashboard/stats - Request finished with status 200
+[2025-12-16T10:59:51.612Z] [INFO] [75f58d4e-dd39-4fe0-88f6-49850abb751d] POST /api/auth/logout - Request finished with status 200
+[2025-12-16T10:59:53.803Z] [INFO] [34bcc573-ebe4-46aa-b869-c5d65621693f] POST /api/auth/logout - Request finished with status 401
+[2025-12-16T10:59:53.805Z] [INFO] [94024d42-2d38-4258-9bae-89f251ae4143] POST /api/auth/logout - Request finished with status 401
+[2025-12-16T10:59:55.748Z] [INFO] [0513e99e-d9f3-489a-8286-8d070df4c98c] GET /api/regions - Request finished with status 304
+[2025-12-16T10:59:55.749Z] [INFO] [79971ed2-5e9f-4d73-a86c-71b94642387b] GET /api/kashrut - Request finished with status 304
+[2025-12-16T10:59:55.754Z] [INFO] [635a40e6-4740-4d9c-b06d-8411afa86ab0] GET /api/regions - Request finished with status 304
+[2025-12-16T10:59:55.756Z] [INFO] [cf86830b-37a8-4223-8bab-706be79a4252] GET /api/kashrut - Request finished with status 304
+[2025-12-16T10:59:55.818Z] [INFO] [f52756ba-8477-4e8f-8fc1-3b2b4b5d4a78] GET /api/categories - Request finished with status 304
+[2025-12-16T10:59:55.889Z] [INFO] [8298f498-947d-4be2-ad82-ea2312530c02] GET /api/categories - Request finished with status 304
+[2025-12-16T11:00:37.083Z] [INFO] [bed8e87d-1500-46c4-b691-b4970dc5d17a] POST /api/suppliers/register - Request finished with status 201
+[2025-12-16T11:00:48.341Z] [INFO] [c0a7db30-ceea-40a2-9e9b-44423347c43f] PATCH /api/suppliers/add-images - Request finished with status 201
+[2025-12-16T11:00:48.443Z] [INFO] [0c5d0c02-0db7-4eca-88a6-db1c40ede1ce] GET /api/users/me - Request finished with status 200
+[2025-12-16T11:00:48.550Z] [INFO] [bf7431d7-8fa7-4dde-9a0b-aa4918ecaee3] GET /api/users/me - Request finished with status 304
+[2025-12-16T11:00:48.645Z] [INFO] [c01adf59-7922-49d6-a428-6788e696de52] GET /api/users/me - Request finished with status 304
+[2025-12-16T11:00:48.721Z] [INFO] [d600b4a0-3353-469f-b273-08412684d903] GET /api/users/me - Request finished with status 304
+[2025-12-16T11:00:49.424Z] [INFO] [dcfb5706-0559-4127-9a2f-b0ceccd9e2bd] GET /api/users/me - Request finished with status 304
+[2025-12-16T11:00:49.571Z] [INFO] [c5daf2e9-a9fe-428a-8ba4-10118bbed8b5] GET /api/users/me - Request finished with status 304
+[2025-12-16T11:00:49.642Z] [INFO] [47457cc7-2e59-406f-bf53-77ef1693d8a2] GET /api/notifications - Request finished with status 201
+[2025-12-16T11:00:49.644Z] [INFO] [a1330c89-9bc0-457b-8bf1-2d1e1aa5ff85] GET /api/users/me - Request finished with status 304
+[2025-12-16T11:00:49.877Z] [INFO] [9f92ed65-fd0c-4793-b64d-e0f545abc8c2] GET /api/users/me - Request finished with status 304
+[2025-12-16T11:00:49.977Z] [INFO] [9936b36b-9658-47d9-8e8c-aac767129741] GET /api/notifications - Request finished with status 201
+[2025-12-16T11:00:50.256Z] [INFO] [c366d908-5437-43f3-8e90-12e139470433] GET /api/dashboard/supplier/charts - Request finished with status 304
+[2025-12-16T11:00:50.989Z] [INFO] [cb7ed082-032b-49de-b7da-ceddf3d678bb] GET /api/dashboard/supplier/charts - Request finished with status 304
+[2025-12-16T11:00:51.045Z] [INFO] [bc66091e-0290-4819-bc6f-9fc871fc6b0b] GET /api/dashboard/summarySupplier - Request finished with status 304
+[2025-12-16T11:00:51.697Z] [INFO] [68e84550-cc50-45ba-8741-2e98eaa381e4] GET /api/dashboard/summarySupplier - Request finished with status 304
+[2025-12-16T11:00:51.918Z] [INFO] [e6cc9c17-d23e-4834-9d71-e720ba326170] POST /api/auth/logout - Request finished with status 200
+>>>>>>> 68b14fa4332f3615d9783c21bf7df265dc00d2fb

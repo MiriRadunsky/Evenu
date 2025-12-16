@@ -34,15 +34,47 @@ export const SupplierService = {
   },
 
   async registerSupplier({ userData, supplierData }) {
-    const { user,token } = await authServ.register({ ...userData });
-    const category =await categorySrv.getCategoryById(supplierData.category);    
+    console.log("🔍 התחלת רישום ספק עם נתונים:", { email: userData.email, category: supplierData.category });
+    
+    // ===== כל הבדיקות לפני יצירת משתמש! =====
+    
+    // 1. בדיקת אימייל קיים
+    const existingUser = await models.User.findOne({ email: userData.email });
+    console.log("✅ בדיקת אימייל קיים:", existingUser ? "נמצא משתמש!" : "אימייל פנוי");
+    if (existingUser) throw new AppError(409, 'משתמש כבר קיים');
+    
+    // 2. בדיקת קטגוריה
+    const category = await categorySrv.getCategoryById(supplierData.category);
+    console.log("✅ בדיקת קטגוריה:", category ? "קטגוריה תקינה" : "קטגוריה לא נמצאה");
     if(!category) throw new AppError(404, "קטגוריה לא קיימת");
-    supplierData.category = category._id;
-    const supplier = await SupplierRepository.createSupplier({
-      user: user._id,
-      ...supplierData,
-    });
-    return { user, supplier, token };
+    
+    // 3. בדיקת regions
+    console.log("✅ בדיקת אזורים:", supplierData.regions);
+    if (!supplierData.regions || !Array.isArray(supplierData.regions) || supplierData.regions.length === 0) {
+      throw new AppError(400, "חובה לבחור לפחות אזור שירות אחד");
+    }
+    
+    // ===== רק עכשיו יוצרים את המשתמש =====
+    let user;
+    try {
+      const result = await authServ.register({ ...userData });
+      user = result.user;
+      const token = result.token;
+      
+      supplierData.category = category._id;
+      const supplier = await SupplierRepository.createSupplier({
+        user: user._id,
+        ...supplierData,
+      });
+      
+      return { user, supplier, token };
+    } catch (error) {
+      // אם נכשל ליצור ספק אבל המשתמש כבר נוצר - מוחקים אותו
+      if (user && user._id) {
+        await models.User.findByIdAndDelete(user._id);
+      }
+      throw error;
+    }
   },
  
   async updateSupplierMedia(id,profileImage, media) {

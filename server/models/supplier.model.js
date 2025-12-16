@@ -35,7 +35,7 @@ const supplierSchema = new Schema(
 
     category: { type: Types.ObjectId, ref: 'Category', required: true, index: true },
 
-    regions: { type: String, default: "מרכז", index: true },
+    regions: { type: [String], required: true, index: true },
 
     kashrut: { type: String, trim: true },
 
