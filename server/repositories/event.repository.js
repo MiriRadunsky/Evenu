@@ -50,27 +50,37 @@ export async function updateBudget(eventId, ownerId, newBudget, historyRecord) {
   ).select(EVENT_PROJECTION);
 }
 
+
 export async function findRelevantByOwnerId(ownerId, query = {}) {
-  const { type, from, to } = query;
+  const { type, from, to, status } = query;
 
   const filter = { ownerId };
 
-  // סוג האירוע
-  if (type) {
-    filter.type = type;
-  }
+  if (type) filter.type = type;
 
-  // תנאי תאריכים
-  filter.date = { $gte: new Date() }; // רק אירועים שלא עברו
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+
+  filter.date = { $gte: startOfToday };
+
   if (from) filter.date.$gte = new Date(from);
   if (to) filter.date.$lte = new Date(to);
 
-  return Event.find(filter)
-    .sort(DEFAULT_SORT)
-    .select("_id name date type locationRegion estimatedGuests budget status") // כל השדות הדרושים
-    .lean();
-}
+  if (status && status !== "מתוכנן" && status !== "הושלם" && status !== "בפעולה") {
+    filter.status = status;
+  }
 
+  let events = await Event.find(filter)
+    .sort(DEFAULT_SORT)
+    .select("_id name date type locationRegion estimatedGuests budget status")
+    .lean({ virtuals: true }); 
+
+  if (status && (status === "מתוכנן" || status === "הושלם" || status === "בפעולה")) {
+    events = events.filter(e => e.autoStatus === status);
+  }
+
+  return events;
+}
 
 export async function findAllByOwnerId(ownerId, query = {}) {
   const filter = buildFilter(ownerId, query);
@@ -98,13 +108,10 @@ export async function findByOwnerId(ownerId, query = {}) {
   const skip = (pageNumber - 1) * limitNumber;
 
   let filter = buildFilter(ownerId, { status, type });
-  // If filtering by a virtual status (not DB field), fetch all for owner, filter in JS, then page
   if (status && (status === "מתוכנן" || status === "הושלם" || status === "בפעולה")) {
-    // Fetch all events for owner/type
     let all = await Event.find(buildFilter(ownerId, { type }))
       .sort(DEFAULT_SORT)
       .select(EVENT_PROJECTION);
-    // Filter by virtual status
     all = all.filter(e => {
       if (typeof e.autoStatus === 'function') return e.autoStatus() === status;
       return e.autoStatus === status;
@@ -118,7 +125,6 @@ export async function findByOwnerId(ownerId, query = {}) {
       limit: limitNumber,
     };
   } else {
-    // DB status filter
     const [items, total] = await Promise.all([
       Event.find(filter)
         .sort(DEFAULT_SORT)
