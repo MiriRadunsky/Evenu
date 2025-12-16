@@ -1,100 +1,99 @@
 
 import SupplierRequest from "../models/request.model.js";
+import Supplier from "../models/supplier.model.js";
+import Category from "../models/category.model.js";
 function buildRequestSearchFilter(searchTerm) {
-  if (!searchTerm || typeof searchTerm !== "string" || !searchTerm.trim()) {
-    return {};
-  }
-
-  const regex = new RegExp(searchTerm.trim(), "i");
-
-  return {
-    $or: [
-      { notesFromClient: regex },
-      { "basicEventSummary.eventName": regex },
-      { "basicEventSummary.location": regex },
-      { "basicEventSummary.type": regex },
-    ],
-  };
+  // No-op: filtering will be done in JS after population
+  return {};
 }
 
 export const RequestRepository = {
 
   async getRequestsByUserId(
     userId,
-    { page = 1, limit = 5, status, eventId, searchTerm } = {}
+    { page = 1, limit = 5, status, eventId, searchTerm, category } = {}
   ) {
     const baseFilter = { clientId: userId };
-
-    // If status is a virtual (e.g., "פג" for expired), filter in JS after fetching all
     const isVirtualStatus = status === "פג";
-
     if (!isVirtualStatus && status && status !== "הכל") {
       baseFilter.status = status;
     }
-
     if (eventId) {
       baseFilter.eventId = eventId;
     }
 
-    const searchFilter = buildRequestSearchFilter(searchTerm);
+    // If category provided (label or id), find supplier ids in that category and filter
+    if (category) {
+      let catDoc = null;
+      // try by id
+      try {
+        catDoc = await Category.findById(category).lean();
+      } catch (e) {
+        catDoc = null;
+      }
+      if (!catDoc) {
+        // try by label
+        catDoc = await Category.findOne({ label: category }).lean();
+      }
+      if (catDoc) {
+        const suppliers = await Supplier.find({ category: catDoc._id }).select("_id").lean();
+        const supplierIds = suppliers.map(s => s._id);
+        if (supplierIds.length === 0) {
+          // no suppliers in category -> return empty page
+          return {
+            items: [],
+            total: 0,
+            page: Number(page) || 1,
+            pageSize: Number(limit) || 5,
+            totalPages: 1,
+          };
+        }
+        baseFilter.supplierId = { $in: supplierIds };
+      }
+    }
 
-    const query = {
-      ...baseFilter,
-      ...searchFilter,
-    };
-
+    const query = { ...baseFilter };
     const pageNumber = Number(page) || 1;
     const limitNumber = Number(limit) || 10;
     const skip = (pageNumber - 1) * limitNumber;
 
+    // Always populate supplier for search
+    let all = await SupplierRequest.find(query)
+      .populate("eventId")
+      .populate({
+        path: "supplierId",
+        populate: {
+          path: "user",
+          select: "name email",
+        },
+      })
+      .sort({ createdAt: -1 });
+
+    // Filter by virtual status if needed
     if (isVirtualStatus) {
-      // Fetch all, filter by virtual status (expired)
-      let all = await SupplierRequest.find(query)
-        .populate("eventId")
-        .populate({
-          path: "supplierId",
-          populate: {
-            path: "user",
-            select: "name email",
-          },
-        })
-        .sort({ createdAt: -1 });
-      // Virtual: expired = expiresAt < now
       const now = new Date();
       all = all.filter(r => r.expiresAt && r.expiresAt < now);
-      const total = all.length;
-      const items = all.slice(skip, skip + limitNumber);
-      return {
-        items,
-        total,
-        page: pageNumber,
-        pageSize: limitNumber,
-        totalPages: Math.ceil(total / limitNumber) || 1,
-      };
-    } else {
-      const [items, total] = await Promise.all([
-        SupplierRequest.find(query)
-          .populate("eventId")
-          .populate({
-            path: "supplierId",
-            populate: {
-              path: "user",
-              select: "name email",
-            },
-          })
-          .sort({ createdAt: -1 })
-          .skip(skip)
-          .limit(limitNumber),
-        SupplierRequest.countDocuments(query),
-      ]);
-      return {
-        items,
-        total,
-        page: pageNumber,
-        pageSize: limitNumber,
-        totalPages: Math.ceil(total / limitNumber) || 1,
-      };
     }
+
+    // Filter by supplier name/email if searchTerm is present
+    if (searchTerm && searchTerm.trim()) {
+      const regex = new RegExp(searchTerm.trim(), "i");
+      all = all.filter(r => {
+        const supplierUser = r.supplierId && r.supplierId.user;
+        if (!supplierUser) return false;
+        return regex.test(supplierUser.name) || regex.test(supplierUser.email);
+      });
+    }
+
+    const total = all.length;
+    const items = all.slice(skip, skip + limitNumber);
+    return {
+      items,
+      total,
+      page: pageNumber,
+      pageSize: limitNumber,
+      totalPages: Math.ceil(total / limitNumber) || 1,
+    };
   },
   async createRequest({
     eventId,
@@ -131,7 +130,7 @@ export const RequestRepository = {
 
    async getBySupplier(
     supplierId,
-  { page = 1, limit = 5, status, eventId, searchTerm } = {}
+    { page = 1, limit = 10, status, eventId, searchTerm, category } = {}
   ) {
     const baseFilter = { supplierId };
 

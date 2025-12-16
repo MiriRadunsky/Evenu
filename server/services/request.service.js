@@ -8,20 +8,21 @@ import { SupplierRepository } from "../repositories/suppliers.repositry.js";
 
 export const RequestService = {
 
-  async getRequestsByUserId(userId, { page, limit, status, eventId, searchTerm }) {
+  async getRequestsByUserId(userId, { page, limit, status, eventId, searchTerm, category }) {
     return RequestRepository.getRequestsByUserId(userId, {
       page,
       limit,
       status,
       eventId,
-      searchTerm
+      searchTerm,
+      category,
     });
   },
 
-  async getRequestsBySupplierUserId(userId, { page, limit, status, eventId, searchTerm }) {
+  async getRequestsBySupplierUserId(userId, { page, limit, status, eventId, searchTerm, category }) {
     const supplierId = await SupplierRepository.getSupplierIdByUserId(userId);
     if (!supplierId) throw new Error("ספק לא נמצא");
-    return await RequestRepository.getBySupplier(supplierId, { page, limit, status, eventId, searchTerm });
+    return await RequestRepository.getBySupplier(supplierId, { page, limit, status, eventId, searchTerm, category });
   },
 
   // יוצרת thread ומקשרת לבקשה
