@@ -73,6 +73,7 @@ if (q && q.trim()) {
         .populate("user", "name email")
         .populate("category", "label")
         .sort({ createdAt: -1 })
+        .skip(Number(skip))
         .limit(Number(limit))
         .lean(),
       Supplier.countDocuments(filter),

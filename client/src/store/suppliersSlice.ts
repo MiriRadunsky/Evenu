@@ -9,6 +9,11 @@ export interface SupplierState {
   loadingList: boolean;
   loadingOne: boolean;
   error?: string;
+  // pagination
+  page: number;
+  total: number;
+  limit: number;
+  pages: number;
 }
 
 export interface SupplierListResponse {
@@ -26,7 +31,7 @@ export type SupplierFilters = Record<string, string | number | boolean | undefin
 
 // --- getAll ---
 export const fetchSuppliers = createAsyncThunk<
-  Supplier[],
+  SupplierListResponse,
   SupplierFilters | undefined,
   { rejectValue: string }
 >("suppliers/fetchAll", async (filters, { rejectWithValue }) => {
@@ -34,12 +39,9 @@ export const fetchSuppliers = createAsyncThunk<
     const { data } = await api.get<SupplierListResponse>("/suppliers", {
       params: filters,
     });
-    console.log(data);
-    return data.suppliers;
+    return data;
   } catch (err: unknown) {
-    return rejectWithValue(
-      getErrorMessage(err, "שגיאה בטעינת ספקים")
-    );
+    return rejectWithValue(getErrorMessage(err, "שגיאה בטעינת ספקים"));
   }
 });
 
@@ -69,6 +71,10 @@ const initialState: SupplierState = {
   loadingList: false,
   loadingOne: false,
   error: undefined,
+  page: 1,
+  total: 0,
+  limit: 20,
+  pages: 1,
 };
 
 const suppliersSlice = createSlice({
@@ -86,13 +92,14 @@ const suppliersSlice = createSlice({
         state.loadingList = true;
         state.error = undefined;
       })
-      .addCase(
-        fetchSuppliers.fulfilled,
-        (state, action: PayloadAction<Supplier[]>) => {
-          state.loadingList = false;
-          state.suppliersList = action.payload;
-        }
-      )
+      .addCase(fetchSuppliers.fulfilled, (state, action: PayloadAction<SupplierListResponse>) => {
+        state.loadingList = false;
+        state.suppliersList = action.payload.suppliers;
+        state.total = action.payload.pagination.total;
+        state.page = action.payload.pagination.page;
+        state.limit = action.payload.pagination.limit;
+        state.pages = action.payload.pagination.pages;
+      })
       .addCase(fetchSuppliers.rejected, (state, action) => {
         state.loadingList = false;
         state.error =
