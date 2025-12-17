@@ -1,70 +1,6 @@
-// import { AppError } from '../middlewares/error.middleware.js';
-// import * as repo from '../repositories/event.repository.js';
-// import { EVENT_TYPES } from '../shared/eventTypes.shared.js';
-
-// export async function createEvent(ownerId, data) {
-
-//   const event = await repo.create({ ...data, ownerId });
-//   return event;
-// }
-
-// export async function getEventById(id, ownerId) {
-//   const event = await repo.findById(id);
-
-//   if (!event) {
-//     throw new AppError(404, 'The event doesn\'t exist');
-//   }
-
-//   if (event.ownerId._id.toString() !== ownerId.toString()) {
-//     throw new AppError(403, 'You are not authorized to view this event');
-//   }
-
-//   return event;
-// }
-// export function getEvevtTypes() {
-//   return EVENT_TYPES;
-
-// }
-
-// export async function getUserEvents(ownerId, query) {
-//   const { items, total, page, limit } = await repo.findByOwnerId(ownerId, query);
-
-//   return {
-//     events: items,
-//     pagination: {
-//       total,
-//       page,
-//       limit,
-//       pages: Math.ceil(total / limit)
-//     }
-//   };
-// }
-
-// export async function updateEvent(id, ownerId, data) {
-//   const event = await repo.updateById(id, ownerId, data);
-
-//   if (!event) {
-//     throw new AppError(404, 'The event doesn\'t exist or you are not authorized to update it');
-//   }
-
-//   return event;
-// }
-
-// export async function deleteEvent(id, ownerId) {
-//   const event = await repo.deleteById(id, ownerId);
-
-//   if (!event) {
-//     throw new AppError(404, 'The event doesn\'t exist or you are not authorized to delete it');
-//   }
-
-//   return event;
-// }
-
-// services/event.service.js
 import { AppError } from "../middlewares/error.middleware.js";
 import * as repo from "../repositories/event.repository.js";
 import { EVENT_TYPES } from "../shared/eventTypes.shared.js";
-import { NotificationService } from "./notification.service.js";
 
 function buildPagination(total, page, limit) {
   return {
@@ -74,7 +10,6 @@ function buildPagination(total, page, limit) {
     pages: Math.ceil(total / limit),
   };
 }
-
 export async function updateBudgetAllocated(eventId, userId, amount, session) {
   const event = await repo.getEventById(eventId);
   if (!event) {
@@ -104,8 +39,6 @@ if (eventDate < new Date()) {
     amount,
     session
   );
-  console.log(updatedEvent);
-
   if (!updatedEvent) {
     throw new AppError(
       400,
@@ -132,21 +65,11 @@ export async function createEvent(ownerId, data) {
   const event = await repo.create(eventData);
   return { ...event.toObject(), status: event.autoStatus };
 }
-
-// // 🔹 כל האירועים – בלי פגינציה
-// export async function getUserEvents(ownerId, query) {
-//   const events = await repo.findAllByOwnerId(ownerId, query);
-//   return { events };
-// }
-
-// 🔹 רק אירועים רלוונטיים (לפי date + פילטרים ב-query)
 export async function getUserRelevantEvents(ownerId, query) {
   const events = await repo.findRelevantByOwnerId(ownerId, query);
   console.log('📋 Relevant events for user:', events.length, 'events');
   return { events };
 }
-
-
 export async function getEventById(id, ownerId) {
   const event = await repo.getEventById(id);
 
@@ -163,13 +86,9 @@ export async function getEventById(id, ownerId) {
   }
   return { ...event.toObject(), status: event.autoStatus };
 }
-
-
 export function getEventTypes() {
   return EVENT_TYPES;
 }
-
-// 🔹 אם תרצי גם פגינציה
 export async function getUserEventsPaged(ownerId, query) {
   const { items, total, page, limit } = await repo.findByOwnerId(
     ownerId,
@@ -181,7 +100,6 @@ export async function getUserEventsPaged(ownerId, query) {
     pagination: buildPagination(total, page, limit),
   };
 }
-
 export async function getUserEvents(ownerId, query = {}) {
   const { items, total, page, limit } = await repo.findByOwnerId(
     ownerId,
@@ -189,7 +107,6 @@ export async function getUserEvents(ownerId, query = {}) {
   );
 
   const events = items
-    // אם כבר מייננת ב-DEFAULT_SORT לפי date, אפשר לוותר
     .sort((a, b) => new Date(a.date) - new Date(b.date))
     .map((e) => ({
       ...e.toObject(),
@@ -203,10 +120,6 @@ export async function getUserEvents(ownerId, query = {}) {
     limit,
   };
 }
-
-/**
- * עדכון אירוע
- */
 export async function updateEvent(id, ownerId, data) {
   const event = await repo.updateById(id, ownerId, data);
   if (!event) {
@@ -215,10 +128,6 @@ export async function updateEvent(id, ownerId, data) {
 
   return event;
 }
-
-/**
- * מחיקת אירוע
- */
 export async function deleteEvent(id, ownerId) {
   const event = await repo.deleteById(id, ownerId);
 
