@@ -9,6 +9,9 @@ getAllRequestsByUserId: asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const { page = 1, limit = 10, status, eventId, searchTerm, category } = req.query;
 
+  console.log("Filters:", { status, eventId, searchTerm, category });
+  console.log("Received eventId in getAllRequestsByUserId:", eventId);
+
   const result = await RequestService.getRequestsByUserId(userId, {
     page: Number(page),
     limit: Number(limit),
@@ -25,6 +28,9 @@ getAllRequestsByUserId: asyncHandler(async (req, res) => {
   getSupplierRequests: asyncHandler(async (req, res) => {
      const userId = req.user._id;
      const { page = 1, limit = 10, status, eventId, searchTerm, category } = req.query;
+
+    console.log("Filters:", { status, eventId, searchTerm, category });
+    console.log("Received eventId in getSupplierRequests:", eventId);
 
     const result = await RequestService.getRequestsBySupplierUserId(userId, {
       page,

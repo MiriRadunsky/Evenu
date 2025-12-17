@@ -20,3 +20,25 @@
 [2025-12-16T10:32:23.903Z] [ERROR] [658593f2-0911-435a-b87c-89bdf82adbd0] POST /api/suppliers/register - Supplier validation failed: regions: Cast to string failed for value "[ 'גוש דן' ]" (type Array) at path "regions"
 [2025-12-16T10:45:41.841Z] [ERROR] [ff9a93dd-8db2-411c-bf8c-8a9ae545c0c1] POST /api/suppliers/register - Supplier validation failed: regions: Cast to string failed for value "[ 'גוש דן' ]" (type Array) at path "regions"
 [2025-12-16T11:37:57.467Z] [ERROR] [2926f43a-bc3e-49cc-ab14-24d8a1f2a294] POST /api/auth/login - ערכים לא תקינים
+[2025-12-16T20:41:32.863Z] [ERROR] [10b62a7f-2f17-43a1-9518-0fe80798a1f0] GET /api/dashboard/supplier/charts - ספק לא נמצא
+[2025-12-16T20:41:32.884Z] [ERROR] [f8e5b19e-be55-4edd-b10f-8e26633637e6] GET /api/dashboard/summarySupplier - ספק לא נמצא
+[2025-12-16T20:41:33.462Z] [ERROR] [98e6955a-74cf-416d-bd66-f1e7d3a72055] GET /api/dashboard/supplier/charts - ספק לא נמצא
+[2025-12-16T20:41:33.553Z] [ERROR] [037eeef0-176e-4d88-bf66-188950cfd517] GET /api/dashboard/summarySupplier - ספק לא נמצא
+[2025-12-16T20:41:36.386Z] [ERROR] [45597bea-58fc-4854-890a-a83cb15b481e] GET /api/contracts/supplier?page=1&debouncedSearch= - ספק לא נמצא
+[2025-12-16T20:41:36.389Z] [ERROR] [88a1cdda-70bf-49d1-aed7-219a37fddf7f] GET /api/requests/supplier - ספק לא נמצא
+[2025-12-16T20:41:36.832Z] [ERROR] [5049ea68-678d-43d3-88bb-c5d249165b14] GET /api/contracts/supplier?page=1&debouncedSearch= - ספק לא נמצא
+[2025-12-16T20:41:36.841Z] [ERROR] [a61e8fee-27d7-4777-a61f-7bf586dd08d2] GET /api/requests/supplier - ספק לא נמצא
+[2025-12-16T20:41:37.737Z] [ERROR] [29b20866-30df-471a-998f-00da624fbaec] GET /api/events/relevant - Forbidden: insufficient role
+[2025-12-16T20:41:37.957Z] [ERROR] [d5e9263f-d6df-4e44-a631-e0e18b5bd3ed] GET /api/events/relevant - Forbidden: insufficient role
+[2025-12-16T20:41:37.964Z] [ERROR] [8569e7a4-585e-49ea-b6b3-a0ef910752bb] GET /api/requests/supplier?page=1&limit=10&searchTerm= - ספק לא נמצא
+[2025-12-16T20:41:38.467Z] [ERROR] [00f3c265-196d-427f-bc10-f58c90bad86f] GET /api/requests/supplier?page=1&limit=10&searchTerm= - ספק לא נמצא
+[2025-12-16T20:46:42.949Z] [ERROR] [7c5700ba-9ce5-4e15-9dee-237912d3c1ff] GET /api/events/relevant - Forbidden: insufficient role
+[2025-12-16T20:46:43.163Z] [ERROR] [7e85b1e7-abae-4f64-b664-2c49d4af2128] GET /api/events/relevant - Forbidden: insufficient role
+[2025-12-16T20:46:54.639Z] [ERROR] [f0f9e708-cc6a-4421-9eaf-eb1e8978b49f] GET /api/events/relevant - Forbidden: insufficient role
+[2025-12-16T20:46:54.979Z] [ERROR] [2035e1d2-63c5-45dc-81bf-255df394ac26] GET /api/events/relevant - Forbidden: insufficient role
+[2025-12-16T20:47:03.437Z] [ERROR] [803b6604-a0a3-420c-8b33-c639e0af8e6e] GET /api/events/relevant - Forbidden: insufficient role
+[2025-12-16T20:47:03.717Z] [ERROR] [1d051709-e509-4b7c-a2ba-d4b5ae6d2aef] GET /api/events/relevant - Forbidden: insufficient role
+[2025-12-16T20:49:08.316Z] [ERROR] [c079d470-9a90-4e6d-8d24-b235e4f285a1] GET /api/events/relevant - Forbidden: insufficient role
+[2025-12-16T20:49:08.822Z] [ERROR] [a54fe800-45b2-430c-a0bc-043b9caa2486] GET /api/events/relevant - Forbidden: insufficient role
+[2025-12-16T20:49:56.242Z] [ERROR] [9305a818-5437-4a7b-abcb-b48fb61fe661] GET /api/events/relevant - Forbidden: insufficient role
+[2025-12-16T20:49:56.871Z] [ERROR] [2f46f284-c265-415a-903f-29c2856010a8] GET /api/events/relevant - Forbidden: insufficient role

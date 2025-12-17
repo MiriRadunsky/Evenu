@@ -23,7 +23,9 @@ export const SupplierRepository = {
   async findMany({ category, region, active, q, page = 1, limit = 20 }) {
     const filter = {};
 
-    if (region) filter.regions = region.trim();
+    if (region) {
+      filter.regions = { $in: [region.trim()] };
+    }
 
     filter.status = "מאושר";
 
@@ -65,7 +67,8 @@ if (q && q.trim()) {
       }
     }
 
-    const skip = (Number(page) - 1) * Number(limit);
+  const skip = (Number(page) - 1) * Number(limit);
+  console.log('SupplierRepository.findMany filter:', filter, 'limit:', limit, 'page:', page);
 
     const [items, total] = await Promise.all([
       Supplier.find(filter)
@@ -73,6 +76,7 @@ if (q && q.trim()) {
         .populate("user", "name email")
         .populate("category", "label")
         .sort({ createdAt: -1 })
+        .skip(Number(skip))
         .limit(Number(limit))
         .lean(),
       Supplier.countDocuments(filter),

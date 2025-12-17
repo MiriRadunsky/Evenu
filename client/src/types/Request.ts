@@ -26,4 +26,5 @@ export interface Request {
       email: string;
     };
   };
+  threadId?: string;
 }
