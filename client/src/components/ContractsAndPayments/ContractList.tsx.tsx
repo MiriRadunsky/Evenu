@@ -18,6 +18,7 @@ import {
   signContract,
   fetchContractsBySupplier,
   fetchContractsByClient,
+  cancelContract,
 } from "../../store/contractsSlice";
 import { SignContractDialog } from "./SignContractDialog";
 import { ContractCard } from "./ContractCard";
@@ -84,7 +85,7 @@ const [debouncedSearch, setDebouncedSearch] = useState("");
 
   useEffect(() => {
     if (type === "client") {
-      dispatch(fetchEvents({ page: 1, pageSize: 10 })); // Pass required arguments
+      dispatch(fetchEvents({ page: 1, pageSize: 10 })); 
     }
   }, [type, dispatch]);
 
@@ -110,6 +111,23 @@ const [debouncedSearch, setDebouncedSearch] = useState("");
       );
     }
   }, [dispatch, type, selectedTab, currentPage, selectedEventId, debouncedSearch]);
+const handleCancelContract = async (contractId: string) => {
+  try {
+    const ok = window.confirm("בטוחה שתרצי לבטל את החוזה? לא ניתן לשחזר.");
+    if (!ok) return;
+
+    await dispatch(
+      cancelContract({
+        party: type,          
+        contractId,
+      })
+    ).unwrap();
+
+    toast.success("החוזה בוטל בהצלחה");
+  } catch (err: unknown) {
+    toast.error(String(err));
+  }
+};
 
 
 
@@ -315,7 +333,6 @@ const [debouncedSearch, setDebouncedSearch] = useState("");
           <TabsTrigger value="ממתין ללקוח">ממתין ללקוח</TabsTrigger>
           <TabsTrigger value="ממתין לספק">ממתין לספק</TabsTrigger>
           <TabsTrigger value="טיוטה">טיוטה</TabsTrigger>
-          <TabsTrigger value="הושלם">הושלם</TabsTrigger>
           <TabsTrigger value="מבוטל">מבוטל</TabsTrigger>
         </TabsList>
 
@@ -388,6 +405,7 @@ const [debouncedSearch, setDebouncedSearch] = useState("");
                         onDownload={() => handleDownloadContract(contract._id)}
                         onSignClick={() => handleSignContract(contract._id)}
                         signing={signingContractId === contract._id}
+                          onCancel={() => handleCancelContract(contract._id)}  
                         canSign={canSign}
                         bothSigned={bothSigned}
                         signaturesSummary={{

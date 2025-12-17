@@ -156,12 +156,10 @@ export async function cancelContractService(contractId, userId, party) {
   const contract = await getContractById(contractId);
   if (!contract) throw new AppError(404, "חוזה לא נמצא");
 
-  // אסור לבטל חוזה שכבר פעיל
   if (contract.status === "פעיל") {
     throw new AppError(400, "לא ניתן לבטל חוזה שכבר פעיל");
   }
 
-  // בדיקות הרשאה לפי צד
   if (party === "supplier") {
     const suppllierId = await SupplierRepository.getSupplierIdByUserId(userId);
     if (!suppllierId) throw new AppError(404, "ספק לא נמצא");
@@ -177,7 +175,6 @@ export async function cancelContractService(contractId, userId, party) {
     throw new AppError(400, "צד לא תקין");
   }
 
-  // עדכון הסטטוס למבוטל
   const updatedContract = await updateContract(contractId, { status: "מבוטל" });
   return updatedContract;
 }
