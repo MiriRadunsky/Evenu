@@ -150,6 +150,15 @@ export default function SupplierDashboard() {
     dispatch(fetchDashboardChartsSupplier());
   }, [dispatch]);
 
+  useEffect(() => {
+    console.log("📊 [ספק] נתוני גרפים:", { 
+      revenueByMonth, 
+      paymentsByStatus,
+      hasRevenueData: revenueByMonth?.length > 0,
+      hasStatusData: paymentsByStatus?.length > 0 
+    });
+  }, [revenueByMonth, paymentsByStatus]);
+
   const upcomingFirst = upcomingEvent?.[0] || null;
 
   const formattedPendingTotal = `₪${pendingPaymentsTotal.toLocaleString(
@@ -275,10 +284,10 @@ export default function SupplierDashboard() {
               הכנסות לפי חודש
             </CardTitle>
           </CardHeader>
-          <CardContent className="h-72 w-full overflow-hidden">
+          <CardContent>
             {revenueByMonth && revenueByMonth.length > 0 ? (
-              <div className="w-full h-full">
-                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+              <div className="h-72">
+                <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={revenueByMonth}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--primary))" />
                   <XAxis dataKey="month" />
@@ -296,7 +305,7 @@ export default function SupplierDashboard() {
                   />
                 </BarChart>
               </ResponsiveContainer>
-              </div>
+            </div>
             ) : (
               <p className="text-sm text-muted-foreground text-center py-8">
                 אין עדיין נתוני הכנסה להצגה.
@@ -313,16 +322,18 @@ export default function SupplierDashboard() {
               תשלומים לפי סטטוס
             </CardTitle>
           </CardHeader>
-          <CardContent className="h-72 w-full overflow-hidden">
+          <CardContent>
             {paymentsByStatus && paymentsByStatus.length > 0 ? (
-              <div className="w-full h-full">
-                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={paymentsByStatus}
                     dataKey="count"
                     nameKey="status"
-                    outerRadius={90}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={80}
                     label
                   >
                     {paymentsByStatus.map((item, idx) => (
@@ -336,7 +347,7 @@ export default function SupplierDashboard() {
                   <Legend />
                 </PieChart>
               </ResponsiveContainer>
-              </div>
+            </div>
             ) : (
               <p className="text-sm text-muted-foreground text-center py-8">
                 אין מספיק נתוני תשלומים לסטטיסטיקה.

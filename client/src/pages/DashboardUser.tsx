@@ -146,6 +146,15 @@ export default function Dashboard() {
     dispatch(fetchDashboardChartsUser()); 
   }, [dispatch]);
 
+  useEffect(() => {
+    console.log("📊 נתוני גרפים:", { 
+      paymentsByMonth, 
+      paymentsByStatus,
+      hasMonthData: paymentsByMonth?.length > 0,
+      hasStatusData: paymentsByStatus?.length > 0 
+    });
+  }, [paymentsByMonth, paymentsByStatus]);
+
   const upcomingFirst: Event | null = upcomingEvent?.[0] || null;
 
   const formattedPendingTotal = `₪${pendingPaymentsTotal.toLocaleString(
@@ -263,17 +272,17 @@ export default function Dashboard() {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
-        <Card className="w-full overflow-hidden">
+        <Card className="w-full">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <DollarSign className="h-5 w-5 text-primary" />
               תשלומים לפי חודש
             </CardTitle>
           </CardHeader>
-          <CardContent className="h-72 w-full overflow-hidden">
+          <CardContent>
             {paymentsByMonth && paymentsByMonth.length > 0 ? (
-              <div className="w-full h-full">
-                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+              <div className="h-72">
+                <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={paymentsByMonth}>
                   <CartesianGrid
                     strokeDasharray="3 3"
@@ -294,7 +303,7 @@ export default function Dashboard() {
                   />
                 </BarChart>
               </ResponsiveContainer>
-              </div>
+            </div>
             ) : (
               <p className="text-sm text-muted-foreground text-center py-8">
                 אין עדיין נתוני תשלומים להצגה.
@@ -304,23 +313,25 @@ export default function Dashboard() {
         </Card>
 
         {/* תשלומים לפי סטטוס */}
-        <Card className="w-full overflow-hidden">
+        <Card className="w-full">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5 text-primary" />
               תשלומים לפי סטטוס
             </CardTitle>
           </CardHeader>
-          <CardContent className="h-72 w-full overflow-hidden">
+          <CardContent>
             {paymentsByStatus && paymentsByStatus.length > 0 ? (
-              <div className="w-full h-full">
-                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={paymentsByStatus}
                     dataKey="count"
                     nameKey="status"
-                    outerRadius={90}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={80}
                     label
                   >
                     {paymentsByStatus.map((item, idx) => (
@@ -334,7 +345,7 @@ export default function Dashboard() {
                   <Legend />
                 </PieChart>
               </ResponsiveContainer>
-              </div>
+            </div>
             ) : (
               <p className="text-sm text-muted-foreground text-center py-8">
                 אין מספיק נתוני תשלומים לסטטיסטיקה.
