@@ -39,7 +39,7 @@ export const SendRequestDialog = ({
   isLoading,
   isSending,
 }: SendRequestDialogProps) => {
-  const { eventsList, loadingList, error } = useSelector(
+  const { eventsList, loadingList } = useSelector(
       (state: RootState) => state.events);
   console.log("events", eventsList);
   
@@ -126,7 +126,7 @@ export const SendRequestDialog = ({
           </div>
 
           <DialogFooter>
-            <Button type="submit" disabled={isLoading || !selectedEvent || isRegionMismatch}>
+            <Button type="submit" disabled={isLoading || !selectedEvent || Boolean(isRegionMismatch)}>
               {isRegionMismatch
                 ? "אזור הספק לא תואם לאירוע"
                 : isSending

@@ -84,9 +84,9 @@ const [debouncedSearch, setDebouncedSearch] = useState("");
 
   useEffect(() => {
     if (type === "client") {
-      dispatch(fetchEvents());
+      dispatch(fetchEvents({ page: 1, pageSize: 10 })); // Pass required arguments
     }
-  }, [dispatch, type]);
+  }, [type, dispatch]);
 
   useEffect(() => {
     const statusFilter = selectedTab === "הכל" ? undefined : selectedTab;
