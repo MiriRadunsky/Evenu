@@ -1,4 +1,3 @@
-// controllers/budget.controller.js
 import {
   getUserRelevantEvents,
   updateEventBudget,

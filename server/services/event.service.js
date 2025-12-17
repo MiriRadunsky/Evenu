@@ -146,9 +146,7 @@ export async function getUserRelevantEvents(ownerId, query) {
   return { events };
 }
 
-/**
- * קבלת אירוע לפי ID
- */
+
 export async function getEventById(id, ownerId) {
   const event = await repo.getEventById(id);
 
@@ -166,9 +164,7 @@ export async function getEventById(id, ownerId) {
   return { ...event.toObject(), status: event.autoStatus };
 }
 
-/**
- * קבלת סוגי אירועים
- */
+
 export function getEventTypes() {
   return EVENT_TYPES;
 }

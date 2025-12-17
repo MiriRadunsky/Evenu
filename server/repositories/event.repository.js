@@ -72,7 +72,6 @@ export async function findRelevantByOwnerId(ownerId, query = {}) {
 
   let events = await Event.find(filter)
     .sort(DEFAULT_SORT)
-    .select("_id name date type locationRegion estimatedGuests budget status")
     .lean({ virtuals: true }); 
 
   if (status && (status === "מתוכנן" || status === "הושלם" || status === "בפעולה")) {

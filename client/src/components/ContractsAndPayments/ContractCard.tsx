@@ -6,6 +6,7 @@ import {
   CheckCircle,
   Download,
   PenTool,
+  X,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
@@ -25,6 +26,7 @@ interface ContractCardProps {
   onToggleSignatures: () => void;
   onDownload: () => void;
   onSignClick: () => void;
+  onCancel: () => void;
   signing: boolean;
   canSign: boolean;
   bothSigned: boolean;
@@ -38,6 +40,7 @@ export function ContractCard({
   onToggleSignatures,
   onDownload,
   onSignClick,
+  onCancel,
   signing,
   canSign,
   bothSigned,
@@ -62,6 +65,7 @@ export function ContractCard({
         return "bg-white text-black border-slate-300";
     }
   };
+  const canCancel = contract.status !== "מבוטל" && contract.status !== "פעיל" && canSign;
 
   return (
     <Card className="rounded-xl border border-primary/30 text-slate-700 bg-white">
@@ -129,13 +133,9 @@ export function ContractCard({
           </div>
         )}
 
-        {/* כפתורי פעולה */}
         <div className="flex flex-wrap gap-3 pt-2">
           {contract.s3Key && (
-            <Button
-              onClick={onDownload}
-              className="flex-1 min-w-[150px]"
-            >
+            <Button onClick={onDownload} className="flex-1 min-w-[150px]">
               <Download className="w-4 h-4 ml-2" />
               צפייה בחוזה
             </Button>
@@ -150,6 +150,17 @@ export function ContractCard({
             >
               <PenTool className="w-4 h-4 ml-2" />
               {signing ? "חותם..." : "חתום על החוזה"}
+            </Button>
+          )}
+          {canCancel && (
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={onCancel}
+              className="flex-1 min-w-[150px]"
+            >
+              <X className="w-4 h-4 ml-2" />
+              בטל חוזה
             </Button>
           )}
         </div>
