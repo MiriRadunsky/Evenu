@@ -19,7 +19,6 @@ import {
   Users,
   UserCheck,
   Calendar,
-  BarChart3,
   LogOut,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
