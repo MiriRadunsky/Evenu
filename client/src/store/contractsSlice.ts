@@ -142,12 +142,29 @@ export const signContract = createAsyncThunk<
    return rejectWithValue(getErrorMessage(err,'שגיאה בחתימת חוזה'));
   }
 });
+export const cancelContract = createAsyncThunk<
+  { updatedContract: Contract },
+  {
+    party: "supplier" | "client";
+    contractId: string;
+  },
+  { rejectValue: string }
+>("contracts/cancelContract", async (params, { rejectWithValue }) => {
+  try {
+    const { contractId, party } = params;
 
+    const { data } = await api.post(`/contracts/${contractId}/cancel`, {
+      party,
+    });
+    return data as { updatedContract: Contract };
+  } catch (err: unknown) {
+    return rejectWithValue(getErrorMessage(err, "שגיאה בביטול חוזה"));
+  }
+});
 const contractsSlice = createSlice({
   name: "contracts",
   initialState,
   reducers: {
-    // אם תרצי לנקות state בלוגאאוט וכדומה
     resetContractsState: () => initialState,
   },
   extraReducers: (builder) => {
@@ -229,7 +246,29 @@ const contractsSlice = createSlice({
         state.loading = false;
         state.error =
           (action.payload as string) || "Failed to sign contract";
-      });
+      })
+            /* -------- cancel -------- */
+      .addCase(cancelContract.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        cancelContract.fulfilled,
+        (state, action: PayloadAction<{ updatedContract: Contract }>) => {
+          state.loading = false;
+          const updated = action.payload.updatedContract;
+
+          const index = state.data.items.findIndex((c) => c._id === updated._id);
+          if (index !== -1) {
+            state.data.items[index] = updated;
+          } 
+        }
+      )
+      .addCase(cancelContract.rejected, (state, action) => {
+        state.loading = false;
+        state.error = (action.payload as string) || "Failed to cancel contract";
+      })
+
   },
 });
 

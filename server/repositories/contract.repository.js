@@ -62,8 +62,8 @@ export async function getContractById(id) {
 }
 
 export async function updateContract(id, updateData) {
-  const query = Contract.findByIdAndUpdate(id, updateData, { new: true });
-  const updated = await populateContractQuery(query);
+  await Contract.updateOne({ _id: id }, { $set: updateData });
+  const updated = await Contract.findById(id).populate(CONTRACT_POPULATE_SPEC);
   return updated;
 }
 
@@ -80,8 +80,6 @@ export async function checkIfContractExists({
     status,
   });
 }
-
-
 
 export async function getContractsBySupplier(
   supplierId,
