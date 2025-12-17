@@ -6,12 +6,10 @@ export const createContract = asyncHandler(async (req, res) => {
   const contract = await srv.createContract(req.body, req.user._id);
   res.status(201).json({ message: "Contract created successfully", contract });
 });
-
 export const getContract = asyncHandler(async (req, res) => {
   const contract = await srv.getContract(req.params.id);
   res.status(200).json({ contract });
 });
-
 export const signContract = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { party, signatureMeta, signatureData } = req.body;
@@ -30,7 +28,6 @@ export const signContract = asyncHandler(async (req, res) => {
     updatedContract,
   });
 });
-
 export const cancelContract = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { party } = req.body;
@@ -52,7 +49,6 @@ export const getContractsBySupplier = asyncHandler(async (req, res) => {
 
   res.json(result);
 });
-
 export const getContractsByClient = asyncHandler(async (req, res) => {
   const { page = 1, limit = 4, status, eventId, searchTerm } = req.query;
 
@@ -66,14 +62,12 @@ export const getContractsByClient = asyncHandler(async (req, res) => {
 
   res.json(result);
 });
-
 export const updateContract = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { s3Key } = req.body;
   const contract = await srv.updateContractService(id, s3Key);
   res.json({ contract });
 });
-
 export const verifyContractSignature = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const result = await srv.verifyContractSignatureService(id);
@@ -82,7 +76,6 @@ export const verifyContractSignature = asyncHandler(async (req, res) => {
     verification: result,
   });
 });
-
 export const getSignatureImage = asyncHandler(async (req, res) => {
   const { key } = req.query;
 
