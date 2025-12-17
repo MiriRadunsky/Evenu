@@ -2,6 +2,7 @@
 import Message from '../models/message.model.js';
 
 export async function createMessage(data) {
+  console.log("saving message")
   return await Message.create(data);
 }
 
@@ -17,13 +18,29 @@ export async function hasUnreadMessages(threadId, viewerId) {
   });
 }
 
+
+// Mark all messages in a thread as read by a user (add userId to readBy array)
 export async function markThreadMessagesAsRead(threadId, userId) {
   return Message.updateMany(
     {
       threadId,
-      to: userId,
-      isRead: false
+      readBy: { $ne: userId },
+      to: userId
     },
-    { $set: { isRead: true } }
+    {
+      $addToSet: { readBy: userId },
+      $set: { readAt: new Date() }
+    }
   );
+}
+
+// Fetch messages by read/unread state for a user
+export async function getMessagesByReadState(threadId, userId, read = true) {
+  const filter = { threadId };
+  if (read) {
+    filter.readBy = userId;
+  } else {
+    filter.readBy = { $ne: userId };
+  }
+  return Message.find(filter).sort({ createdAt: 1 });
 }

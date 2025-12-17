@@ -35,8 +35,9 @@ export const SupplierController = {
     description,
   } = req.body;
 
-  console.log("userData:", { name, email, phone, password, role });
-  console.log("supplierData:", { category, regions, kashrut, description });
+  console.log("🔵 הגיעה בקשת רישום ספק!");
+  console.log("userData:", { name, email, phone, password: password ? "***" : "חסר", role });
+  console.log("supplierData:", { category, regions: regions?.length || 0, kashrut, description });
 
   // קריאה לשירות הרישום
   const { user, supplier, token } = await SupplierService.registerSupplier({

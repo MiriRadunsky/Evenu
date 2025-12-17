@@ -47,7 +47,7 @@ export const EventDetailsDialog = ({
                   <p className="font-medium">{formatEventDate(event.date)}</p>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">מיקום:</span>
+                  <span className="text-muted-foreground">איזור:</span>
                   <p className="font-medium">{event.locationRegion}</p>
                 </div>
                 <div>

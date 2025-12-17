@@ -89,7 +89,7 @@ export const SupplierDetailsDialog = ({
               {supplier.regions && (
                 <div className="flex items-center gap-2 text-sm">
                   <MapPin className="h-4 w-4 text-muted-foreground" />
-                  <span>{supplier.regions.join(", ")}</span>
+                  <span>{supplier.regions}</span>
                 </div>
               )}
 

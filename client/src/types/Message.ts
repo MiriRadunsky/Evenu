@@ -24,4 +24,6 @@ export interface Message {
   to: string;
   body: string;
   createdAt: string | Date;
+  readBy?: string[]; // user IDs who have read this message
+  readAt?: string | Date; // last read timestamp (optional)
 }

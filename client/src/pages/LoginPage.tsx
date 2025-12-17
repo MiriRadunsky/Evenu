@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Mail, Lock, ArrowLeft, Sparkles } from 'lucide-react';
+import { Mail, Lock, ArrowLeft, Sparkles, Eye, EyeOff } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { login } from '../services/auth';
 import { GoogleLoginButton } from '../components/shared/GoogleLoginButton';
@@ -13,47 +13,44 @@ interface LoginPageProps {
 export function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setError('');
-  setLoading(true);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
 
-  try {
-    const response = await login({ email, password });
-    // שמירת הטוקן ב-localStorage
-    if (response.token) {
-      localStorage.setItem('token', response.token);
+    try {
+      const response = await login({ email, password });
+      if (response.token) {
+        localStorage.setItem('token', response.token);
+      }
+      onLogin();
+    } catch (err) {
+      setError(getErrorMessage(err, 'שגיאה בהתחברות. אנא נסה שוב.'));
+    } finally {
+      setLoading(false);
     }
-    onLogin();
-  } catch (err) {
-    setError(
-      getErrorMessage(err,
-      'שגיאה בהתחברות. אנא נסה שוב.')
-    );
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-12 relative bg-gradient-to-br from-[#faf8f3] to-white">
+      
       {/* Logo */}
       <div className="absolute top-8 right-8">
-        <img 
-          src="/src/assets/logo.png" 
-          alt="Évenu לוגו" 
-          className="w-auto h-14 drop-shadow-md" 
+        <img
+          src="/src/assets/logo.png"
+          alt="Évenu לוגו"
+          className="w-auto h-14 drop-shadow-md"
         />
       </div>
-      
+
       {/* Decorative background elements */}
       <div className="absolute top-20 right-20 w-64 h-64 bg-[#d4a960]/10 rounded-full blur-3xl"></div>
       <div className="absolute bottom-20 left-20 w-96 h-96 bg-[#2d2d35]/5 rounded-full blur-3xl"></div>
-      
+
       <div className="relative z-10 w-full max-w-md">
         <button
           onClick={() => onNavigate('landing')}
@@ -72,7 +69,9 @@ const handleSubmit = async (e: React.FormEvent) => {
               <div className="absolute inset-0 opacity-50 gradient-gold rounded-3xl blur-2xl"></div>
             </div>
             <h1 className="text-[#2d2d35] mb-3 text-3xl font-light">התחברות למערכת</h1>
-            <p className="text-[#6d6d78] text-base font-light">ברוכים השבים! היכנסו לחשבון שלכם</p>
+            <p className="text-[#6d6d78] text-base font-light">
+              ברוכים השבים! היכנסו לחשבון שלכם
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -85,8 +84,11 @@ const handleSubmit = async (e: React.FormEvent) => {
               </div>
             )}
 
+            {/* Email */}
             <div className="space-y-3">
-              <label htmlFor="email" className="text-[#2d2d35] text-sm font-light block">כתובת אימייל</label>
+              <label htmlFor="email" className="text-[#2d2d35] text-sm font-light block">
+                כתובת אימייל
+              </label>
               <div className="relative group">
                 <Mail className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#8a8a95] group-focus-within:text-[#d4a960] transition-colors" />
                 <input
@@ -101,32 +103,42 @@ const handleSubmit = async (e: React.FormEvent) => {
               </div>
             </div>
 
+            {/* Password + Eye */}
             <div className="space-y-3">
-              <label htmlFor="password" className="text-[#2d2d35] text-sm font-light block">סיסמה</label>
+              <label htmlFor="password" className="text-[#2d2d35] text-sm font-light block">
+                סיסמה
+              </label>
+
               <div className="relative group">
                 <Lock className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#8a8a95] group-focus-within:text-[#d4a960] transition-colors" />
+
                 <input
                   id="password"
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   className="w-full pr-12 h-14 rounded-2xl border border-[#e3e3e6] focus:border-[#d4a960] focus:ring-2 focus:ring-[#d4a960]/20 bg-white/50 backdrop-blur-sm text-[#2d2d35] transition-all duration-300 outline-none px-4 font-light"
                   required
                 />
+
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8a8a95] hover:text-[#d4a960] transition-colors"
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
               </div>
             </div>
 
             <div className="flex items-center justify-between">
-              {/* <label className="flex items-center gap-3 cursor-pointer group">
-                <input 
-                  type="checkbox" 
-                  className="rounded-lg border-[#cfcfd4] text-[#d4a960] focus:ring-[#d4a960] w-5 h-5 transition-all" 
-                />
-                <span className="text-[#6d6d78] group-hover:text-[#2d2d35] transition-colors text-sm font-light">זכור אותי</span>
-              </label> */}
-              <button 
-                type="button" 
+              <button
+                type="button"
                 className="text-[#d4a960] hover:text-[#c89645] transition-colors text-sm font-light"
               >
                 שכחתי סיסמה
@@ -173,7 +185,9 @@ const handleSubmit = async (e: React.FormEvent) => {
         <div className="mt-8 text-center">
           <div className="inline-flex items-center gap-2 bg-white/50 backdrop-blur-sm px-4 py-2 rounded-xl border border-[#d4a960]/20">
             <Lock className="w-4 h-4 text-[#d4a960]" />
-            <p className="text-[#6d6d78] text-sm font-light">המערכת מאובטחת ומוגנת בהצפנה מלאה</p>
+            <p className="text-[#6d6d78] text-sm font-light">
+              המערכת מאובטחת ומוגנת בהצפנה מלאה
+            </p>
           </div>
         </div>
       </div>

@@ -24,7 +24,7 @@ const profileImageSub = new Schema(
 const mediaSub = new Schema(
   {
     images: { type: [imageSub], default: [] },
-    videos: { type: [String], default: [] } // לינקים לוידאו (יוטיוב/ווימאו וכו')
+    videos: { type: [String], default: [] }
   },
   { _id: false }
 );
@@ -35,7 +35,7 @@ const supplierSchema = new Schema(
 
     category: { type: Types.ObjectId, ref: 'Category', required: true, index: true },
 
-    regions: { type: [String], default: [], index: true },
+    regions: { type: [String], required: true, index: true },
 
     kashrut: { type: String, trim: true },
 

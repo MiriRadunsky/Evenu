@@ -1,7 +1,8 @@
 import models from "../models/index.model.js";
-import Category from "../models/category.model.js"; 
+import Category from "../models/category.model.js";
+import Supplier from "../models/supplier.model.js";
+import User from "../models/user.model.js";
 
-const Supplier = models.Supplier;
 
 export const SupplierRepository = {
   async updateStatus(id, status) {
@@ -22,11 +23,35 @@ export const SupplierRepository = {
   async findMany({ category, region, active, q, page = 1, limit = 20 }) {
     const filter = {};
 
-    if (region) filter.regions = region;
+    if (region) {
+      filter.regions = { $in: [region.trim()] };
+    }
 
     filter.status = "מאושר";
 
-    if (q) filter.$text = { $search: q };
+    // if (q) filter.$text = { $search: q };
+if (q && q.trim()) {
+  const term = q.trim();
+
+  const users = await User.find({
+    name: { $regex: term, $options: "i" },
+  })
+    .select("_id")
+    .lean();
+
+  const userIds = users.map((u) => u._id);
+
+  if (userIds.length === 0) {
+    return {
+      items: [],
+      total: 0,
+      page: Number(page),
+      limit: Number(limit),
+    };
+  }
+
+  filter.user = { $in: userIds };
+}
 
     if (category) {
       const cat = await Category.findOne({ label: category }).lean();
@@ -42,21 +67,21 @@ export const SupplierRepository = {
       }
     }
 
-    const skip = (Number(page) - 1) * Number(limit);
+  const skip = (Number(page) - 1) * Number(limit);
+  console.log('SupplierRepository.findMany filter:', filter, 'limit:', limit, 'page:', page);
 
-    // שליפת הנתונים
     const [items, total] = await Promise.all([
       Supplier.find(filter)
         .select("name category regions status profileImage")
         .populate("user", "name email")
         .populate("category", "label")
         .sort({ createdAt: -1 })
-        .skip(skip)
+        .skip(Number(skip))
         .limit(Number(limit))
         .lean(),
       Supplier.countDocuments(filter),
     ]);
-
+    console.log("Suppliers found:", items);
     return {
       items,
       total,
@@ -89,7 +114,7 @@ export const SupplierRepository = {
     return supplier || null;
   },
   async getSupplierById(_id) {
-    const supplier = await Supplier.findOne({_id}).lean();    
+    const supplier = await Supplier.findOne({ _id }).lean();
     return supplier || null;
   },
   async findById(id) {

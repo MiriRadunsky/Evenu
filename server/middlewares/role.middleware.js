@@ -3,7 +3,6 @@ import { AppError } from "./error.middleware.js";
 export function roleGuard(allowed = []) {
   return (req, _res, next) => {
     const role = req.user?.role;
-    console.log("RoleGuard - User Role:", role);
     if (!role || !allowed.includes(role)) {
       throw new AppError(403, 'Forbidden: insufficient role');
     }
@@ -11,7 +10,6 @@ export function roleGuard(allowed = []) {
   };
 }
 
-// Middleware ספציפי למנהלים
 export function isAdmin(req, _res, next) {
   const role = req.user?.role;
   if (role !== 'admin') {
@@ -20,7 +18,6 @@ export function isAdmin(req, _res, next) {
   next();
 }
 
-// Middleware ספציפי לספקים
 export function isSupplier(req, _res, next) {
   const role = req.user?.role;
   if (role !== 'supplier') {
@@ -29,7 +26,6 @@ export function isSupplier(req, _res, next) {
   next();
 }
 
-// Middleware ספציפי למשתמשים רגילים
 export function isUser(req, _res, next) {
   const role = req.user?.role;
   if (role !== 'user') {

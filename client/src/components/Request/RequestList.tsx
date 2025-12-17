@@ -21,7 +21,8 @@ import {
 
 import type { AppDispatch, RootState } from "../../store";
 import { CreateContractDialog } from "../ContractsAndPayments/CreateContractDialog";
-import { fetchEvents } from "../../store/eventsSlice";
+import { fetchRelevantEvents } from "../../store/eventsSlice";
+import { fetchCategories } from "../../store/categoriesSlice";
 import { RequestCard } from "./RequestCard";
 import { Card, CardContent } from "../ui/card";
 
@@ -37,25 +38,43 @@ export default function RequestList({ type }: RequestListProps) {
   );
 
   const events = useSelector((state: RootState) => state.events.eventsList);
+  const categories = useSelector((state: RootState) => state.categories.list);
 
   const requests = useMemo(() => {
     return data?.items ?? [];
   }, [data]);
+
   const totalPages = data?.totalPages ?? 1;
   const total = data?.total ?? 0;
   const pageSize = data?.pageSize ?? 10;
 
   const [selectedTab, setSelectedTab] = useState("הכל");
   const [selectedEventId, setSelectedEventId] = useState<string>("all");
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [page, setPage] = useState(1);
   const [expandedRequest, setExpandedRequest] = useState<string | null>(null);
-  const [showCreateContractDialog, setShowCreateContractDialog] =
-    useState(false);
+  const [showCreateContractDialog, setShowCreateContractDialog] = useState(false);
+  // Search only by supplier
   const [searchTerm, setSearchTerm] = useState("");
 
   const resolvedMode: "user" | "supplier" = type;
   const actionLoading = loading;
   const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  // If a category is selected, build a deduplicated events list from the requests
+  const eventsForDropdown = useMemo(() => {
+    if (selectedCategory && selectedCategory !== "all") {
+      const map = new Map<string, any>();
+      for (const r of requests) {
+        const ev = r.eventId;
+        if (ev && ev._id) {
+          map.set(ev._id, ev);
+        }
+      }
+      return Array.from(map.values());
+    }
+    return events;
+  }, [selectedCategory, requests, events]);
 
   useEffect(() => {
     const t = setTimeout(() => {
@@ -65,10 +84,10 @@ export default function RequestList({ type }: RequestListProps) {
   }, [searchTerm]);
 
   useEffect(() => {
-    if (resolvedMode === "user" && events.length === 0) {
-      dispatch(fetchEvents());
-    }
-  }, [resolvedMode, events.length, dispatch]);
+    // Always fetch relevant events (no paging) and categories on mount
+    dispatch(fetchRelevantEvents());
+    dispatch(fetchCategories());
+  }, [dispatch]);
 
   const handleTabChange = (value: string) => {
     setSelectedTab(value);
@@ -83,9 +102,14 @@ export default function RequestList({ type }: RequestListProps) {
   useEffect(() => {
     const status = selectedTab === "הכל" ? undefined : selectedTab;
     const eventId = selectedEventId === "all" ? undefined : selectedEventId;
-
-    const query = { page, limit: pageSize, status, eventId, debouncedSearch };
-
+    const query = {
+      page,
+      limit: pageSize,
+      status,
+      eventId,
+      searchTerm: debouncedSearch,
+      category: selectedCategory === "all" ? undefined : selectedCategory,
+    };
     if (resolvedMode === "supplier") {
       dispatch(fetchRequestsBySupplier(query));
     } else {
@@ -97,6 +121,7 @@ export default function RequestList({ type }: RequestListProps) {
     page,
     selectedTab,
     selectedEventId,
+    selectedCategory,
     pageSize,
     debouncedSearch,
   ]);
@@ -127,63 +152,63 @@ export default function RequestList({ type }: RequestListProps) {
         סך הכל {total} בקשות
       </div>
 
-      {/* כרטיס סינונים + חיפוש */}
-      <Card className="w-full border border-primary rounded-xl bg-white p-4 shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-6">
-          {/* חיפוש */}
-          <div className="w-full max-w-md">
-            <input
-              type="text"
-              placeholder="חיפוש לפי אירוע / ספק / לקוח / הערה..."
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setPage(1);
-              }}
-              className="w-full border border-primary rounded-lg px-4 py-2 text-sm bg-white 
-                focus:outline-none focus:ring-2 focus:ring-primary"
-              style={{ direction: "rtl" }}
-            />
+      {/* חיפוש לפי ספק */}
+      <div className="flex flex-wrap items-center justify-between gap-6 mb-4">
+        <div className="w-full max-w-md">
+          <input
+            type="text"
+            placeholder="חיפוש לפי ספק (שם או אימייל)..."
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setPage(1);
+            }}
+            className="w-full border border-primary rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary"
+            style={{ direction: "rtl" }}
+          />
+        </div>
+        {/* סינון לפי אירוע — תמיד מוצג */}
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground flex items-center gap-1">
+              <Calendar className="w-4 h-4" />
+              אירוע:
+            </span>
+            <Select value={selectedEventId} onValueChange={handleEventChange}>
+              <SelectTrigger className="w-56 border-primary">
+                <SelectValue placeholder="בחר אירוע" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">כל האירועים</SelectItem>
+                {eventsForDropdown?.map((ev) => (
+                  <SelectItem key={ev._id} value={ev._id}>
+                    {ev.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
-          {/* סינון לפי אירוע — רק למשתמש */}
-          {resolvedMode === "user" && (
-            <>
-              <div className="space-y-1 text-right">
-                <p className="text-sm font-medium">סינון</p>
-                <p className="text-xs text-muted-foreground">
-                  אפשר לראות בקשות לפי אירוע
-                </p>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground flex items-center gap-1">
-                  <Calendar className="w-4 h-4" />
-                  אירוע:
-                </span>
-
-                <Select
-                  value={selectedEventId}
-                  onValueChange={handleEventChange}
-                >
-                  <SelectTrigger className="w-56 border-primary">
-                    <SelectValue placeholder="בחר אירוע" />
-                  </SelectTrigger>
-
-                  <SelectContent>
-                    <SelectItem value="all">כל האירועים</SelectItem>
-                    {events?.map((ev) => (
-                      <SelectItem key={ev._id} value={ev._id}>
-                        {ev.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </>
-          )}
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground flex items-center gap-1">
+              קטגוריה ספק:
+            </span>
+            <Select value={selectedCategory} onValueChange={(v) => { setSelectedCategory(v); setPage(1); setSelectedEventId("all"); }}>
+              <SelectTrigger className="w-56 border-primary">
+                <SelectValue placeholder="כל הקטגוריות" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">כל הקטגוריות</SelectItem>
+                {categories?.map((c) => (
+                  <SelectItem key={c._id} value={c._id}>
+                    {c.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
-      </Card>
+      </div>
 
       <Tabs value={selectedTab} onValueChange={handleTabChange}>
         <TabsList className="grid w-full grid-cols-4 h-auto">

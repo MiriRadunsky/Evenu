@@ -38,6 +38,7 @@ import { fetchCategories } from "../store/categoriesSlice";
 import { useKashrutList } from "../hooks/useKashrutList";
 import { getErrorMessage } from "@/Utils/error";
 import { Button } from "./ui/button";
+import { useRegionsList } from "@/hooks/use-region";
 
 interface Props {
   onRegister: () => void;
@@ -88,6 +89,9 @@ export function SupplierRegisterForm({ onRegister, onRoleChange, currentRole }: 
   const [passwordFocus, setPasswordFocus] = useState(false);
   const [kashrutOpen, setKashrutOpen] = useState(false);
   const [kashrutSearch, setKashrutSearch] = useState("");
+  const { regionsList, loading: loadingRegions } = useRegionsList();
+  const [regionsOpen, setRegionsOpen] = useState(false);
+  const [regionsSearch, setRegionsSearch] = useState("");
 
   const dispatch = useDispatch<AppDispatch>();
   const { list: categories, loading: loadingCategories } = useSelector(
@@ -157,19 +161,19 @@ export function SupplierRegisterForm({ onRegister, onRoleChange, currentRole }: 
       // המרת regions ממחרוזת למערך (מפריד לפי פסיק)
       const regionsArray = regions ? regions.split(',').map(r => r.trim()).filter(r => r) : [];
 
-await register(
-  {
-    name,
-    email,
-    phone,
-    password,   // חובה כאן
-    category,
-    regions: regionsArray,
-    kashrut,
-    description
-  },
-  "supplier"
-);
+      await register(
+        {
+          name,
+          email,
+          phone,
+          password,   // חובה כאן
+          category,
+          regions: regionsArray,
+          kashrut,
+          description
+        },
+        "supplier"
+      );
 
       setStep(2); // עבור ספקים עוברים לשלב הבא
     } catch (err) {
@@ -257,9 +261,83 @@ await register(
         {errors.category && <p className="mt-1 text-xs text-red-500">{errors.category}</p>}
       </div>
 
-      {/* שדות נוספים */}
-      <input placeholder="אזורי פעילות" value={formData.regions} onChange={e => updateField("regions", e.target.value)} className="w-full h-14 px-4 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#2d2d35]" />
-      
+      {/* אזורי פעילות – בחירה מרובה */}
+      <div>
+        {loadingRegions ? (
+          <div className="flex items-center w-full h-12 px-3 text-xs text-gray-500 border sm:h-14 rounded-2xl sm:px-4 sm:text-sm">
+            טוען אזורים...
+          </div>
+        ) : regionsList.length === 0 ? (
+          <input
+            placeholder="אזורי פעילות"
+            value={formData.regions}
+            onChange={e => updateField("regions", e.target.value)}
+            className="w-full h-14 px-4 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#2d2d35]"
+          />
+        ) : (
+          <Popover open={regionsOpen} onOpenChange={setRegionsOpen}>
+            <PopoverTrigger asChild>
+              <button
+                type="button"
+                role="combobox"
+                aria-expanded={regionsOpen}
+                className="w-full h-12 sm:h-14 border rounded-2xl px-3 sm:px-4 text-sm sm:text-base flex items-center justify-between hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#2d2d35]"
+              >
+                <span className={formData.regions ? "" : "text-gray-400"}>
+                  {formData.regions || "בחר אזורי פעילות"}
+                </span>
+                <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
+              </button>
+            </PopoverTrigger>
+
+            <PopoverContent
+              className="w-[var(--radix-popover-trigger-width)] p-0"
+              align="start"
+              side="bottom"
+            >
+              <Command shouldFilter={false}>
+                <CommandInput
+                  placeholder="חפש אזור..."
+                  value={regionsSearch}
+                  onValueChange={setRegionsSearch}
+                  className="h-9"
+                />
+
+                <CommandList className="max-h-[200px] sm:max-h-[300px]">
+                  <CommandEmpty>לא נמצאו אזורים</CommandEmpty>
+
+                  <CommandGroup>
+                    {regionsList
+                      .filter(r => !regionsSearch || r.includes(regionsSearch))
+                      .map(r => (
+                        <CommandItem
+                          key={r}
+                          value={r}
+                          onSelect={() => {
+                            updateField("regions", r);
+                            setRegionsOpen(false);
+                            setRegionsSearch("");
+                          }}
+                          className="cursor-pointer"
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              formData.regions === r ? "opacity-100" : "opacity-0"
+                            )}
+                          />
+                          {r}
+                        </CommandItem>
+                      ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+        )}
+      </div>
+
+
       {/* כשרות */}
       <div>
         {loadingKashrut ? (

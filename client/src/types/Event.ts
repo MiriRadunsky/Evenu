@@ -9,9 +9,10 @@ export interface Event {
   locationRegion: string;
   budget?: number;
   budgetAllocated?: number;
-    budgetHistory?: BudgetHistoryItem[];
+  budgetHistory?: BudgetHistoryItem[];
   estimatedGuests: number;
   status: "פעיל" | "הושלם" | "בוטל";
+  autoStatus?: string;
   createdAt: Date;
   updatedAt: Date;
 }

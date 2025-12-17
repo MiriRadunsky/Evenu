@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { fetchRegions } from "../store/regionsSlice";
 import type { RootState, AppDispatch } from "../store";
 import {
   fetchSuppliers,
@@ -33,11 +34,16 @@ import { getErrorMessage } from "@/Utils/error";
 
 export default function Suppliers() {
   const dispatch: AppDispatch = useDispatch();
-  const { suppliersList, selectedSupplier } = useSelector(
-    (state: RootState) => state.suppliers
-  );
+  const { suppliersList, selectedSupplier, page: serverPage, pages: totalPages, total } = useSelector((state: RootState) => state.suppliers);
+  const regions = useSelector((state: RootState) => state.regions?.list || []);
   const [selectedCategory, setSelectedCategory] = useState("הכל");
-  const [regionFilter, setRegionFilter] = useState("");
+  const [page, setPage] = useState<number>(1);
+  const [limit] = useState<number>(9); // Set to 9 per page (change this number as needed)
+  const [regionFilter, setRegionFilter] = useState("all");
+  // Fetch regions on mount
+  useEffect(() => {
+    dispatch(fetchRegions());
+  }, [dispatch]);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [viewingSupplier, setViewingSupplier] = useState(false);
@@ -53,17 +59,19 @@ export default function Suppliers() {
 
   // טוען ספקים עם פילטרים
   useEffect(() => {
-    const filters: Record<string, string> = {};
+    const filters: Record<string, string | number> = {};
     if (selectedCategory !== "הכל") filters.category = selectedCategory;
-    if (regionFilter) filters.region = regionFilter;
+  if (regionFilter && regionFilter !== "all") filters.region = regionFilter;
     if (debouncedSearch) filters.q = debouncedSearch;
+    filters.page = page;
+    filters.limit = limit;
     dispatch(fetchSuppliers(filters));
-  }, [dispatch, selectedCategory, regionFilter, debouncedSearch]);
+  }, [dispatch, selectedCategory, regionFilter, debouncedSearch, page, limit]);
 
   useEffect(() => {
     const loadUrls = async () => {
       if (!suppliersList) return;
-   
+
       const updated = await Promise.all(
         suppliersList.map(async (s) => {
           if (s.profileImage?.key) {
@@ -77,6 +85,14 @@ export default function Suppliers() {
     };
     loadUrls();
   }, [suppliersList]);
+
+  // Sync page with server response (if server returns a different page)
+  useEffect(() => {
+    if (serverPage && serverPage !== page) {
+      setPage(serverPage);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [serverPage]);
 
   const handleSelectSupplier = (id: string) => {
     dispatch(fetchSupplierById(id));
@@ -93,9 +109,9 @@ export default function Suppliers() {
   }) => {
     try {
       setIsSending(true);
-      
+
       console.log('🚀 Sending request with:', { eventId, requestMessage, supplierId });
-      
+
       const result = await dispatch(
         createSupplierRequest({
           eventId,
@@ -104,8 +120,9 @@ export default function Suppliers() {
         })
       ).unwrap();
       
+
       console.log('✅ Request sent successfully:', result);
-      
+
       toast.success("הבקשה נשלחה בהצלחה");
       dispatch(clearSelectedSupplier());
       setSendRequest(false);
@@ -129,7 +146,7 @@ export default function Suppliers() {
               <label className="text-sm font-medium">קטגוריה</label>
               <Select
                 value={selectedCategory}
-                onValueChange={setSelectedCategory}
+                onValueChange={(v) => { setSelectedCategory(v); setPage(1); }}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -148,11 +165,22 @@ export default function Suppliers() {
 
             <div className="space-y-2">
               <label className="text-sm font-medium">אזור</label>
-              <Input
-                placeholder="חפש לפי אזור..."
+              <Select
                 value={regionFilter}
-                onChange={(e) => setRegionFilter(e.target.value)}
-              />
+                onValueChange={(v) => { setRegionFilter(v); setPage(1); }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="בחר אזור" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">כל האזורים</SelectItem>
+                  {(regions && Array.isArray(regions) ? regions : []).map((region) => (
+                    <SelectItem key={region} value={region}>
+                      {region}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-2">
@@ -162,7 +190,7 @@ export default function Suppliers() {
                 <Input
                   placeholder="חפש ספק..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
                   className="pr-10"
                 />
               </div>
@@ -208,7 +236,7 @@ export default function Suppliers() {
                 {s.regions && (
                   <div className="flex items-center gap-2 text-sm">
                     <MapPin className="h-4 w-4 text-muted-foreground" />
-                    <span>{s.regions.join(", ")}</span>
+                    <span>{s.regions}</span>
                   </div>
                 )}
 
@@ -244,17 +272,50 @@ export default function Suppliers() {
         </Card>
       )}
 
+      {/* Pagination controls */}
+      {totalPages && totalPages > 1 && (
+        <div className="flex items-center justify-between mt-6">
+          <div className="text-sm text-muted-foreground">
+            סה"כ {total} ספקים • עמוד {page} מתוך {totalPages}
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page <= 1}
+            >
+              הקודם
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page >= totalPages}
+            >
+              הבא
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* דיאלוגים */}
       {selectedSupplier &&
         (sendRequest ? (
           <SendRequestDialog
             supplier={selectedSupplier}
             open={sendRequest}
-            onOpenChange={(open) => !open && setSendRequest(false)}
+            onOpenChange={(open) => {
+              if (!open) {
+                setSendRequest(false);
+                dispatch(clearSelectedSupplier()); // ← חשוב מאוד
+              }
+            }}
             onSubmit={handleSendRequest}
             isLoading={false}
             isSending={isSending}
           />
+
         ) : (
           <SupplierDetailsDialog
             supplier={selectedSupplier}

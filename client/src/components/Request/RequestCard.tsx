@@ -22,6 +22,7 @@ import {
   GOLD_CARD_BORDER,
   GOLD_LABEL,
 } from "../../Utils/requestStatus";
+import { useNavigate } from "react-router-dom";
 
 type Mode = "user" | "supplier";
 
@@ -60,6 +61,8 @@ export function RequestCard({
   onAttachContract,
   loadingActions = false,
 }: RequestCardProps) {
+  const navigate = useNavigate();
+
   const title =
     request.eventId?.name ||
     request.basicEventSummary?.eventName ||
@@ -164,7 +167,13 @@ export function RequestCard({
 
             {/* צ'אט + חוזה */}
             <div className="flex flex-wrap gap-2">
-              <Button variant="link" className="flex-1">
+              <Button
+                variant="link"
+                className="flex-1"
+                onClick={() =>
+                  navigate(mode === "supplier" ? `/supplier/chat` : `/chat`)
+                }
+              >
                 <MessageSquare className="w-4 h-4 ml-2" />
                 צפה בצ'אט
               </Button>

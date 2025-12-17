@@ -48,8 +48,11 @@ export const createSupplierRequest = createAsyncThunk<
         notesFromClient,
       });
       // data.request + data.threadId
+      console.log("successful request creation response:", data);
+      
       return { ...data.request, threadId: data.threadId } as Request;
     } catch (err: unknown) {
+      console.log("un error for request creation:", err);
       return rejectWithValue(
         getErrorMessage(err, "Failed to create request")
       );

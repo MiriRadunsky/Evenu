@@ -7,14 +7,15 @@ export const RequestController = {
  
 getAllRequestsByUserId: asyncHandler(async (req, res) => {
   const userId = req.user._id;
-  const { page = 1, limit = 10, status, eventId ,searchTerm} = req.query;
+  const { page = 1, limit = 10, status, eventId, searchTerm, category } = req.query;
 
   const result = await RequestService.getRequestsByUserId(userId, {
     page: Number(page),
     limit: Number(limit),
     status,
     eventId,
-    searchTerm: searchTerm||undefined
+    searchTerm: searchTerm || undefined,
+    category: category || undefined,
   });
 
   res.status(200).json(result);
@@ -23,14 +24,15 @@ getAllRequestsByUserId: asyncHandler(async (req, res) => {
 
   getSupplierRequests: asyncHandler(async (req, res) => {
      const userId = req.user._id;
-     const { page = 1, limit = 10, status, eventId ,searchTerm} = req.query;
+     const { page = 1, limit = 10, status, eventId, searchTerm, category } = req.query;
 
     const result = await RequestService.getRequestsBySupplierUserId(userId, {
       page,
       limit,
       status,
       eventId: eventId || undefined,
-      searchTerm: searchTerm||undefined
+      searchTerm: searchTerm || undefined,
+      category: category || undefined,
     });
 
     res.status(200).json(result);

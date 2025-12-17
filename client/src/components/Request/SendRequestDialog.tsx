@@ -28,7 +28,7 @@ interface SendRequestDialogProps {
   onOpenChange: (open: boolean) => void;
   onSubmit: (data: { eventId: string; requestMessage: string; supplierId: string }) => Promise<void>;
   isLoading: boolean;
-  isSending:boolean
+  isSending: boolean;
 }
 
 export const SendRequestDialog = ({
@@ -39,46 +39,44 @@ export const SendRequestDialog = ({
   isLoading,
   isSending,
 }: SendRequestDialogProps) => {
-
-  const { eventsList, loadingList } = useSelector((state: RootState) => state.events);
+  const { eventsList, loadingList, error } = useSelector(
+      (state: RootState) => state.events);
+  console.log("events", eventsList);
+  
   const dispatch: AppDispatch = useDispatch();
 
-  const [eventId, setEventId] = useState("");
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [requestMessage, setRequestMessage] = useState("");
 
-  // קובע supplierId מהקומפוננטה (אין צורך ב־state נוסף)
   const supplierId = supplier._id;
 
+  // טוען אירועים רלוונטיים
   useEffect(() => {
-    dispatch(fetchRelevantEvents());    
+    dispatch(fetchRelevantEvents());
   }, [dispatch]);
 
-  // בחירת אירוע ראשון אוטומטית
+  // בוחר את האירוע הראשון אוטומטית
   useEffect(() => {
     if (open && eventsList?.length > 0) {
-      setEventId(eventsList[0]._id);
+      setSelectedEvent(eventsList[0]);
     }
   }, [open, eventsList]);
 
   // ניקוי השדות כשסוגרים
   useEffect(() => {
     if (!open) {
-      setEventId("");
+      setSelectedEvent(null);
       setRequestMessage("");
     }
   }, [open]);
 
+  const isRegionMismatch = selectedEvent && supplier.regions !== selectedEvent.locationRegion;
+  console.log("aaa", supplier.regions, selectedEvent?.locationRegion);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    console.log('📤 Sending request:', { eventId, requestMessage, supplierId });
-    
-    await onSubmit({
-      eventId,
-      requestMessage,
-      supplierId       
-    });
-    
+    if (!selectedEvent || isRegionMismatch) return;
+
+    await onSubmit({ eventId: selectedEvent._id, requestMessage, supplierId });
     onOpenChange(false);
   };
 
@@ -90,11 +88,17 @@ export const SendRequestDialog = ({
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-
           {/* בחירת אירוע */}
           <div className="space-y-2">
             <Label>בחר אירוע</Label>
-            <Select value={eventId} onValueChange={setEventId} required>
+            <Select
+              value={selectedEvent?._id || ""}
+              onValueChange={(id) => {
+                const ev = eventsList.find((e) => e._id === id) || null;
+                setSelectedEvent(ev);
+              }}
+              required
+            >
               <SelectTrigger>
                 <SelectValue placeholder={loadingList ? "טוען..." : "בחר אירוע"} />
               </SelectTrigger>
@@ -113,7 +117,7 @@ export const SendRequestDialog = ({
             <Label>הודעה לספק (לפחות 5 תווים)</Label>
             <Textarea
               value={requestMessage}
-              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setRequestMessage(e.target.value)}
+              onChange={(e) => setRequestMessage(e.target.value)}
               placeholder="כתוב הודעה לספק (לפחות 5 תווים)..."
               rows={4}
               required
@@ -122,11 +126,19 @@ export const SendRequestDialog = ({
           </div>
 
           <DialogFooter>
-            <Button type="submit" disabled={isLoading || !eventId}>
-              {isSending ? "שולח..." : "שלח בקשה"}
+            <Button type="submit" disabled={isLoading || !selectedEvent || isRegionMismatch}>
+              {isRegionMismatch
+                ? "אזור הספק לא תואם לאירוע"
+                : isSending
+                  ? "שולח..."
+                  : "שלח בקשה"}
             </Button>
+            {isRegionMismatch && (
+              <p className="text-sm text-red-500 mt-1">
+                לא ניתן לשלוח בקשה – אזור הספק אינו תואם את אזור האירוע
+              </p>
+            )}
           </DialogFooter>
-
         </form>
       </DialogContent>
     </Dialog>

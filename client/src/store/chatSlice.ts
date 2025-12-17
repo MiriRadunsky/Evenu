@@ -41,7 +41,6 @@ export const fetchThreads = createAsyncThunk<
   try {
     const url = role === "supplier" ? `/threads/supplier` : `/threads/user`;
     const { data } = await api.get(url);
-    // data כבר מכיל fields: _id, userId, supplierId, supplierName, clientName, eventName, status, hasUnread
     return data;
   } catch (err) {
   if (err instanceof Error) {
@@ -50,7 +49,6 @@ export const fetchThreads = createAsyncThunk<
     return thunkAPI.rejectWithValue("שגיאה לא ידועה");
   }
 });
-
 
 export const fetchMessages = createAsyncThunk<
   Message[],
@@ -76,7 +74,6 @@ const chatSlice = createSlice({
   name: "chat",
   initialState,
   reducers: {
-    // --- SELECT THREAD + SOCKET JOIN ---
     joinThread: (state, action: PayloadAction<{ threadId: string }>) => {
       const threadId = action.payload.threadId;
       state.activeThreadId = threadId;
@@ -86,13 +83,10 @@ const chatSlice = createSlice({
       }
     },
 
-    // --- NEW MESSAGE FROM SOCKET ---
     appendMessage: (state, action: PayloadAction<Message>) => {
       const msg = action.payload;
       const tid = msg.threadId;
-
       if (!tid) return;
-
       if (!state.messagesByThread[tid]) {
         state.messagesByThread[tid] = [];
       }

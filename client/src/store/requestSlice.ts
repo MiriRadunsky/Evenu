@@ -33,14 +33,12 @@ const initialState: RequestState = {
 
 export const fetchRequests = createAsyncThunk<
   RequestPagination,
-  { page?: number; limit?: number; status?: string; eventId?: string } | void,
+  { page?: number; limit?: number; status?: string; eventId?: string; searchTerm?: string } | void,
   { rejectValue: string }
 >("requests/fetchAll", async (params, { rejectWithValue }) => {
   try {
     const query = params ?? {};
     const { data } = await api.get("/requests", { params: query });
-    console.log('user',data);
-    
     return data as RequestPagination;
   } catch (error: unknown) {
     return rejectWithValue(
@@ -50,20 +48,19 @@ export const fetchRequests = createAsyncThunk<
 });
 
 export const fetchRequestsBySupplier = createAsyncThunk<
-RequestPagination,
-{ page?: number; limit?: number; status?: string } | void,
-{ rejectValue: string }
+  RequestPagination,
+  { page?: number; limit?: number; status?: string; eventId?: string; searchTerm?: string } | void,
+  { rejectValue: string }
 >(
   "requests/fetchRequestsBySupplier",
   async (params, { rejectWithValue }) => {
     try {
       const query = params ?? {};
       const { data } = await api.get("/requests/supplier", { params: query });
-      console.log('supplier',data);
       return data as RequestPagination;
     } catch (error: unknown) {
       return rejectWithValue(
-        getErrorMessage(error, "שגיאה בטעינת בקשות")
+        getErrorMessage(error, "שגיאה בטעינת בקשות לספק")
       );
     }
   }

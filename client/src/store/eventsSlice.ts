@@ -28,16 +28,18 @@ const initialState: EventState = {
 export type EventType = string;
 
 // 🔹 כל האירועים
+// Change fetchEvents to accept { page, pageSize }
 export const fetchEvents = createAsyncThunk<
   Event[],
-  void,
+  { page: number; pageSize: number; status?: string },
   { rejectValue: string }
->("events/fetchAll", async (_, { rejectWithValue }) => {
+>("events/fetchAll", async ({ page, pageSize, status }, { rejectWithValue }) => {
   try {
-    const { data } = await api.get<{ success: boolean; data: Event[] }>(
-      "/events"
-    );
-    console.log("event", data);
+    let url = `/events?page=${page}&pageSize=${pageSize}`;
+    if (status && status !== "הכל") {
+      url += `&status=${encodeURIComponent(status)}`;
+    }
+    const { data } = await api.get<{ success: boolean; data: Event[] }>(url);
     return data.data;
   } catch (err: unknown) {
     return rejectWithValue(getErrorMessage(err, "שגיאה בטעינת אירועים"));

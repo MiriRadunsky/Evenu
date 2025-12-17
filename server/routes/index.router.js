@@ -17,6 +17,7 @@ import paymentRoutes from './payment.route.js';
 import budgetRoutes from './budget.routes.js';
 import citiesRouter from './cities.route.js';
 import kashrutRouter from './kashrut.route.js';
+import regionsRouter from './region.route.js';
 const router = Router();
 
 router.get('/', (req, res) => res.send('This is the Home Page'));
@@ -39,6 +40,7 @@ router.use('/payments', paymentRoutes);
 router.use('/budget', budgetRoutes);
 router.use('/cities', citiesRouter);
 router.use('/kashrut', kashrutRouter);
+router.use("/regions", regionsRouter);
 
 
 router.get('/health', (req, res) => res.json({ up: true }));
