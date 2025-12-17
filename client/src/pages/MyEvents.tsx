@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../store";
 
@@ -34,12 +34,6 @@ console.log("eventsList ", eventsList);
     const status = selectedTab === "הכל" ? undefined : selectedTab;
     dispatch(fetchEvents({ page, pageSize, status }));
   }, [dispatch, page, pageSize, selectedTab]);
-
-  const filteredEvents = useMemo(() => {
-    if (!eventsList) return [];
-    if (selectedTab === "הכל") return eventsList;
-    return eventsList.filter((e:Event) => e.status === selectedTab);
-  }, [eventsList, selectedTab]);
 
   // const handleCreateEvent = async (data: Event) => {
   //   await dispatch(createEvent(data));

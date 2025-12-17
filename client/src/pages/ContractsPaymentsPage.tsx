@@ -77,7 +77,7 @@ export default function ContractsPaymentsPage() {
 
   useEffect(() => {
     if (user?.role === "user") {
-      dispatch(fetchEvents());
+      dispatch(fetchEvents({ page: 1, pageSize: 10 }));
     }
   }, [dispatch, user?.role]);
 

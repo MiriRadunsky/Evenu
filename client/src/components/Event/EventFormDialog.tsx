@@ -31,7 +31,6 @@ import { createEvent, fetchEventTypes } from "../../store/eventsSlice";
 import type { AppDispatch, RootState } from "../../store";
 import { toast } from "sonner";
 import { cn } from "../../lib/utils";
-import { useCitiesList } from "../../hooks/useCitiesList";
 import { useRegionsList } from "@/hooks/use-region";
 
 /* ----- טיפוסים ----- */
@@ -105,15 +104,12 @@ export const EventFormDialog: React.FC<EventFormDialogProps> = ({
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [cityOpen, setCityOpen] = useState(false);
-  const [citySearch, setCitySearch] = useState("");
 
-const filteredRegions = useMemo(() => {
-  const list = regions.regionsList || [];
-  if (!regionsSearch) return list.slice(0, 50);
-  return list.filter((r) => r.includes(regionsSearch)).slice(0, 50);
-}, [regions, regionsSearch]);
-
+  const filteredRegions = useMemo(() => {
+    const list = regions.regionsList || [];
+    if (!regionsSearch) return list.slice(0, 50);
+    return list.filter((r) => r.includes(regionsSearch)).slice(0, 50);
+  }, [regions, regionsSearch]);
 
   useEffect(() => {
     dispatch(fetchEventTypes());
@@ -369,7 +365,6 @@ const filteredRegions = useMemo(() => {
               <p className="text-red-500 text-sm">{errors.locationRegion}</p>
             )}
           </div>
-
 
           <DialogFooter>
             <Button type="submit" disabled={isSubmitting || loadingList || loadingOne}>
