@@ -1,4 +1,3 @@
-
 import SupplierRequest from "../models/request.model.js";
 import Supplier from "../models/supplier.model.js";
 import Category from "../models/category.model.js";
@@ -8,7 +7,6 @@ function buildRequestSearchFilter(searchTerm) {
 }
 
 export const RequestRepository = {
-
   async getRequestsByUserId(
     userId,
     { page = 1, limit = 5, status, eventId, searchTerm, category } = {}
@@ -18,21 +16,16 @@ export const RequestRepository = {
     if (!isVirtualStatus && status && status !== "הכל") {
       baseFilter.status = status;
     }
-    if (eventId) {
-      baseFilter.eventId = eventId;
-    }
 
     // If category provided (label or id), find supplier ids in that category and filter
     if (category) {
       let catDoc = null;
-      // try by id
       try {
         catDoc = await Category.findById(category).lean();
       } catch (e) {
         catDoc = null;
       }
       if (!catDoc) {
-        // try by label
         catDoc = await Category.findOne({ label: category }).lean();
       }
       if (catDoc) {
@@ -50,6 +43,20 @@ export const RequestRepository = {
         }
         baseFilter.supplierId = { $in: supplierIds };
       }
+    }
+
+    if (eventId) {
+      baseFilter.eventId = eventId;
+    }
+
+    // Combine category and eventId filters if both are present
+    if (category && eventId) {
+      baseFilter.$and = [
+        { supplierId: baseFilter.supplierId },
+        { eventId: baseFilter.eventId },
+      ];
+      delete baseFilter.supplierId;
+      delete baseFilter.eventId;
     }
 
     const query = { ...baseFilter };
@@ -85,14 +92,12 @@ export const RequestRepository = {
       });
     }
 
-    const total = all.length;
-    const items = all.slice(skip, skip + limitNumber);
     return {
-      items,
-      total,
+      items: all.slice(skip, skip + limitNumber),
+      total: all.length,
       page: pageNumber,
       pageSize: limitNumber,
-      totalPages: Math.ceil(total / limitNumber) || 1,
+      totalPages: Math.ceil(all.length / limitNumber),
     };
   },
   async createRequest({
