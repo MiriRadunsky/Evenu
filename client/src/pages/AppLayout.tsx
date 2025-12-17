@@ -114,13 +114,13 @@ export default function AppLayout({ navigationItems, children }: { navigationIte
       <SidebarProvider style={{ direction: "rtl" } as React.CSSProperties}>
         <Sidebar
           side="right"
-          className="bg-background dark:bg-gray-900 text-gray-900 dark:text-white shadow-md"
+          className="bg-background dark:bg-gray-900 text-gray-900 dark:text-white shadow-md overflow-x-hidden"
         >
           {/* HEADER */}
           <SidebarHeader className="bg-background dark:bg-gray-900">
             <div className="flex flex-col items-center justify-start p-0 m-0">
               <img
-                src="/src/assets/logo.png"
+                src="/logo.png"
                 alt="Évenu לוגו"
                 className="h-28 w-auto mb-2 mt-2"
                 style={{ maxWidth: '90%', display: 'block' }}
@@ -182,9 +182,9 @@ export default function AppLayout({ navigationItems, children }: { navigationIte
         </Sidebar>
 
         {/* MAIN SECTION */}
-        <SidebarInset className="bg-background dark:bg-gray-900">
+        <SidebarInset className="flex flex-col h-screen overflow-x-hidden max-w-full bg-background dark:bg-gray-900">
           {/* TOP BAR */}
-          <div className="sticky top-0 z-10 flex items-center gap-2 px-4 py-3 border-b bg-background dark:bg-gray-900">
+          <div className="sticky top-0 z-10 flex items-center gap-2 px-4 py-3 border-b bg-background dark:bg-gray-900 flex-shrink-0 w-full max-w-full">
             <SidebarTrigger />
 
             {/* NOTIFICATION BUTTON */}
@@ -264,7 +264,11 @@ export default function AppLayout({ navigationItems, children }: { navigationIte
 
           {/* PAGE CONTENT */}
           
-          <main id="main-content" className="p-6 bg-background dark:bg-gray-900" role="main" aria-label="תוכן ראשי">{children}</main>
+          <main id="main-content" className="flex-1 w-full max-w-full p-6 overflow-y-auto overflow-x-hidden bg-background dark:bg-gray-900" role="main" aria-label="תוכן ראשי">
+            <div className="w-full max-w-full overflow-x-hidden">
+              {children}
+            </div>
+          </main>
         </SidebarInset>
       </SidebarProvider>
       <Toaster />

@@ -313,10 +313,11 @@ export const DashboardRepository = {
       .sort({ createdAt: -1 })
       .limit(limit)
       .populate('category', 'label')
+      .populate('user', 'name email')
       .lean();
 
     return suppliers.map(s => ({
-      name: s.businessName || s.name || 'לא ידוע',
+      name: s.user?.name || s.user?.email || 'לא ידוע',
       category: s.category?.label || 'לא מוגדר',
       date: s.createdAt
     }));

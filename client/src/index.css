@@ -77,13 +77,34 @@
   * {
     border-color: hsl(var(--border));
     direction: rtl;
+    box-sizing: border-box;
+  }
+  
+  #root {
+    overflow-x: hidden !important;
+    max-width: 100vw;
+    width: 100%;
+  }
+  
+  main {
+    overflow-x: hidden !important;
+    max-width: 100%;
   }
 
-  body {
+  html, body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
     font-family: var(--font-sans);
     letter-spacing: var(--letter-spacing);
+    overflow-x: hidden !important;
+    max-width: 100vw;
+    width: 100%;
+    position: relative;
+  }
+  
+  body {
+    margin: 0;
+    padding: 0;
   }
 
   /* RTL Support */

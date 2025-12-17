@@ -87,6 +87,13 @@ export function AdminDashboard() {
         setCategorySuppliers(additionalStats.categorySuppliers || []);
         setRecentSuppliers(additionalStats.recentSuppliers || []);
         setRecentEvents(additionalStats.recentEvents || []);
+        
+        console.log("📊 [אדמין] נתוני גרפים:", { 
+          monthlyEvents: additionalStats.monthlyEvents, 
+          categorySuppliers: additionalStats.categorySuppliers,
+          hasMonthlyData: additionalStats.monthlyEvents?.length > 0,
+          hasCategoryData: additionalStats.categorySuppliers?.length > 0 
+        });
       } catch (err) {
         console.error('Error fetching dashboard stats:', err);
         setError('שגיאה בטעינת סטטיסטיקות הדשבורד');
@@ -214,10 +221,10 @@ export function AdminDashboard() {
         {/* Charts Section */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* Bar Chart - Events by Month */}
-          <Card className="p-4 md:p-6 border-2 border-[#d4a960]/20 hover:border-[#d4a960]/40 transition-all bg-gradient-to-br from-white to-[#faf8f3]">
+          <Card className="p-4 md:p-6 border-2 border-[#d4a960]/20 hover:border-[#d4a960]/40 transition-all bg-gradient-to-br from-white to-[#faf8f3] w-full">
             <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-4 md:mb-6">אירועים לפי חודש</h3>
             {monthlyEvents.length > 0 ? (
-            <div className="h-[250px] sm:h-[300px]">
+            <div className="h-[300px] sm:h-[350px]">
               <ResponsiveContainer width="100%" height="100%">
               <BarChart data={monthlyEvents}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -259,19 +266,19 @@ export function AdminDashboard() {
           </Card>
 
           {/* Pie Chart - Suppliers by Category */}
-          <Card className="p-4 md:p-6 border-2 border-[#d4a960]/20 hover:border-[#d4a960]/40 transition-all bg-gradient-to-br from-white to-[#faf8f3]">
+          <Card className="p-4 md:p-6 border-2 border-[#d4a960]/20 hover:border-[#d4a960]/40 transition-all bg-gradient-to-br from-white to-[#faf8f3] w-full">
             <h3 className="mb-4 md:mb-6 text-lg md:text-xl font-semibold text-gray-900">חלוקת ספקים לפי קטגוריה</h3>
             {categorySuppliers.length > 0 ? (
-            <div className="h-[280px] sm:h-[350px]">
+            <div className="h-[300px] sm:h-[350px]">
               <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={categorySuppliers}
                   cx="50%"
-                  cy="45%"
+                  cy="50%"
                   labelLine={false}
                   label={false}
-                  outerRadius={110}
+                  outerRadius={90}
                   fill="#8884d8"
                   dataKey="value"
                   nameKey="category"

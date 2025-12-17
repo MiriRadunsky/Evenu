@@ -20,7 +20,7 @@ export function RegisterPage({ onRegister, onNavigate }: RegisterPageProps) {
       {/* Logo */}
       <div className="absolute top-4 sm:top-8 right-4 sm:right-8">
         <img 
-          src="/src/assets/logo.png" 
+          src="/logo.png" 
           alt="Évenu לוגו" 
           className="h-10 sm:h-14 w-auto drop-shadow-md" 
         />

@@ -41,7 +41,7 @@ export function LoginPage({ onLogin, onNavigate }: LoginPageProps) {
       {/* Logo */}
       <div className="absolute top-8 right-8">
         <img
-          src="/src/assets/logo.png"
+          src="/logo.png"
           alt="Évenu לוגו"
           className="w-auto h-14 drop-shadow-md"
         />

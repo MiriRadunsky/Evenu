@@ -79,7 +79,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
         <div className="relative z-10 max-w-5xl px-4 mx-auto text-center">
           {/* לוגו שלך בלבד במרכז, ללא עיגול */}
           <div className="flex justify-center mb-0 p-0" style={{marginBottom: 0, paddingBottom: 0}}>
-            <img src="/src/assets/logo.png" alt="Évenu לוגו" className="h-72 w-auto" style={{display:'block'}} />
+            <img src="/logo.png" alt="Évenu לוגו" className="h-72 w-auto" style={{display:'block'}} />
           </div>
 
           <h1 id="hero-heading" className="text-3xl font-light leading-tight text-white md:text-4xl lg:text-5xl mt-[-4rem]">
