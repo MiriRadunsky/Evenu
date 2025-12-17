@@ -102,5 +102,15 @@ export const EventController = {
       message: 'The event deleted successfully',
     });
   }),
+
+  // Fetch events for the logged-in user
+  getUserEvents: asyncHandler(async (req, res) => {
+    const events = await eventService.getUserEvents(req.user._id, req.query);
+
+    res.status(200).json({
+      success: true,
+      events,
+    });
+  }),
 };
 

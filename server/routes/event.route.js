@@ -56,4 +56,7 @@ router.post(
 );
 router.put('/:id/budget', EventController.updateEventBudget);
 
+// אירועים של המשתמש המחובר
+router.get('/user-events', EventController.getUserEvents);
+
 export default router;
