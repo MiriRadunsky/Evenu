@@ -1,4 +1,0 @@
-[2025-12-17T09:49:34.634Z] [ERROR] [f56495fa-06a6-437f-81f6-21bdc2e66621] POST /api/auth/login - משתמש לא נמצא
-[2025-12-17T09:51:45.766Z] [ERROR] [9a6b43b7-7eef-41f9-b6fe-c3260f63026e] POST /api/auth/login - אחד מהנתונים שגוי
-[2025-12-17T09:52:18.446Z] [ERROR] [df456641-c37e-446a-b0a6-8df2c38b3721] POST /api/auth/login - אחד מהנתונים שגוי
-[2025-12-17T09:52:25.190Z] [ERROR] [4fdb6915-321c-43cf-9564-81c46d71db21] POST /api/auth/login - אחד מהנתונים שגוי
