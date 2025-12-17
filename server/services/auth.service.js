@@ -22,10 +22,10 @@ export async function register({ name, email, phone, password, role }) {
 
 export async function login(email, password) {
     const user = await repo.findUserByEmail(email);
-    if (!user) throw new AppError(404, 'משתמש לא נמצא');
+    if (!user) throw new AppError(401, 'אחד מהנתונים שגוי');
 
     const valid = await bcrypt.compare(password, user.password);
-    if (!valid) throw new AppError(401, 'ערכים לא תקינים');
+    if (!valid) throw new AppError(401, 'אחד מהנתונים שגוי');
 
     const token = generateToken(user);
     return { token };
