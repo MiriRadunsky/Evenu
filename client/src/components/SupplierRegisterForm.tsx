@@ -166,7 +166,7 @@ export function SupplierRegisterForm({ onRegister, onRoleChange, currentRole }: 
           name,
           email,
           phone,
-          password,   // חובה כאן
+          password,   
           category,
           regions: regionsArray,
           kashrut,
@@ -175,7 +175,7 @@ export function SupplierRegisterForm({ onRegister, onRoleChange, currentRole }: 
         "supplier"
       );
 
-      setStep(2); // עבור ספקים עוברים לשלב הבא
+      setStep(2); 
     } catch (err) {
       setErrors({
         general: getErrorMessage(err, "שגיאה בהרשמה"),
@@ -210,7 +210,6 @@ export function SupplierRegisterForm({ onRegister, onRoleChange, currentRole }: 
 
       {errors.general && <p className="text-sm text-center text-red-500">{errors.general}</p>}
 
-      {/* שדות */}
       <div>
         <input type="text" placeholder="שם מלא" value={formData.name} onChange={e => updateField("name", e.target.value)} className="w-full px-4 h-14 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#2d2d35]" />
         {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name}</p>}

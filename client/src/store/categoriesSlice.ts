@@ -7,7 +7,7 @@ export const fetchCategories = createAsyncThunk(
   "categories/fetchCategories",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get("/categories"); // endpoint בשרת
+      const response = await api.get("/categories"); 
       console.log("Categories response:", response.data);
       
       return response.data;
