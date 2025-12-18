@@ -1,3 +1,4 @@
+import api from "@/services/axios";
 import { useEffect, useState } from "react";
 
 export function useRegionsList() {
@@ -7,12 +8,12 @@ export function useRegionsList() {
   useEffect(() => {
     async function fetchRegions() {
       try {
-        // קריאה דרך השרת שלנו כדי להימנע מבעיות CORS
-        const res = await fetch("/api/regions");
-        const data = await res.json();
+        // const res = await fetch("/api/regions");
+        const res=await api.get("/regions");
+        // const data = await res.json();
 
-        if (data.success && data.regions) {
-          setRegionsList(data.regions);
+        if (res.data.success && res.data.regions) {
+          setRegionsList(res.data.regions);
         } else {
           setRegionsList([]);
         }
