@@ -4,6 +4,7 @@ const router = express.Router();
 
 // רשימת אזורים בישראל (לא מחוזות)
 export const israelRegions = [
+  "כל הארץ",
   "גליל עליון",
   "גליל תחתון",
   "הגולן",

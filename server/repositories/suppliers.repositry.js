@@ -28,6 +28,7 @@ export const SupplierRepository = {
     }
 
     filter.status = "מאושר";
+    filter.isActive = true;
 
     // if (q) filter.$text = { $search: q };
 if (q && q.trim()) {
@@ -72,13 +73,11 @@ if (q && q.trim()) {
 
     const [items, total] = await Promise.all([
       Supplier.find(filter)
-        .select("name category regions status profileImage")
         .populate("user", "name email")
         .populate("category", "label")
         .sort({ createdAt: -1 })
         .skip(Number(skip))
-        .limit(Number(limit))
-        .lean(),
+        .limit(Number(limit)),
       Supplier.countDocuments(filter),
     ]);
     console.log("Suppliers found:", items);

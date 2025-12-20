@@ -49,11 +49,22 @@ const supplierSchema = new Schema(
       enum: ['בהמתנה', 'מאושר', 'נפסל', 'נחסם'],
       default: 'בהמתנה',
       index: true
+    },
+
+    isActive: {
+      type: Boolean,
+      default: false,
+      index: true
     }
   },
   { timestamps: true }
 );
 
+// צור indexes לביצועים טובים יותר
+supplierSchema.index({ status: 1, isActive: 1 });
 supplierSchema.index({ category: 1, regions: 1, isActive: 1 });
+supplierSchema.index({ user: 1 });
+supplierSchema.index({ regions: 1 });
+supplierSchema.index({ createdAt: -1 });
 
 export default model('Supplier', supplierSchema);
