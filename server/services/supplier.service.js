@@ -3,6 +3,7 @@ import * as authServ from "../services/auth.service.js";
 import { SupplierRepository } from "../repositories/suppliers.repositry.js";
 import models from "../models/index.model.js";
 import * as categorySrv from "../services/categories.service.js";
+import { israelRegions } from "../shared/regions.js";
 export const SupplierService = {
   async listSuppliers(query) {
     const { items, total, page, limit } = await SupplierRepository.findMany(
@@ -52,6 +53,13 @@ export const SupplierService = {
     console.log("✅ בדיקת אזורים:", supplierData.regions);
     if (!supplierData.regions || !Array.isArray(supplierData.regions) || supplierData.regions.length === 0) {
       throw new AppError(400, "חובה לבחור לפחות אזור שירות אחד");
+    }
+
+    // Ensure regions are valid and exist in the predefined list
+    supplierData.regions = supplierData.regions.filter(region => israelRegions.includes(region.trim()));
+
+    if (supplierData.regions.length === 0) {
+      throw new AppError(400, "חובה לבחור לפחות אזור שירות תקין אחד");
     }
     
     // ===== רק עכשיו יוצרים את המשתמש =====

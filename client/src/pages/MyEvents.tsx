@@ -31,9 +31,8 @@ console.log("eventsList ", eventsList);
 
   // Fetch events when page or tab changes
   useEffect(() => {
-    const status = selectedTab === "הכל" ? undefined : selectedTab;
-    dispatch(fetchEvents({ page, pageSize, status }));
-  }, [dispatch, page, pageSize, selectedTab]);
+    dispatch(fetchEvents({ page, pageSize }));
+  }, [dispatch, page, pageSize]);
 
   // const handleCreateEvent = async (data: Event) => {
   //   await dispatch(createEvent(data));

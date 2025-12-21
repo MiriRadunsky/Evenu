@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchRegions } from "../store/regionsSlice";
-import type { RootState, AppDispatch } from "../store";
 import {
   fetchSuppliers,
   fetchSupplierById,
   clearSelectedSupplier,
 } from "../store/suppliersSlice";
+import { fetchRegions } from "../store/regionsSlice";
+import type { RootState, AppDispatch } from "../store";
 import {
   Card,
   CardContent,
@@ -40,16 +40,13 @@ export default function Suppliers() {
   const [page, setPage] = useState<number>(1);
   const [limit] = useState<number>(9); // Set to 9 per page (change this number as needed)
   const [regionFilter, setRegionFilter] = useState("all");
-  // Fetch regions on mount
-  useEffect(() => {
-    dispatch(fetchRegions());
-  }, [dispatch]);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [viewingSupplier, setViewingSupplier] = useState(false);
   const [sendRequest, setSendRequest] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [suppliersWithUrls, setSuppliersWithUrls] = useState<Supplier[]>([]);
+  const [categories, setCategories] = useState<{ _id: string; label: string }[]>([]); // Update the categories state type to match the expected structure
 
   // דיבאונס לחיפוש
   useEffect(() => {
@@ -61,7 +58,7 @@ export default function Suppliers() {
   useEffect(() => {
     const filters: Record<string, string | number> = {};
     if (selectedCategory !== "הכל") filters.category = selectedCategory;
-  if (regionFilter && regionFilter !== "all") filters.region = regionFilter;
+    if (regionFilter && regionFilter !== "all") filters.region = regionFilter;
     if (debouncedSearch) filters.q = debouncedSearch;
     filters.page = page;
     filters.limit = limit;
@@ -94,6 +91,32 @@ export default function Suppliers() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [serverPage]);
 
+  // Fetch categories from the server
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('/api/categories'); // Adjust the endpoint as needed
+        const data = await response.json();
+
+        // Ensure the data is an array of objects with _id and label
+        if (Array.isArray(data) && data.every(item => '_id' in item && 'label' in item)) {
+          setCategories(data);
+        } else {
+          console.error('Invalid categories data structure:', data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch categories:', error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  // Fetch regions on component mount
+  useEffect(() => {
+    dispatch(fetchRegions());
+  }, [dispatch]);
+
   const handleSelectSupplier = (id: string) => {
     dispatch(fetchSupplierById(id));
   };
@@ -119,19 +142,19 @@ export default function Suppliers() {
           supplierId: supplierId,
         })
       ).unwrap();
-      
+
 
       console.log('✅ Request sent successfully:', result);
 
       toast.success("הבקשה נשלחה בהצלחה");
       dispatch(clearSelectedSupplier());
       setSendRequest(false);
-     } catch (err:unknown) {
-       console.error("❌ Error sending request:", err);
-       toast.error(getErrorMessage(err,"שגיאה בשליחת הבקשה"));
-     } finally {
-       setIsSending(false);
-     }
+    } catch (err: unknown) {
+      console.error("❌ Error sending request:", err);
+      toast.error(getErrorMessage(err, "שגיאה בשליחת הבקשה"));
+    } finally {
+      setIsSending(false);
+    }
   };
 
   return (
@@ -153,13 +176,17 @@ export default function Suppliers() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="הכל">הכל</SelectItem>
-                  <SelectItem value="צלם">צלם</SelectItem>
-                  <SelectItem value="להקה">להקה</SelectItem>
-                  <SelectItem value="אולם">אולם</SelectItem>
-                  <SelectItem value="קייטרינג">קייטרינג</SelectItem>
-                  <SelectItem value="עיצוב">עיצוב</SelectItem>
-                  <SelectItem value="אחר">אחר</SelectItem>
+
+                  {categories.map((category) => (
+                    <SelectItem
+                      key={category._id}
+                      value={category._id}
+                    >
+                      {category.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
+
               </Select>
             </div>
 
@@ -195,6 +222,8 @@ export default function Suppliers() {
                 />
               </div>
             </div>
+
+
           </div>
         </CardContent>
       </Card>

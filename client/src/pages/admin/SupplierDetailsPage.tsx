@@ -305,7 +305,7 @@ export function SupplierDetailsPage() {
         )}
 
         {/* REGIONS */}
-        {supplier.regions && supplier.regions.length > 0 && (
+        {supplier.regions && (
           <Card className="p-6">
             <h3 className="flex items-center gap-2 mb-4 text-xl font-semibold">
               <MapPin className="w-5 h-5 text-[#d4a960]" />
@@ -313,14 +313,9 @@ export function SupplierDetailsPage() {
             </h3>
 
             <div className="flex flex-wrap gap-2">
-              {supplier.regions.map((region, index) => (
-                <span
-                  key={index}
-                  className="px-3 py-1 bg-[#faf8f3] border rounded-full text-sm"
-                >
-                  {region}
-                </span>
-              ))}
+              <span className="px-3 py-1 bg-[#faf8f3] border rounded-full text-sm">
+                {supplier.regions}
+              </span>
             </div>
           </Card>
         )}

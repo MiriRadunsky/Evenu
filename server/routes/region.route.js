@@ -1,28 +1,7 @@
 import express from "express";
+import { israelRegions } from "../shared/regions.js";
 
 const router = express.Router();
-
-// רשימת אזורים בישראל (לא מחוזות)
-export const israelRegions = [
-  "כל הארץ",
-  "גליל עליון",
-  "גליל תחתון",
-  "הגולן",
-  "עמק יזרעאל",
-  "קריות",
-  "חיפה והסביבה",
-  "צפון",
-  "השרון",
-  "גוש דן",
-  "המרכז",
-  "השפלה",
-  "ירושלים והסביבה",
-  "הרי יהודה",
-  "בקעת הירדן",
-  "הנגב",
-  "הערבה",
-  "אילת"
-].sort((a, b) => a.localeCompare(b, "he"));
 
 // GET /api/regions - מחזיר את רשימת האזורים
 router.get("/", (req, res) => {

@@ -39,7 +39,7 @@ import {
   fetchClientPayments,
   fetchSupplierPayments,
 } from "../store/paymentsSlice";
-import { fetchEvents } from "../store/eventsSlice";
+import { fetchEvents, fetchRelevantEvents } from "../store/eventsSlice";
 
 import { SupplierPaymentActions } from "../components/ContractsAndPayments/SupplierPaymentActions";
 import { ClientReportPaymentDialog } from "../components/ContractsAndPayments/ClientReportPaymentDialog";
@@ -77,7 +77,7 @@ export default function ContractsPaymentsPage() {
 
   useEffect(() => {
     if (user?.role === "user") {
-      dispatch(fetchEvents({ page: 1, pageSize: 10 }));
+      dispatch(fetchRelevantEvents());
     }
   }, [dispatch, user?.role]);
 

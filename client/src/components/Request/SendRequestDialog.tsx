@@ -70,7 +70,7 @@ export const SendRequestDialog = ({
     }
   }, [open]);
 
-  const isRegionMismatch = selectedEvent && supplier.regions !== selectedEvent.locationRegion;
+  const isRegionMismatch = selectedEvent && !supplier.regions.some(region => region === selectedEvent.locationRegion);
   console.log("aaa", supplier.regions, selectedEvent?.locationRegion);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,7 +84,9 @@ export const SendRequestDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]" style={{ direction: "rtl" }}>
         <DialogHeader>
-          <DialogTitle>שליחת בקשה ל{supplier.user.name}</DialogTitle>
+          <DialogTitle>
+            שליחת בקשה ל{supplier.user?.name || "ספק לא ידוע"}
+          </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">

@@ -37,7 +37,9 @@ export const fetchSuppliers = createAsyncThunk<
 >("suppliers/fetchAll", async (filters, { rejectWithValue }) => {
   try {
     const { data } = await api.get<SupplierListResponse>("/suppliers", {
-      params: filters,
+      params: {
+        ...filters, // Ensure both eventId and categoryId are included
+      },
     });
     return data;
   } catch (err: unknown) {

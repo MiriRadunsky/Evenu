@@ -15,4 +15,5 @@ export interface Event {
   autoStatus?: string;
   createdAt: Date;
   updatedAt: Date;
+  isRelevant?: boolean; // Re-added isRelevant property to Event interface
 }

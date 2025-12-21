@@ -20,39 +20,12 @@ export const SupplierRepository = {
     return updatedSupplier;
   },
 
-  async findMany({ category, region, active, q, page = 1, limit = 20 }) {
+  async findMany({ category, region, eventId, active, q, page = 1, limit = 20 }) {
     const filter = {};
 
-    if (region) {
-      filter.regions = { $in: [region.trim()] };
+    if (eventId) {
+      filter.event = eventId; // Ensure event filtering
     }
-
-    filter.status = "מאושר";
-    filter.isActive = true;
-
-    // if (q) filter.$text = { $search: q };
-if (q && q.trim()) {
-  const term = q.trim();
-
-  const users = await User.find({
-    name: { $regex: term, $options: "i" },
-  })
-    .select("_id")
-    .lean();
-
-  const userIds = users.map((u) => u._id);
-
-  if (userIds.length === 0) {
-    return {
-      items: [],
-      total: 0,
-      page: Number(page),
-      limit: Number(limit),
-    };
-  }
-
-  filter.user = { $in: userIds };
-}
 
     if (category) {
       const cat = await Category.findOne({ label: category }).lean();
@@ -68,8 +41,41 @@ if (q && q.trim()) {
       }
     }
 
-  const skip = (Number(page) - 1) * Number(limit);
-  console.log('SupplierRepository.findMany filter:', filter, 'limit:', limit, 'page:', page);
+    // Ensure the region filter is applied correctly
+    if (region) {
+      const trimmedRegion = region.trim();
+      if (trimmedRegion) {
+        filter.regions = { $elemMatch: { $regex: trimmedRegion, $options: "i" } };
+      }
+    }
+
+    filter.status = "מאושר";
+
+    if (q && q.trim()) {
+      const term = q.trim();
+
+      const users = await User.find({
+        name: { $regex: term, $options: "i" },
+      })
+        .select("_id")
+        .lean();
+
+      const userIds = users.map((u) => u._id);
+
+      if (userIds.length === 0) {
+        return {
+          items: [],
+          total: 0,
+          page: Number(page),
+          limit: Number(limit),
+        };
+      }
+
+      filter.user = { $in: userIds };
+    }
+
+    const skip = (Number(page) - 1) * Number(limit);
+    console.log('SupplierRepository.findMany filter:', filter, 'limit:', limit, 'page:', page);
 
     const [items, total] = await Promise.all([
       Supplier.find(filter)
