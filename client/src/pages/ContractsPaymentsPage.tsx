@@ -39,7 +39,7 @@ import {
   fetchClientPayments,
   fetchSupplierPayments,
 } from "../store/paymentsSlice";
-import { fetchEvents, fetchRelevantEvents } from "../store/eventsSlice";
+import { fetchRelevantEvents } from "../store/eventsSlice";
 
 import { SupplierPaymentActions } from "../components/ContractsAndPayments/SupplierPaymentActions";
 import { ClientReportPaymentDialog } from "../components/ContractsAndPayments/ClientReportPaymentDialog";
