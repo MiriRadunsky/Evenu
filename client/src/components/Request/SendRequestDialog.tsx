@@ -41,7 +41,6 @@ export const SendRequestDialog = ({
 }: SendRequestDialogProps) => {
   const { eventsList, loadingList } = useSelector(
       (state: RootState) => state.events);
-  console.log("events", eventsList);
   
   const dispatch: AppDispatch = useDispatch();
 
@@ -50,19 +49,16 @@ export const SendRequestDialog = ({
 
   const supplierId = supplier._id;
 
-  // טוען אירועים רלוונטיים
   useEffect(() => {
     dispatch(fetchRelevantEvents());
   }, [dispatch]);
 
-  // בוחר את האירוע הראשון אוטומטית
   useEffect(() => {
     if (open && eventsList?.length > 0) {
       setSelectedEvent(eventsList[0]);
     }
   }, [open, eventsList]);
 
-  // ניקוי השדות כשסוגרים
   useEffect(() => {
     if (!open) {
       setSelectedEvent(null);
@@ -70,16 +66,21 @@ export const SendRequestDialog = ({
     }
   }, [open]);
 
-  // Check if supplier covers "כל הארץ" or matches event region
+  const supplierRegionsArray = Array.isArray(supplier.regions) ? supplier.regions.map(r => (r || "").trim()) : [];
+  const hasCountryWideRegion = supplierRegionsArray.includes("כל הארץ");
+  const eventRegionTrimmed = (selectedEvent?.locationRegion || "").trim();
+  const hasRegionMatch = supplierRegionsArray.some(region => region === eventRegionTrimmed);
+  
   const isRegionMismatch = selectedEvent && 
-    Array.isArray(supplier.regions) &&
-    !supplier.regions.map(r => (r || "").trim()).includes("כל הארץ") &&
-    !supplier.regions.some(region => (region || "").trim() === (selectedEvent.locationRegion || "").trim());
+    !hasCountryWideRegion && 
+    !hasRegionMatch;
   
   console.log("Region check:", {
     supplierRegions: supplier.regions,
-    eventRegion: selectedEvent?.locationRegion,
-    hasCountryWide: Array.isArray(supplier.regions) && supplier.regions.map(r => (r || "").trim()).includes("כל הארץ"),
+    supplierRegionsTrimmed: supplierRegionsArray,
+    eventRegion: eventRegionTrimmed,
+    hasCountryWide: hasCountryWideRegion,
+    hasRegionMatch: hasRegionMatch,
     mismatch: isRegionMismatch
   });
   
