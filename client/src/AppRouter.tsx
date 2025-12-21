@@ -57,12 +57,7 @@ export default function AppRouter() {
     {title:'תשלומים',path:'/supplier/payments',element:<ContractsPaymentsPage/>,icon:Wallet},
 
   ];
-  //  const adminRoutes = [
-  //   { path: "/admin/dashboard", element: <AdminDashboard /> },
-  //   { path: "/admin/pending-suppliers", element: <PendingSuppliersPage /> },
-  //   { path: "/admin/active-suppliers", element: <ActiveSuppliersPage /> },
-  //   { path: "/admin/users", element: <UsersPage /> },
-  // ];
+  
   const renderRoutes = (routes: AppRoute[], requiredRole?: 'admin' | 'user' | 'supplier') =>
     routes.map((route) => (
       <Route

@@ -20,6 +20,7 @@ import {
 } from "../ui/select";
 
 import type { AppDispatch, RootState } from "../../store";
+import type { Event } from "../../types/Event";
 import { CreateContractDialog } from "../ContractsAndPayments/CreateContractDialog";
 import { fetchRelevantEvents } from "../../store/eventsSlice";
 import { fetchCategories } from "../../store/categoriesSlice";
@@ -54,17 +55,15 @@ export default function RequestList({ type }: RequestListProps) {
   const [page, setPage] = useState(1);
   const [expandedRequest, setExpandedRequest] = useState<string | null>(null);
   const [showCreateContractDialog, setShowCreateContractDialog] = useState(false);
-  // Search only by supplier
   const [searchTerm, setSearchTerm] = useState("");
 
   const resolvedMode: "user" | "supplier" = type;
   const actionLoading = loading;
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
-  // If a category is selected, build a deduplicated events list from the requests
   const eventsForDropdown = useMemo(() => {
     if (selectedCategory && selectedCategory !== "all") {
-      const map = new Map<string, any>();
+      const map = new Map<string, Event>();
       for (const r of requests) {
         const ev = r.eventId;
         if (ev && ev._id) {
@@ -156,7 +155,7 @@ export default function RequestList({ type }: RequestListProps) {
           <div className="w-full">
             <input
               type="text"
-              placeholder="חיפוש לפי ספק / אירוע / קטגוריה..."
+              placeholder="חיפוש לפי ספק"
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
@@ -166,7 +165,7 @@ export default function RequestList({ type }: RequestListProps) {
               style={{ direction: "rtl" }}
             />
           </div>
-
+{type === "user" && (
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:space-y-0">
             <div className="space-y-1">
               <p className="text-sm font-semibold">סינון</p>
@@ -218,6 +217,7 @@ export default function RequestList({ type }: RequestListProps) {
               </div>
             </div>
           </div>
+)}
         </div>
       </Card>
 
