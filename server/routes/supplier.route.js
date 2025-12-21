@@ -29,7 +29,7 @@ router.get(
   SupplierController.getOne
 );
 // POST /api/supplier/register
-router.post('/register', validateBody(supplierRegisterSchema), SupplierController.supplierRegister);
+router.post('/register', supplierRegisterSchema, SupplierController.supplierRegister);
 // // POST /api/supplier/login
 //PATCH /api/suppliers/:id
 router.patch('/add-images', authGuard,SupplierController.updateMediaSupplier)
