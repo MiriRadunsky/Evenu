@@ -40,6 +40,7 @@ export default function Suppliers() {
   const [page, setPage] = useState<number>(1);
   const [limit] = useState<number>(9); // Set to 9 per page (change this number as needed)
   const [regionFilter, setRegionFilter] = useState("all");
+  const [budgetFilter, setBudgetFilter] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [viewingSupplier, setViewingSupplier] = useState(false);
@@ -60,10 +61,11 @@ export default function Suppliers() {
     if (selectedCategory !== "הכל") filters.category = selectedCategory;
     if (regionFilter && regionFilter !== "all") filters.region = regionFilter;
     if (debouncedSearch) filters.q = debouncedSearch;
+    if (budgetFilter !== null) filters.maxBudget = budgetFilter;
     filters.page = page;
     filters.limit = limit;
     dispatch(fetchSuppliers(filters));
-  }, [dispatch, selectedCategory, regionFilter, debouncedSearch, page, limit]);
+  }, [dispatch, selectedCategory, regionFilter, debouncedSearch, page, limit, budgetFilter]);
 
   useEffect(() => {
     const loadUrls = async () => {
@@ -164,7 +166,7 @@ export default function Suppliers() {
       {/* פילטרים */}
       <Card>
         <CardContent className="pt-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-medium">קטגוריה</label>
               <Select
@@ -208,6 +210,16 @@ export default function Suppliers() {
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">תקציב מקסימלי (₪)</label>
+              <Input
+                type="number"
+                placeholder="הזן תקציב"
+                value={budgetFilter ?? ''}
+                onChange={(e) => { setBudgetFilter(e.target.value ? Number(e.target.value) : null); setPage(1); }}
+              />
             </div>
 
             <div className="space-y-2">
@@ -259,6 +271,12 @@ export default function Suppliers() {
               <CardContent className="space-y-2">
                 {s.category && (
                   <Badge className="text-sm">{s.category.label}</Badge>
+                )}
+
+                {typeof s.baseBudget !== 'undefined' && (
+                  <div className="text-sm">
+                    <strong>מחיר בסיסי: </strong>₪{s.baseBudget}
+                  </div>
                 )}
 
                 {/* אזורים */}
@@ -347,9 +365,15 @@ export default function Suppliers() {
 
         ) : (
           <SupplierDetailsDialog
+            key={selectedSupplier?._id}
             supplier={selectedSupplier}
             open={viewingSupplier}
-            onOpenChange={(open) => !open && setViewingSupplier(false)}
+            onOpenChange={(open) => {
+              if (!open) {
+                setViewingSupplier(false);
+                dispatch(clearSelectedSupplier()); // Clear selected supplier when dialog closes
+              }
+            }}
             onSendRequest={() => {
               setViewingSupplier(false);
               setSendRequest(true);

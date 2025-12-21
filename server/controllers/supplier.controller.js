@@ -10,6 +10,11 @@ export const SupplierController = {
     const { _v, ...data } = await SupplierService.getSupplier(req.params.id);
     res.status(201).json({ supplier: data });
   }),
+  getOwnProfile: asyncHandler(async (req, res) => {
+    const userId = req.user._id;
+    const { _v, ...data } = await SupplierService.getSupplierByUserId(userId);
+    res.status(200).json({ supplier: data });
+  }),
   updateSupplierStatus: asyncHandler(async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
@@ -30,10 +35,12 @@ export const SupplierController = {
       regions,
       kashrut,
       description,
+      baseBudget,
+      priceFiles,
     } = req.body;
     const { user, supplier, token } = await SupplierService.registerSupplier({
       userData: { name, email, phone, password, role: role || "supplier" },
-      supplierData: { category, regions, kashrut, description },
+      supplierData: { category, regions, kashrut, description, baseBudget, priceFiles },
     });
 
     res.cookie("token", token, {
@@ -46,12 +53,14 @@ export const SupplierController = {
   }),
   updateMediaSupplier: asyncHandler(async (req, res) => {
     const id = req.user._id;
-    const { profileImage, media } = req.body;
+    const { profileImage, media, baseBudget, priceFiles } = req.body;
 
     const { _v, ...updated } = await SupplierService.updateSupplierMedia(
       id,
       profileImage,
-      media
+      media,
+      baseBudget,
+      priceFiles
     );
     res.status(201).json({ supplier: updated });
   }),

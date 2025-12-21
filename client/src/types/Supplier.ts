@@ -31,6 +31,15 @@ export interface Supplier {
   status: "בהמתנה" | "מאושר" | "נפסל" | "נחסם";
   createdAt: string;
   updatedAt: string;
+  // מחיר בסיסי שהספק מציין
+  baseBudget?: number;
+  // מחירונים מרובים (קבצים ו/או תמונות)
+  priceFiles?: Array<{
+    key: string;
+    originalName?: string;
+    contentType?: string;
+    uploadedAt?: string;
+  }> | null;
 }
 
 // export interface SupplierCategory {

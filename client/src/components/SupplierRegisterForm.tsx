@@ -56,6 +56,7 @@ interface SupplierFormData {
   regions: string;
   kashrut: string;
   description: string;
+  baseBudget: string;
   agreedTerms: boolean;
 }
 
@@ -80,6 +81,7 @@ export function SupplierRegisterForm({ onRegister, onRoleChange, currentRole }: 
     regions: "",
     kashrut: "",
     description: "",
+    baseBudget: "",
     agreedTerms: false,
   });
 
@@ -136,7 +138,7 @@ export function SupplierRegisterForm({ onRegister, onRoleChange, currentRole }: 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const { name, email, phone, password, confirmPassword, category, kashrut, regions, description, agreedTerms } = formData;
+    const { name, email, phone, password, confirmPassword, category, kashrut, regions, description, baseBudget, agreedTerms } = formData;
 
     const nameError = validateName(name);
     const emailError = validateEmail(email);
@@ -166,11 +168,12 @@ export function SupplierRegisterForm({ onRegister, onRoleChange, currentRole }: 
           name,
           email,
           phone,
-          password,   
+          password,
           category,
           regions: regionsArray,
           kashrut,
-          description
+          description,
+          baseBudget: Number(baseBudget || 0),
         },
         "supplier"
       );
@@ -185,7 +188,7 @@ export function SupplierRegisterForm({ onRegister, onRoleChange, currentRole }: 
     }
   };
 
-  if (step === 2) return <MediaUploader onRegister={onRegister} />;
+  if (step === 2) return <MediaUploader onRegister={onRegister} baseBudget={Number(formData.baseBudget || 0)} />;
 
   return (
     <form onSubmit={handleSubmit} className="w-full p-4 space-y-3 shadow-xl sm:p-6 md:p-10 bg-white/90 backdrop-blur-lg rounded-2xl sm:rounded-3xl sm:space-y-5">
@@ -372,6 +375,10 @@ export function SupplierRegisterForm({ onRegister, onRoleChange, currentRole }: 
       </div>
 
       <textarea placeholder="תיאור קצר על השירותים שלך" value={formData.description} onChange={e => updateField("description", e.target.value)} className="w-full px-4 py-3 border rounded-2xl h-24 focus:outline-none focus:ring-2 focus:ring-[#2d2d35]" />
+
+      <div>
+        <input type="number" placeholder="מחיר בסיסי (₪)" value={formData.baseBudget} onChange={e => updateField("baseBudget", e.target.value)} className="w-full px-4 h-14 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#2d2d35]" />
+      </div>
 
       {/* תנאים */}
       <div className="flex items-start gap-3">

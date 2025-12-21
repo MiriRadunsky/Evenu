@@ -17,7 +17,6 @@ export const uploadFileAwsController = {
       );
 
       return res.json(urlData); 
-      // יחזיר: { url: "...", key: "contracts/abc.pdf" }
     } catch (err) {
       console.error("AWS Upload URL Error:", err);
       return res.status(500).json({ error: "Failed to generate upload URL" });

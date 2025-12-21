@@ -93,9 +93,7 @@ export async function approveSupplier(supplierId) {
 
   // אישור הספק
   const updatedSupplier = await repo.approveSupplier(supplierId);
-  
-  // TODO: שליחת התראה למייל/SMS לספק
-  console.log(`✅ Supplier approved: ${updatedSupplier.user?.email}`);
+
 
   return {
     message: 'ספק אושר בהצלחה',
@@ -118,9 +116,7 @@ export async function rejectSupplier(supplierId) {
   // דחיית הספק
   const updatedSupplier = await repo.rejectSupplier(supplierId);
   
-  // TODO: שליחת התראה למייל/SMS לספק
-  console.log(`❌ Supplier rejected: ${updatedSupplier.user?.email}`);
-
+ 
   return {
     message: 'ספק נדחה',
     supplier: {
@@ -176,8 +172,6 @@ export async function unblockSupplier(supplierId) {
   // ביטול חסימה
   const updatedSupplier = await repo.unblockSupplier(supplierId);
   
-  // TODO: שליחת התראה למייל/SMS לספק
-  console.log(`✅ Supplier unblocked: ${updatedSupplier.user?.email}`);
 
   return {
     message: 'חסימה בוטלה בהצלחה',

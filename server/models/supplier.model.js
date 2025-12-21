@@ -29,6 +29,17 @@ const mediaSub = new Schema(
   { _id: false }
 );
 
+// תת־סקימה של קובץ מחירון (תומך בתמונות וקבצים)
+const priceFileSub = new Schema(
+  {
+    key: { type: String, required: true, trim: true },
+    originalName: { type: String, trim: true },
+    contentType: { type: String, trim: true },
+    uploadedAt: { type: Date, default: Date.now }
+  },
+  { _id: false }
+);
+
 const supplierSchema = new Schema(
   {
     user: { type: Types.ObjectId, ref: 'User', required: true, index: true },
@@ -42,6 +53,12 @@ const supplierSchema = new Schema(
     media: { type: mediaSub, default: {} },
 
     profileImage: { type: profileImageSub, default: null },
+    
+    // מחירונים מרובים (קבצים ו/או תמונות)
+    priceFiles: { type: [priceFileSub], default: [] },
+
+    // תקציב בסיסי של הספק
+    baseBudget: { type: Number, default: 0, index: true },
 
     description: { type: String, trim: true },
     status: {

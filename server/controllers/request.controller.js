@@ -4,34 +4,38 @@ import Supplier from "../models/supplier.model.js";
 import { AppError } from "../middlewares/error.middleware.js";
 
 export const RequestController = {
- 
-getAllRequestsByUserId: asyncHandler(async (req, res) => {
-  const userId = req.user._id;
-  const { page = 1, limit = 10, status, eventId, searchTerm, category } = req.query;
+  getAllRequestsByUserId: asyncHandler(async (req, res) => {
+    const userId = req.user._id;
+    const {
+      page = 1,
+      limit = 10,
+      status,
+      eventId,
+      searchTerm,
+      category,
+    } = req.query;
+    const result = await RequestService.getRequestsByUserId(userId, {
+      page: Number(page),
+      limit: Number(limit),
+      status,
+      eventId,
+      searchTerm: searchTerm || undefined,
+      category: category || undefined,
+    });
 
-  console.log("Filters:", { status, eventId, searchTerm, category });
-  console.log("Received eventId in getAllRequestsByUserId:", eventId);
-
-  const result = await RequestService.getRequestsByUserId(userId, {
-    page: Number(page),
-    limit: Number(limit),
-    status,
-    eventId,
-    searchTerm: searchTerm || undefined,
-    category: category || undefined,
-  });
-
-  res.status(200).json(result);
-}),
-
+    res.status(200).json(result);
+  }),
 
   getSupplierRequests: asyncHandler(async (req, res) => {
-     const userId = req.user._id;
-     const { page = 1, limit = 10, status, eventId, searchTerm, category } = req.query;
-
-    console.log("Filters:", { status, eventId, searchTerm, category });
-    console.log("Received eventId in getSupplierRequests:", eventId);
-
+    const userId = req.user._id;
+    const {
+      page = 1,
+      limit = 10,
+      status,
+      eventId,
+      searchTerm,
+      category,
+    } = req.query;
     const result = await RequestService.getRequestsBySupplierUserId(userId, {
       page,
       limit,
@@ -48,7 +52,7 @@ getAllRequestsByUserId: asyncHandler(async (req, res) => {
     const { eventId } = req.params;
     const { supplierId, notesFromClient } = req.body;
     const clientId = req.user._id;
-    
+
     const { request, threadId } = await RequestService.createSupplierRequest({
       eventId,
       supplierId,
@@ -73,8 +77,11 @@ getAllRequestsByUserId: asyncHandler(async (req, res) => {
 
     const { id } = req.params;
     console.log(id);
-    
-    const result = await RequestService.approveSupplierRequest(id, supplier._id);
+
+    const result = await RequestService.approveSupplierRequest(
+      id,
+      supplier._id
+    );
 
     res.status(200).json({
       message: "בקשה אושרה",
@@ -91,7 +98,10 @@ getAllRequestsByUserId: asyncHandler(async (req, res) => {
     }
 
     const { id } = req.params;
-    const result = await RequestService.declineSupplierRequest(id, supplier._id);
+    const result = await RequestService.declineSupplierRequest(
+      id,
+      supplier._id
+    );
 
     res.status(200).json({
       message: "בקשה סורבה",

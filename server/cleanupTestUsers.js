@@ -6,7 +6,6 @@ async function cleanup() {
   try {
     await connectMongo();
     
-    // מוחק את המשתמש הבעייתי (החלף את האימייל)
     const email = 'elisheva77@example.com';
     const result = await User.findOneAndDelete({ email });
     

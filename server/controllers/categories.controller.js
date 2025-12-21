@@ -3,6 +3,5 @@ import * as srv from '../services/categories.service.js';
 import asyncHandler from '../middlewares/asyncHandler.middleware.js';
 export const  getAllCategories = asyncHandler(async(req,res) =>{
     const categories =  await srv.getCategories();
-    console.log("Categories from DB:", categories);
     res.status(200).json(categories);
 })

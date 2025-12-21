@@ -20,7 +20,7 @@ export const SupplierRepository = {
     return updatedSupplier;
   },
 
-  async findMany({ category, region, eventId, active, q, page = 1, limit = 20 }) {
+  async findMany({ category, region, eventId, active, q, page = 1, limit = 20, maxBudget }) {
     const filter = {};
 
     if (eventId) {
@@ -46,6 +46,14 @@ export const SupplierRepository = {
       const trimmedRegion = region.trim();
       if (trimmedRegion) {
         filter.regions = { $elemMatch: { $regex: trimmedRegion, $options: "i" } };
+      }
+    }
+
+    // Filter by budget (suppliers whose baseBudget is less than or equal to maxBudget)
+    if (typeof maxBudget !== 'undefined' && maxBudget !== null && String(maxBudget).trim() !== '') {
+      const num = Number(maxBudget);
+      if (!Number.isNaN(num)) {
+        filter.baseBudget = { $lte: num };
       }
     }
 
@@ -86,7 +94,6 @@ export const SupplierRepository = {
         .limit(Number(limit)),
       Supplier.countDocuments(filter),
     ]);
-    console.log("Suppliers found:", items);
     return {
       items,
       total,
@@ -115,7 +122,8 @@ export const SupplierRepository = {
     return supplier?._id || null;
   },
   async getSupplierByUserId(userId) {
-    const supplier = await Supplier.findOne({ user: userId }).lean();
+    const supplier = await Supplier.findOne({ user: userId }) .populate("category", "label")
+      .populate("user", "name email phone").lean();
     return supplier || null;
   },
   async getSupplierById(_id) {
@@ -131,11 +139,31 @@ export const SupplierRepository = {
   async createSupplier(data) {
     return Supplier.create(data);
   },
-  async updateSupplierMedia(id, profileImage, media) {
+  async updateSupplierMedia(id, profileImage, media, baseBudget, priceFiles) {
+    const update = { profileImage, media };
+    if (typeof baseBudget !== 'undefined') update.baseBudget = baseBudget;
+    
+    // Handle priceFiles - if array provided, use it; if single file, push to existing array
+    if (priceFiles !== undefined) {
+      if (Array.isArray(priceFiles)) {
+        update.priceFiles = priceFiles;
+      } else if (priceFiles) {
+        // Single file: fetch current and push new one
+        const supplier = await Supplier.findById(id).select('priceFiles');
+        if (supplier && supplier.priceFiles) {
+          supplier.priceFiles.push(priceFiles);
+          update.priceFiles = supplier.priceFiles;
+        } else {
+          update.priceFiles = [priceFiles];
+        }
+      }
+    }
+
     return Supplier.findByIdAndUpdate(
       id,
-      { profileImage, media },
+      update,
       { new: true }
     );
   },
 };
+

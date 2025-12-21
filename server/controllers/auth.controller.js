@@ -3,7 +3,6 @@ import asyncHandler from "../middlewares/asyncHandler.middleware.js";
 
 
 export const register = asyncHandler(async (req, res) => {
-  console.log("Register - Request Body:", req.body);
   req.body.role = 'user';
   const { user, token } = await serv.register(req.body);
   res.cookie("token", token, {

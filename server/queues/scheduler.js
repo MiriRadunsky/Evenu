@@ -59,7 +59,6 @@ export const notificationWorker = new Worker(
     await connection.rpush(listKey, notification.id);
     await connection.hset(mapKey, notification.id, JSON.stringify(notification));
 
-    console.log(`✅ Notification sent to user ${notification.userId}`);
   },
   { connection }
 );
