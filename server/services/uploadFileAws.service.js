@@ -1,5 +1,6 @@
 import AWS from 'aws-sdk';
 import dotenv from 'dotenv/config';
+import { v4 as uuidv4 } from 'uuid';
 
 const s3 = new AWS.S3({
   accessKeyId: process.env.AWS_ACCESS_KEY,
@@ -13,9 +14,11 @@ export const uploadFileAwsService = {
 
   // יצירת כתובת העלאה חתומה
   createPresignedUploadUrl: async (fileName, contentType) => {
+    const uniqueFileName = `${Date.now()}-${uuidv4()}-${fileName}`;
+    
     const params = {
       Bucket: BUCKET,
-      Key: fileName,
+      Key: uniqueFileName,
       Expires: 3600,
       ContentType: contentType, // חובה!
     };
@@ -24,7 +27,7 @@ export const uploadFileAwsService = {
 
     return { 
       url,
-      key: fileName,
+      key: uniqueFileName,
       contentType
     };
   },

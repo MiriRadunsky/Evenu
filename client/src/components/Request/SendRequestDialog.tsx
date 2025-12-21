@@ -69,23 +69,11 @@ export const SendRequestDialog = ({
   const supplierRegionsArray = Array.isArray(supplier.regions) ? supplier.regions.map(r => (r || "").trim()) : [];
   const hasCountryWideRegion = supplierRegionsArray.includes("כל הארץ");
   const eventRegionTrimmed = (selectedEvent?.locationRegion || "").trim();
-  
-  // If event has no region set, allow any supplier (region is not a blocker)
-  // Otherwise, check if supplier covers this region
   const hasRegionMatch = !eventRegionTrimmed || supplierRegionsArray.some(region => region === eventRegionTrimmed);
   
   const isRegionMismatch = selectedEvent && 
     !hasCountryWideRegion && 
     !hasRegionMatch;
-  
-  console.log("Region check:", {
-    supplierRegions: supplier.regions,
-    supplierRegionsTrimmed: supplierRegionsArray,
-    eventRegion: eventRegionTrimmed,
-    hasCountryWide: hasCountryWideRegion,
-    hasRegionMatch: hasRegionMatch,
-    mismatch: isRegionMismatch
-  });
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

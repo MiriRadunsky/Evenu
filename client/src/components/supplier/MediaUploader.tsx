@@ -20,9 +20,9 @@ export default function MediaUploader({ onRegister }: { onRegister: () => void }
 
   try {
     if (profileImage) {
-      await uploadFileToS3(profileImage)
+      const profileImageKey = await uploadFileToS3(profileImage);
       uploadedData.profileImage = {
-        key: profileImage.name,
+        key: profileImageKey,
         alt: profileImage.name,
       };
     }
@@ -33,11 +33,11 @@ export default function MediaUploader({ onRegister }: { onRegister: () => void }
 
       await Promise.all(
         mediaFiles.map(async (file) => {
-           await uploadFileToS3(file);
+          const fileKey = await uploadFileToS3(file);
           if (file.type.startsWith("image/")) {
-            images.push({ key:file.name, alt: file.name });
+            images.push({ key: fileKey, alt: file.name });
           } else if (file.type.startsWith("video/")) {
-            videos.push({ key:file.name});
+            videos.push({ key: fileKey });
           }
         })
       );

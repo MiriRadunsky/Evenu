@@ -204,15 +204,15 @@ const handleCancelContract = async (contractId: string) => {
 
     try {
       setSigningContractId(currentContractToSign);
-      const { file, signatureKey } = convertBase64ToBlob(signatureData);
-      await uploadFileToS3(file);
+      const { file } = convertBase64ToBlob(signatureData);
+      const returnedSignatureKey = await uploadFileToS3(file);
 
       await dispatch(
         signContract({
           party: type,
           contractId: currentContractToSign,
           userId: user._id,
-          signatureKey,
+          signatureKey: returnedSignatureKey,
         })
       ).unwrap();
 

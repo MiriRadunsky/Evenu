@@ -84,7 +84,6 @@ export default function RequestList({ type }: RequestListProps) {
   }, [searchTerm]);
 
   useEffect(() => {
-    // Always fetch relevant events (no paging) and categories on mount
     dispatch(fetchRelevantEvents());
     dispatch(fetchCategories());
   }, [dispatch]);
@@ -152,63 +151,75 @@ export default function RequestList({ type }: RequestListProps) {
         סך הכל {total} בקשות
       </div>
 
-      {/* חיפוש לפי ספק */}
-      <div className="flex flex-wrap items-center justify-between gap-6 mb-4">
-        <div className="w-full max-w-md">
-          <input
-            type="text"
-            placeholder="חיפוש לפי ספק (שם או אימייל)..."
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setPage(1);
-            }}
-            className="w-full border border-primary rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary"
-            style={{ direction: "rtl" }}
-          />
-        </div>
-        {/* סינון לפי אירוע — תמיד מוצג */}
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground flex items-center gap-1">
-              <Calendar className="w-4 h-4" />
-              אירוע:
-            </span>
-            <Select value={selectedEventId} onValueChange={handleEventChange}>
-              <SelectTrigger className="w-56 border-primary">
-                <SelectValue placeholder="בחר אירוע" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">כל האירועים</SelectItem>
-                {eventsForDropdown?.map((ev) => (
-                  <SelectItem key={ev._id} value={ev._id}>
-                    {ev.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+      <Card className="border border-primary/40 rounded-xl bg-white p-4 shadow-sm">
+        <div className="space-y-4">
+          <div className="w-full">
+            <input
+              type="text"
+              placeholder="חיפוש לפי ספק / אירוע / קטגוריה..."
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setPage(1);
+              }}
+              className="w-full border border-primary/40 rounded-lg px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary"
+              style={{ direction: "rtl" }}
+            />
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground flex items-center gap-1">
-              קטגוריה ספק:
-            </span>
-            <Select value={selectedCategory} onValueChange={(v) => { setSelectedCategory(v); setPage(1); setSelectedEventId("all"); }}>
-              <SelectTrigger className="w-56 border-primary">
-                <SelectValue placeholder="כל הקטגוריות" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">כל הקטגוריות</SelectItem>
-                {categories?.map((c) => (
-                  <SelectItem key={c._id} value={c._id}>
-                    {c.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:space-y-0">
+            <div className="space-y-1">
+              <p className="text-sm font-semibold">סינון</p>
+              <p className="text-xs text-muted-foreground">
+                סנן לפי אירוע וקטגוריה
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-2 md:gap-3 w-full md:w-auto">
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <span className="text-sm text-muted-foreground flex items-center gap-1 whitespace-nowrap">
+                  <Calendar className="w-4 h-4" />
+                  אירוע:
+                </span>
+
+                <Select value={selectedEventId} onValueChange={handleEventChange}>
+                  <SelectTrigger className="flex-1 sm:w-40 border-primary/40">
+                    <SelectValue placeholder="בחר אירוע" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">כל האירועים</SelectItem>
+                    {eventsForDropdown?.map((ev) => (
+                      <SelectItem key={ev._id} value={ev._id}>
+                        {ev.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <span className="text-sm text-muted-foreground whitespace-nowrap">
+                  קטגוריה:
+                </span>
+
+                <Select value={selectedCategory} onValueChange={(v) => { setSelectedCategory(v); setPage(1); setSelectedEventId("all"); }}>
+                  <SelectTrigger className="flex-1 sm:w-40 border-primary/40">
+                    <SelectValue placeholder="כל הקטגוריות" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">כל הקטגוריות</SelectItem>
+                    {categories?.map((c) => (
+                      <SelectItem key={c._id} value={c._id}>
+                        {c.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </Card>
 
       <Tabs value={selectedTab} onValueChange={handleTabChange}>
         <TabsList className="grid w-full grid-cols-4 h-auto">
