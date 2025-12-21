@@ -27,7 +27,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
     {
       icon: Shield,
       title: "אמינות ובטיחות",
-      description: "ספקים מאומתים ומהימנים המותאמים לציבור החרדי",
+      description: "ספקים מאומתים ומהימנים המותאמים לצרכים שלכם",
       gradient: "from-[#2d2d35] to-[#595964]",
     },
     {
@@ -77,7 +77,6 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
         </div>
 
         <div className="relative z-10 max-w-5xl px-4 mx-auto text-center">
-          {/* לוגו שלך בלבד במרכז, ללא עיגול */}
           <div className="flex justify-center mb-0 p-0" style={{marginBottom: 0, paddingBottom: 0}}>
             <img src="/logo.png" alt="Évenu לוגו" className="h-72 w-auto" style={{display:'block'}} />
           </div>
@@ -85,9 +84,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
           <h1 id="hero-heading" className="text-3xl font-light leading-tight text-white md:text-4xl lg:text-5xl mt-[-4rem]">
             ניהול אירועים חכם ומסודר
             <br />
-            <span className="inline-block mt-2 text-gradient-gold">
-              לציבור החרדי
-            </span>
+  
           </h1>
           {/* No extra style needed, margin handled by Tailwind */}
 
