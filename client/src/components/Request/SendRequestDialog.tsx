@@ -70,10 +70,19 @@ export const SendRequestDialog = ({
     }
   }, [open]);
 
+  // Check if supplier covers "כל הארץ" or matches event region
   const isRegionMismatch = selectedEvent && 
-    supplier.regions.includes("כל הארץ") === false &&
-    !supplier.regions.some(region => region === selectedEvent.locationRegion);
-  console.log("aaa", supplier.regions, selectedEvent?.locationRegion);
+    Array.isArray(supplier.regions) &&
+    !supplier.regions.map(r => (r || "").trim()).includes("כל הארץ") &&
+    !supplier.regions.some(region => (region || "").trim() === (selectedEvent.locationRegion || "").trim());
+  
+  console.log("Region check:", {
+    supplierRegions: supplier.regions,
+    eventRegion: selectedEvent?.locationRegion,
+    hasCountryWide: Array.isArray(supplier.regions) && supplier.regions.map(r => (r || "").trim()).includes("כל הארץ"),
+    mismatch: isRegionMismatch
+  });
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedEvent || isRegionMismatch) return;
