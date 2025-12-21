@@ -33,8 +33,16 @@ export const PaymentRepository = {
   },
 
   async update(paymentId, data) {
-    return Payment.findByIdAndUpdate(paymentId, data, {
-      new: true,
+    return Payment.findByIdAndUpdate(paymentId, data, { new: true }).populate({
+      path: "contractId",
+      populate: [
+        { path: "eventId", select: "name type location budget" },
+        { path: "clientId" },
+        {
+          path: "supplierId",
+          populate: { path: "user" },
+        },
+      ],
     });
   },
 
@@ -45,7 +53,7 @@ export const PaymentRepository = {
     return Payment.findById(paymentId).populate({
       path: "contractId",
       populate: [
-        { path: "eventId" },
+        { path: "eventId", select: "name type location budget" },
         { path: "clientId" },
         {
           path: "supplierId",
@@ -58,7 +66,6 @@ export const PaymentRepository = {
     return Payment.find({ contractId }).sort({ dueDate: 1 });
   },
   async findPaymentsForClient(clientUserId) {
-    // חוזים של הלקוח (clientId זה ה־User או entity – תלוי במודל שלך)
     const contracts = await Contract.find({ clientId: clientUserId })
       .select("_id")
       .lean();
