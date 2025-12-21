@@ -60,7 +60,6 @@ const supplierSchema = new Schema(
   { timestamps: true }
 );
 
-// צור indexes לביצועים טובים יותר
 supplierSchema.index({ status: 1, isActive: 1 });
 supplierSchema.index({ category: 1, regions: 1, isActive: 1 });
 supplierSchema.index({ user: 1 });

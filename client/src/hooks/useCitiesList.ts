@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import api from "../services/axios";
 
 export function useCitiesList() {
   const [cities, setCities] = useState<string[]>([]);
@@ -6,9 +7,8 @@ export function useCitiesList() {
   useEffect(() => {
     async function fetchCities() {
       try {
-        // קריאה דרך השרת שלנו (proxy) כדי להימנע מבעיות CORS
-        const res = await fetch("/api/cities");
-        const data = await res.json();
+        // שימוש בـ axios מוגדר כדי להשתמש בـ API URL הנכון בכל סביבה
+        const { data } = await api.get("/cities");
 
         if (data.success && data.cities) {
           setCities(data.cities);
