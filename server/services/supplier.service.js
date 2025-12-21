@@ -55,8 +55,18 @@ export const SupplierService = {
       throw new AppError(400, "חובה לבחור לפחות אזור שירות אחד");
     }
 
-    // Ensure regions are valid and exist in the predefined list
-    supplierData.regions = supplierData.regions.filter(region => israelRegions.includes(region.trim()));
+    // Ensure regions are valid and exist in the predefined list (trim whitespace)
+    const trimmedRegions = supplierData.regions.map(r => (typeof r === 'string' ? r.trim() : String(r).trim()));
+    console.log("🔍 אזורים לאחר trim:", trimmedRegions);
+    console.log("📋 אזורים ידועים:", israelRegions);
+    
+    supplierData.regions = trimmedRegions.filter(region => {
+      const isValid = israelRegions.includes(region);
+      if (!isValid) {
+        console.warn(`⚠️ אזור לא חוקי: "${region}"`);
+      }
+      return isValid;
+    });
 
     if (supplierData.regions.length === 0) {
       throw new AppError(400, "חובה לבחור לפחות אזור שירות תקין אחד");
