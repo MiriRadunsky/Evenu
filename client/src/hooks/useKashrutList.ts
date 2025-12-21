@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import api from "../services/axios";
 
 export function useKashrutList() {
   const [kashrutList, setKashrutList] = useState<string[]>([]);
@@ -7,9 +8,8 @@ export function useKashrutList() {
   useEffect(() => {
     async function fetchKashrut() {
       try {
-        // קריאה דרך השרת שלנו כדי להימנע מבעיות CORS
-        const res = await fetch("/api/kashrut");
-        const data = await res.json();
+        // שימוש בـ axios מוגדר כדי להשתמש בـ API URL הנכון בכל סביבה
+        const { data } = await api.get("/kashrut");
 
         if (data.success && data.kashrut) {
           setKashrutList(data.kashrut);

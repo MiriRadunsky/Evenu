@@ -79,13 +79,11 @@ export const SupplierRepository = {
 
     const [items, total] = await Promise.all([
       Supplier.find(filter)
-        .select("name category regions status profileImage")
         .populate("user", "name email")
         .populate("category", "label")
         .sort({ createdAt: -1 })
         .skip(Number(skip))
-        .limit(Number(limit))
-        .lean(),
+        .limit(Number(limit)),
       Supplier.countDocuments(filter),
     ]);
     console.log("Suppliers found:", items);

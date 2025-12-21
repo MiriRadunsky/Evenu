@@ -49,7 +49,8 @@ export const register = async (
 ): Promise<AuthResponse> => {
   try {
     const route = role === "supplier" ? "/suppliers/register" : "/auth/register";
-    const payload = role === "supplier" ? { ...data, role: "supplier" } : data;
+    // Do not send `role` from the client. The server determines role for supplier registration.
+    const payload = data;
     const response = await api.post(route, payload);
     return response.data;
   } catch (error: unknown) {
