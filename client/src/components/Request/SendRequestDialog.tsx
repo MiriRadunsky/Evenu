@@ -70,7 +70,9 @@ export const SendRequestDialog = ({
     }
   }, [open]);
 
-  const isRegionMismatch = selectedEvent && !supplier.regions.some(region => region === selectedEvent.locationRegion);
+  const isRegionMismatch = selectedEvent && 
+    supplier.regions.includes("כל הארץ") === false &&
+    !supplier.regions.some(region => region === selectedEvent.locationRegion);
   console.log("aaa", supplier.regions, selectedEvent?.locationRegion);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

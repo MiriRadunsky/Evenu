@@ -6,7 +6,6 @@ import axios from "axios";
   try {
     if (!file) throw new Error("No file provided");
 
-    // בקשת כתובת upload מהשרת
     const res = await api.get('/file/upload-url', {
       params: { 
         fileName: file.name, 
@@ -20,12 +19,11 @@ import axios from "axios";
       throw new Error("Invalid presigned response");
     }
 
-    // העלאה ישירה ל-S3
     await axios.put(presignedUrl, file, {
       headers: { "Content-Type": file.type },
     });
 
-    return key; // מחזיר את המפתח לשמירה במסד
+    return key; 
   } catch (error: unknown) {
     console.error("S3 Upload Error:", error);
     throw new Error(getErrorMessage(error, "שגיאה בהעלאת הקובץ"));
