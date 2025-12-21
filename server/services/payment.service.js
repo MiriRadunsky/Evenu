@@ -38,7 +38,6 @@ export const PaymentService = {
 
     const payment = await PaymentRepository.create(contractId, data, session);
 
-    // התראה עתידית על תשלום (אם תרצי)
     if (userId && payment.dueDate) {
       const dueDate = moment.tz(payment.dueDate, "Asia/Jerusalem").toDate();
 

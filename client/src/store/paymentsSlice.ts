@@ -190,6 +190,8 @@ const paymentsSlice = createSlice({
   },
   extraReducers: (builder) => {
     const updatePaymentInState = (state: PaymentsState, updated: Payment) => {
+      console.log('update', updated);
+      
       const idx = state.data.items.findIndex(
         (p) => String(p._id) === String(updated._id)
       );
