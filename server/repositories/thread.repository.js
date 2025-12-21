@@ -45,7 +45,6 @@ async function getThreadsByFilter(filter) {
  * Get all threads for a normal user
  */
 export async function getThreadsForUser(userId) {
-  console.log("Repository: Getting threads for user:", userId);
   return getThreadsByFilter({ userId });
 }
 

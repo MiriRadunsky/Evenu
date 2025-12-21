@@ -10,7 +10,6 @@ import User from '../models/user.model.js';
  */
 export async function attachThreadId(req, res, next) {
     try {
-        console.log("in middleware");
         const { eventId, supplierId, clientId, threadId: clientThreadId } = req.body || req.params;
 
         if (!eventId || !supplierId || !clientId) {

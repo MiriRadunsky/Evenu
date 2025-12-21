@@ -31,6 +31,7 @@ import { useDispatch } from "react-redux";
 import { AccessibilityMenu } from "./components/AccessibilityMenu";
 import { fetchUser } from "./store/authSlice";
 import type { AppDispatch } from "./store";
+import SupplierEditProfile from "./pages/SupplierEditProfile";
 
 export default function AppRouter() {
   const dispatch: AppDispatch = useDispatch();
@@ -48,6 +49,7 @@ export default function AppRouter() {
   ];
   const supplierRoutes = [
     { title: "לוח בקרה ספק", path: "/supplier/dashboard", element: <SupplierDashboard />, icon: LayoutDashboard },
+    { title: "עריכת פרופיל", path: "/supplier/edit-profile", element: <SupplierEditProfile />, icon: LayoutDashboard },
     { title: "בקשות", path: "/supplier/requests", element: <SupplierRequestPage />, icon: Send },
     { title: "חוזים", path: "/supplier/contracts", element: <SupplierContractsPage />, icon: Wallet },
     { title: "צ'אט", path: "/supplier/chat", element: <Chat/>, icon: MessageSquare },

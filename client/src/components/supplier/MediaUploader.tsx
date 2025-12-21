@@ -5,9 +5,10 @@ import api from "../../services/axios";
 
 
 
-export default function MediaUploader({ onRegister }: { onRegister: () => void }) {
+export default function MediaUploader({ onRegister, baseBudget = 0 }: { onRegister: () => void; baseBudget?: number }) {
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [mediaFiles, setMediaFiles] = useState<File[]>([]);
+  const [priceListFiles, setPriceListFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
 
  const handleUpload = async () => {
@@ -16,6 +17,7 @@ export default function MediaUploader({ onRegister }: { onRegister: () => void }
   const uploadedData: {
     profileImage?: { key: string; alt: string };
     media?: { images: { key: string; alt: string }[]; videos:{key: string} [] };
+    priceFiles?: Array<{ key: string; originalName?: string; contentType?: string }>;
   } = {};
 
   try {
@@ -44,9 +46,24 @@ export default function MediaUploader({ onRegister }: { onRegister: () => void }
 
       uploadedData.media = { images, videos };
     }
+    if (priceListFiles.length > 0) {
+      uploadedData.priceFiles = await Promise.all(
+        priceListFiles.map(async (file) => {
+          const priceKey = await uploadFileToS3(file);
+          return {
+            key: priceKey,
+            originalName: file.name,
+            contentType: file.type,
+          };
+        })
+      );
+    }
+
     await api.patch('/suppliers/add-images', {
       profileImage: uploadedData.profileImage,
       media: uploadedData.media,
+      priceFiles: uploadedData.priceFiles,
+      baseBudget: baseBudget,
     });
     onRegister()
   } catch (err) {
@@ -93,6 +110,38 @@ export default function MediaUploader({ onRegister }: { onRegister: () => void }
       <label className="block text-sm text-[#2d2d35] mb-2 font-light">
         מדיה נוספת
       </label>
+
+        <div className="mt-4">
+          <label className="block text-sm text-[#2d2d35] mb-2 font-light">קבצי מחירון (אופציונלי)</label>
+          <label className="cursor-pointer flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-2xl hover:bg-gray-200 transition">
+            <UploadCloud className="w-4 h-4" />
+            הוסף קבצי מחירון
+            <input
+              type="file"
+              multiple
+              className="hidden"
+              accept=".pdf,.xlsx,.xls,.doc,.docx,.jpg,.jpeg,.png"
+              onChange={(e) => e.target.files && setPriceListFiles([...priceListFiles, ...Array.from(e.target.files)])}
+            />
+          </label>
+
+          {priceListFiles.length > 0 && (
+            <div className="mt-2 space-y-1">
+              {priceListFiles.map((file, idx) => (
+                <div key={idx} className="flex items-center justify-between text-sm text-gray-700 bg-gray-50 p-2 rounded">
+                  <span>{file.name}</span>
+                  <button
+                    type="button"
+                    onClick={() => setPriceListFiles(priceListFiles.filter((_, i) => i !== idx))}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       <label className="cursor-pointer flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-2xl hover:bg-gray-200 transition">
         <UploadCloud className="w-4 h-4" />
         העלאת קבצים

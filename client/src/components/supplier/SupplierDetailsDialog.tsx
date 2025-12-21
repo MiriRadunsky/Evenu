@@ -29,30 +29,75 @@ export const SupplierDetailsDialog = ({
 }: SupplierDetailsDialogProps) => {
   const [profileUrl, setProfileUrl] = useState<string | undefined>();
   const [mediaUrls, setMediaUrls] = useState<{key: string; alt?: string}[]>([]);
+  const [priceFileUrls, setPriceFileUrls] = useState<Array<{key: string; url: string; originalName?: string}>>([]);
 
   useEffect(() => {
-    const loadImages = async () => {
-      if (supplier.profileImage?.key) {
-        const url = await getImageUrl(supplier.profileImage.key);
-        setProfileUrl(url);
-      }
+    // Clear state when dialog closes
+    if (!open) {
+      setProfileUrl(undefined);
+      setMediaUrls([]);
+      setPriceFileUrls([]);
+      return;
+    }
 
-      if (supplier.media?.images?.length > 0) {
-        const urls = await Promise.all(
-          supplier.media.images.map(async (img) => {
-            if (img.key) {
-              const key = await getImageUrl(img.key);
-              return { key, alt: img.title };
-            }
-            return { key: '', alt: img.title };
-          })
-        );
-        setMediaUrls(urls);
+    // Create abort controller to cancel requests if component unmounts or dialog closes
+    const abortController = new AbortController();
+    let isMounted = true;
+
+    // Load images when dialog opens
+    const loadImages = async () => {
+      try {
+        if (supplier.profileImage?.key) {
+          const url = await getImageUrl(supplier.profileImage.key);
+          if (isMounted && !abortController.signal.aborted) {
+            setProfileUrl(url);
+          }
+        }
+
+        if (supplier.media?.images?.length > 0) {
+          const urls = await Promise.all(
+            supplier.media.images.map(async (img) => {
+              if (img.key) {
+                const key = await getImageUrl(img.key);
+                return { key, alt: img.title };
+              }
+              return { key: '', alt: img.title };
+            })
+          );
+          if (isMounted && !abortController.signal.aborted) {
+            setMediaUrls(urls);
+          }
+        }
+
+        if (supplier.priceFiles && supplier.priceFiles.length > 0) {
+          const urls = await Promise.all(
+            supplier.priceFiles.map(async (file) => {
+              const url = await getImageUrl(file.key);
+              return { key: file.key, url, originalName: file.originalName };
+            })
+          );
+          if (isMounted && !abortController.signal.aborted) {
+            setPriceFileUrls(urls);
+          }
+        } else {
+          if (isMounted && !abortController.signal.aborted) {
+            setPriceFileUrls([]);
+          }
+        }
+      } catch (e) {
+        if (!abortController.signal.aborted) {
+          console.error('Failed to load images or price files', e);
+        }
       }
     };
 
     loadImages();
-  }, [supplier]);
+
+    return () => {
+      isMounted = false;
+      abortController.abort();
+    };
+  }, [supplier, open]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -125,6 +170,27 @@ export const SupplierDetailsDialog = ({
               {supplier.description && (
                 <div className="text-sm">
                   <strong>תיאור: </strong>{supplier.description}
+                </div>
+              )}
+
+              {/* מחיר בסיסי */}
+              {typeof supplier.baseBudget !== 'undefined' && (
+                <div className="text-sm">
+                  <strong>מחיר בסיסי: </strong>₪{supplier.baseBudget}
+                </div>
+              )}
+
+              {/* קישורים לקבצי מחירון אם קיימים */}
+              {priceFileUrls.length > 0 && (
+                <div className="mt-2 space-y-1">
+                  <strong>קבצי מחירון:</strong>
+                  {priceFileUrls.map((file, idx) => (
+                    <div key={file.key}>
+                      <a href={file.url} target="_blank" rel="noreferrer" className="text-primary underline text-sm">
+                        {file.originalName || `מחירון ${idx + 1}`}
+                      </a>
+                    </div>
+                  ))}
                 </div>
               )}
 

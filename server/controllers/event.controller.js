@@ -43,13 +43,11 @@ export const EventController = {
 
   // 🔹 כל האירועים (בלי פגינציה)
   getAllEvents: asyncHandler(async (req, res) => {
-    console.log('event');
     
     const { events } = await eventService.getUserEvents(
       req.user._id,
       req.query
     );
-    console.log('event',events);
 
     res.status(200).json({
       success: true,

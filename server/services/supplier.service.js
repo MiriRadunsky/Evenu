@@ -24,6 +24,12 @@ export const SupplierService = {
     if (!supplier) throw new AppError(404, "ספק לא קיים במערכת");
     return supplier;
   },
+
+  async getSupplierByUserId(userId) {
+    const supplier = await SupplierRepository.getSupplierByUserId(userId);
+    if (!supplier) throw new AppError(404, "ספק לא קיים במערכת");
+    return supplier;
+  },
   async updateSupplierStatus(id, status) {
     const validStatuses = ["בהמתנה", "מאושר", "נפסל", "נחסם"];
     if (!validStatuses.includes(status)) {
@@ -95,10 +101,16 @@ export const SupplierService = {
     }
   },
  
-  async updateSupplierMedia(id,profileImage, media) {
-    const supplierId= await SupplierRepository.getSupplierIdByUserId(id);
+  async updateSupplierMedia(id, profileImage, media, baseBudget, priceFiles) {
+    const supplierId = await SupplierRepository.getSupplierIdByUserId(id);
     if (!supplierId) throw new AppError(404, "ספק לא נמצא");
-    const supplier = await SupplierRepository.updateSupplierMedia(supplierId,profileImage, media);
+    const supplier = await SupplierRepository.updateSupplierMedia(
+      supplierId,
+      profileImage,
+      media,
+      baseBudget,
+      priceFiles
+    );
     return supplier;
   },
 };

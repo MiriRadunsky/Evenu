@@ -2,7 +2,6 @@
 import Message from '../models/message.model.js';
 
 export async function createMessage(data) {
-  console.log("saving message")
   return await Message.create(data);
 }
 

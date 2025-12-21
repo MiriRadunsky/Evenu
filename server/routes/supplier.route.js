@@ -20,6 +20,13 @@ router.get(
   SupplierController.getAll
 );
 
+// GET /api/suppliers/me - Get current supplier's own profile
+router.get(
+  '/me',
+  authGuard,
+  SupplierController.getOwnProfile
+);
+
 // GET /api/suppliers/:id
 router.get(
   '/:id',
