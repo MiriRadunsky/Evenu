@@ -33,7 +33,6 @@ export function AccessibilityMenu() {
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  // Load settings from localStorage
   useEffect(() => {
     const savedSettings = localStorage.getItem('accessibilitySettings');
     if (savedSettings) {
@@ -43,7 +42,6 @@ export function AccessibilityMenu() {
     }
   }, []);
 
-  // Save settings to localStorage and apply them
   const updateSettings = (newSettings: Partial<AccessibilitySettings>) => {
     const updated = { ...settings, ...newSettings };
     setSettings(updated);
@@ -54,38 +52,32 @@ export function AccessibilityMenu() {
   const applySettings = (settings: AccessibilitySettings) => {
     const root = document.documentElement;
 
-    // Font size
     root.style.fontSize = `${settings.fontSize}%`;
 
-    // High contrast
     if (settings.highContrast) {
       root.classList.add('high-contrast');
     } else {
       root.classList.remove('high-contrast');
     }
 
-    // Highlight links
     if (settings.highlightLinks) {
       root.classList.add('highlight-links');
     } else {
       root.classList.remove('highlight-links');
     }
 
-    // Readable font
     if (settings.readableFont) {
       root.classList.add('readable-font');
     } else {
       root.classList.remove('readable-font');
     }
 
-    // Cursor size
     if (settings.cursorSize === 'large') {
       root.classList.add('large-cursor');
     } else {
       root.classList.remove('large-cursor');
     }
 
-    // Keyboard navigation
     if (settings.keyboardNav) {
       root.classList.add('keyboard-nav');
     } else {
@@ -107,7 +99,6 @@ export function AccessibilityMenu() {
     applySettings(defaultSettings);
   };
 
-  // Handle ESC key to close menu
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
@@ -118,7 +109,6 @@ export function AccessibilityMenu() {
 
     if (isOpen) {
       document.addEventListener('keydown', handleEscape);
-      // Focus trap - focus first element in menu
       const firstFocusable = menuRef.current?.querySelector('button');
       firstFocusable?.focus();
     }
@@ -128,7 +118,6 @@ export function AccessibilityMenu() {
     };
   }, [isOpen]);
 
-  // Handle keyboard navigation on button
   const handleButtonKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
