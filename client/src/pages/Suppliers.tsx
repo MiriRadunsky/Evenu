@@ -5,6 +5,7 @@ import {
   fetchSupplierById,
   clearSelectedSupplier,
 } from "../store/suppliersSlice";
+import { fetchRegions } from "../store/regionsSlice";
 import type { RootState, AppDispatch } from "../store";
 import {
   Card,
@@ -110,6 +111,11 @@ export default function Suppliers() {
 
     fetchCategories();
   }, []);
+
+  // Fetch regions on component mount
+  useEffect(() => {
+    dispatch(fetchRegions());
+  }, [dispatch]);
 
   const handleSelectSupplier = (id: string) => {
     dispatch(fetchSupplierById(id));

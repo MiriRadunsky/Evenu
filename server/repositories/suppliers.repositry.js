@@ -41,8 +41,12 @@ export const SupplierRepository = {
       }
     }
 
+    // Ensure the region filter is applied correctly
     if (region) {
-      filter.regions = { $in: [region.trim()] };
+      const trimmedRegion = region.trim();
+      if (trimmedRegion) {
+        filter.regions = { $elemMatch: { $regex: trimmedRegion, $options: "i" } };
+      }
     }
 
     filter.status = "מאושר";
