@@ -8,7 +8,7 @@
 @layer base {
   :root {
     /* Light Mode Colors */
-    --background: 40 40 96; /* #FAF7F2 */
+    --background: 40 25 88; /* רקע כהה יותר, עדיין חמים */
     --foreground: 0 0 24; /* #3D3D3D */
     --card: 0 0 100; /* #FFFFFF */
     --card-foreground: 0 0 24; /* #3D3D3D */
