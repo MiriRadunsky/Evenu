@@ -6,7 +6,7 @@ import Event from '../models/event.model.js';
 // 🔹 קבלת סטטיסטיקות כלליות
 export async function getStats() {
   const [pendingSuppliers, activeSuppliers, totalUsers, activeEvents] = await Promise.all([
-    Supplier.countDocuments({ status: 'בהמתנה' }),
+    Supplier.countDocuments({ status: 'ממתין' }),
     Supplier.countDocuments({ status: 'מאושר', isActive: true }),
     User.countDocuments(),
     Event.countDocuments({ status: 'active' })
@@ -22,7 +22,7 @@ export async function getStats() {
 
 // 🔹 קבלת ספקים ממתינים לאישור
 export async function getPendingSuppliers() {
-  return await Supplier.find({ status: 'בהמתנה' })
+  return await Supplier.find({ status: 'ממתין' })
     .populate('user', 'name email phone')
     .populate('category', 'name')
     .sort({ createdAt: -1 });
